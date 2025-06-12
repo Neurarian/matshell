@@ -6,14 +6,7 @@ self: {
   lib,
   ...
 }: let
-  # New bundled configuration
-  cfgNew = config.programs.matshell;
-
-  # Old configuration for temporary backward compatibility
-  cfgOld = config.programs.ags.matshell;
-
-  agsPkgs = inputs.ags.packages.${system};
-  dependencies = self.matshellDeps.${system};
+  cfg = config.programs.matshell;
 
   # Wallpaper setter script
   wal_set = pkgs.writeShellApplication {
@@ -126,183 +119,61 @@ in {
         description = "Generate required matugen templates & config.";
       };
     };
-
-    # Old config options with deprecation warnings TODO: Delete these after grace period
-    programs.ags.matshell = {
-      enable = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = lib.mdDoc ''
-          DEPRECATED: Use programs.matshell.enable instead.
-          Enable MatShell (old unbundled version).
-        '';
-      };
-
-      service = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = lib.mdDoc ''
-          DEPRECATED: Use programs.matshell.autostart instead.
-          Enable MatShell service (old unbundled version).
-        '';
-      };
-
-      matugenThemeSetter = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = lib.mdDoc ''
-          DEPRECATED: Use programs.matshell.matugenThemeSetter instead.
-          Enable custom wallpaper setter using matugen theming.
-        '';
-      };
-
-      matugenConfig = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = lib.mdDoc ''
-          DEPRECATED: Use programs.matshell.matugenConfig instead.
-          Generate required matugen templates & config.
-        '';
-      };
-    };
   };
 
-  config = lib.mkMerge [
-    # New implementation
-    (lib.mkIf cfgNew.enable {
-      home.packages =
-        [cfgNew.package]
-        # Add theme setter if enabled
-        ++ lib.optionals cfgNew.matugenThemeSetter [wal_set];
+  config = lib.mkIf cfg.enable {
+    home.packages =
+      [cfg.package]
+      # Add theme setter if enabled
+      ++ lib.optionals cfg.matugenThemeSetter [wal_set];
 
-      # Systemd service for matshell autostart
-      systemd.user.services.matshell = lib.mkIf cfgNew.autostart {
-        Unit = {
-          Description = "Matshell";
-          PartOf = ["graphical-session.target"];
-          After = ["graphical-session.target"];
-        };
-
-        Service = {
-          ExecStart = "${cfgNew.package}/bin/matshell";
-          Restart = "on-failure";
-        };
-
-        Install = {
-          WantedBy = ["graphical-session.target"];
-        };
+    # Systemd service for matshell autostart
+    systemd.user.services.matshell = lib.mkIf cfg.autostart {
+      Unit = {
+        Description = "Matshell";
+        PartOf = ["graphical-session.target"];
+        After = ["graphical-session.target"];
       };
 
-      # Add matugen config if enabled
-      home.file.".config/matugen/config.toml".text = let
-        gtkTemplate = builtins.path {path = ../matugen/templates/gtk.css;};
-        agsTemplate = builtins.path {path = ../matugen/templates/ags.scss;};
-        hyprTemplate = builtins.path {path = ../matugen/templates/hyprland_colors.conf;};
-        hyprlockTemplate = builtins.path {path = ../matugen/templates/hyprlock_colors.conf;};
-      in
-        lib.mkIf cfgNew.matugenConfig ''
-          [templates.gtk3]
-          input_path = "${gtkTemplate}"
-          output_path = "~/.config/gtk-3.0/gtk.css"
-
-          [templates.gtk4]
-          input_path = "${gtkTemplate}"
-          output_path = "~/.config/gtk-4.0/gtk.css"
-
-          [templates.ags]
-          input_path = "${agsTemplate}"
-          output_path = "~/.config/ags/style/abstracts/_variables.scss"
-
-          [templates.hypr]
-          input_path = "${hyprTemplate}"
-          output_path = "~/.config/hypr/hyprland_colors.conf"
-
-          [templates.hyprlock]
-          input_path = "${hyprlockTemplate}"
-          output_path = "~/.config/hypr/hyprlock_colors.conf"
-
-          [config.custom_colors]
-        '';
-    })
-
-    # Old implementation TODO: Delete these after grace period
-    (lib.mkIf cfgOld.enable {
-      # Deprecation warnings
-      warnings = [
-        "programs.ags.matshell is deprecated. Please use programs.matshell instead for the bundled version."
-      ];
-
-      programs.ags = {
-        enable = true;
-        package = agsPkgs.ags.override {
-          extraPackages = dependencies;
-        };
+      Service = {
+        ExecStart = "${cfg.package}/bin/matshell";
+        Restart = "on-failure";
       };
 
-      home.activation.cloneMatshell = let
-        dest = "${config.xdg.configHome}/ags";
-        repo = "https://github.com/Neurarian/matshell/";
-      in
-        lib.hm.dag.entryAfter ["writeBoundary"]
-        ''
-          if [ ! -d "${dest}" ]; then
-            echo "Cloning matshell repository..."
-            ${pkgs.git}/bin/git clone --depth 1 ${repo} "${dest}"
-          else
-            echo "Skipping matshell clone (${dest} already exists)"
-          fi
-        '';
-
-      systemd.user.services.ags = lib.mkIf cfgOld.service {
-        Unit = {
-          Description = "Aylur's Gtk Shell: Matshell";
-          PartOf = [
-            "tray.target"
-            "graphical-session.target"
-          ];
-        };
-        Service = let
-          ags = "${config.programs.ags.package}/bin/ags";
-        in {
-          ExecStart = "${ags} run --gtk4";
-          ExecReload = "${ags} quit && ${ags} run --gtk4";
-          Restart = "on-failure";
-          KillMode = "mixed";
-        };
-        Install.WantedBy = ["graphical-session.target"];
+      Install = {
+        WantedBy = ["graphical-session.target"];
       };
+    };
 
-      home.packages = lib.mkIf cfgOld.matugenThemeSetter [wal_set];
+    # Add matugen config if enabled
+    home.file.".config/matugen/config.toml".text = let
+      gtkTemplate = builtins.path {path = ../matugen/templates/gtk.css;};
+      agsTemplate = builtins.path {path = ../matugen/templates/ags.scss;};
+      hyprTemplate = builtins.path {path = ../matugen/templates/hyprland_colors.conf;};
+      hyprlockTemplate = builtins.path {path = ../matugen/templates/hyprlock_colors.conf;};
+    in
+      lib.mkIf cfg.matugenConfig ''
+        [templates.gtk3]
+        input_path = "${gtkTemplate}"
+        output_path = "~/.config/gtk-3.0/gtk.css"
 
-      home.file.".config/matugen/config.toml".text = let
-        gtkTemplate = builtins.path {path = ../matugen/templates/gtk.css;};
-        agsTemplate = builtins.path {path = ../matugen/templates/ags.scss;};
-        hyprTemplate = builtins.path {path = ../matugen/templates/hyprland_colors.conf;};
-        hyprlockTemplate = builtins.path {path = ../matugen/templates/hyprlock_colors.conf;};
-      in
-        lib.mkIf cfgOld.matugenConfig ''
-          [templates.gtk3]
-          input_path = "${gtkTemplate}"
-          output_path = "~/.config/gtk-3.0/gtk.css"
+        [templates.gtk4]
+        input_path = "${gtkTemplate}"
+        output_path = "~/.config/gtk-4.0/gtk.css"
 
-          [templates.gtk4]
-          input_path = "${gtkTemplate}"
-          output_path = "~/.config/gtk-4.0/gtk.css"
+        [templates.ags]
+        input_path = "${agsTemplate}"
+        output_path = "~/.config/ags/style/abstracts/_variables.scss"
 
-          [templates.ags]
-          input_path = "${agsTemplate}"
-          output_path = "~/.config/ags/style/abstracts/_variables.scss"
+        [templates.hypr]
+        input_path = "${hyprTemplate}"
+        output_path = "~/.config/hypr/hyprland_colors.conf"
 
-          [templates.hypr]
-          input_path = "${hyprTemplate}"
-          output_path = "~/.config/hypr/hyprland_colors.conf"
+        [templates.hyprlock]
+        input_path = "${hyprlockTemplate}"
+        output_path = "~/.config/hypr/hyprlock_colors.conf"
 
-          [templates.hyprlock]
-          input_path = "${hyprlockTemplate}"
-          output_path = "~/.config/hypr/hyprlock_colors.conf"
-
-          [config.custom_colors]
-        '';
-    })
-  ];
+        [config.custom_colors]
+      '';
+  };
 }

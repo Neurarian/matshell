@@ -1,4 +1,5 @@
 @use "sass:color";
+@use "theme_variables_matugen";
 
 /*
 * Css Colors
@@ -184,8 +185,3 @@ $spacing-md: 0.75rem;
 $border-width: 2px;
 $scale: 0.5rem;
 $font: 1.1rem;
-
-
-/* Theme mode and scheme variables */
-$darkmode: true;
-$material-color-scheme: "scheme-vibrant";

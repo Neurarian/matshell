@@ -64,10 +64,9 @@ self: {
       # Set Material colortheme
       matugen -t "$scheme" -m "$mode" image "$wallpaper_path"
 
-      # Append mode and scheme to the matshell colors SCSS file
-      matugen_scss_file="$HOME/.config/ags/style/abstracts/_variables.scss"
+      # Write mode and scheme to the matugen variables SCSS file
+      matugen_scss_file="$HOME/.config/ags/style/abstracts/_theme_variables_matugen.scss"
 
-      # Append variables to the end of the file
       {
         echo ""
         echo "/* Theme mode and scheme variables */"
@@ -77,7 +76,7 @@ self: {
           echo "\$darkmode: false;"
         fi
         echo "\$material-color-scheme: \"$scheme\";"
-      } >> "$matugen_scss_file"
+      } > "$matugen_scss_file"
 
       # unload previous wallpaper
       hyprctl hyprpaper unload all

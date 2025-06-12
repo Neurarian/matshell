@@ -1,6 +1,8 @@
 @use "sass:color";
 /* comment if using end4 backend*/
 @use "variables" as *;
+@use "theme_variables_matugen";
+
 /* uncomment if using end4 backend*/
 /* @use "variables_end4" as *;
 @use "_material-colors_end4" as *; */

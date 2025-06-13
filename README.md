@@ -222,6 +222,13 @@ This project wouldn't be possible without:
 
 ______________________________________________________________________
 
+### 🌞 Light Theme (Video Demo Desktop)
+
+<p align="center">
+
+https://github.com/user-attachments/assets/7a7851e3-9ebc-4f52-8b0f-e9a062122d9e
+
+</p>
 ## Screenshots
 
 ### 🌚 Dark Theme (Desktop)
@@ -235,20 +242,3 @@ ______________________________________________________________________
 <b>Full Bar Mode & Cava in Bar</b>
 
 ![2025-04-19T03:22:32,664157108+02:00](https://github.com/user-attachments/assets/458f11ac-2de2-455c-847b-15bd515a8f48)
-
-</p>
-
-### 🌞 Light Theme (Desktop)
-
-<p align="center">
-
-![2025-03-21T22:37:54,320570898+01:00](https://github.com/user-attachments/assets/45bf6c1a-d931-40a1-8644-fd7ccbfb4f95)
-![2025-03-21T22:52:59,913307252+01:00](https://github.com/user-attachments/assets/444a6624-9c36-412a-b265-2a887717c933)
-
-</p>
-
-### Video Demo (quite outdated)
-
-<p align="center">
-  <video src="https://github.com/Neurarian/ags-bar/assets/110474238/3f01073e-552a-479b-99f9-d82647138e55" controls width="600"></video>
-</p>

@@ -25,10 +25,17 @@ function reloadCss() {
 App.start({
   icons: icons,
   css: css,
-  instanceName: "js",
-  requestHandler(request, res) {
-    print(request);
-    res("ok");
+  instanceName: "matshell",
+  requestHandler(request: string, res: (response: any) => void) {
+    if (request === "launcher") {
+      App.toggle_window("launcher");
+      res("app launcher toggled");
+    } else if (request === "logout") {
+      App.toggle_window("logout-menu");
+      res("logout menu toggled");
+    } else {
+      res("not found");
+    }
   },
   main() {
     exec(`sass ${scss} ${css}`);

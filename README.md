@@ -27,74 +27,6 @@ This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice
 - **Hyprland Integration**: Built specifically for the Hyprland compositor
 - **Nix Support**: Support for NixOS / Home-Manager with dedicated module
 
-<details>
-  <summary>Widget List</summary>
-
-- **Main Status Bar**
-
-![2025-04-10 18-58-06](https://github.com/user-attachments/assets/1952d0ed-c9ca-4966-a91f-5f45aae5fdf6)
-
-![2025-04-10 23-47-32](https://github.com/user-attachments/assets/e05e8861-2e76-417a-a7b3-369f155b20c1)
-
-- Laptop (Light)
-
-![2025-03-23T18:37:29,615714672+01:00](https://github.com/user-attachments/assets/8656aa43-7793-476b-9e12-f0a58eeccbfb)
-
-- Desktop (Dark)
-
-![2025-03-23T18:53:49,228938439+01:00](https://github.com/user-attachments/assets/01e4e84c-1901-4532-a924-3a86696aa22c)
-
-- **App Launcher**
-- Light
-
-![2025-03-23T18:41:51,470421774+01:00](https://github.com/user-attachments/assets/ae8b69a8-8fc1-4a48-a18e-77a8af6f83c8)
-
-- Dark
-
-![2025-03-23T18:56:24,165287965+01:00](https://github.com/user-attachments/assets/3760a241-913f-4d31-a90b-f1a6d85b59bf)
-
-- **Logout Menu**
-- Light
-
-![2025-03-23T19:00:49,303694058+01:00](https://github.com/user-attachments/assets/df572fad-1783-45fe-b7ca-a43fd3d55319)
-
-- Dark
-
-![2025-03-23T18:40:10,844462569+01:00](https://github.com/user-attachments/assets/53eb4206-b33d-459c-b3b4-d6cb1154c4f3)
-
-- **Music Player with CAVA**
-
-![2025-04-10T00:02:06,878048376+02:00](https://github.com/user-attachments/assets/cefb1942-4f9b-430e-b499-55ebf32e55e5) ![2025-04-10 18-22-52-8](https://github.com/user-attachments/assets/512b6658-d7e5-44aa-95cc-7a180cf28203)
-
-- **Notifications**
-- Light
-
-![2025-03-23T18:42:09,143344616+01:00](https://github.com/user-attachments/assets/cacd60a8-4941-40d4-802c-54a683ff8b34)
-
-- Dark
-
-![2025-03-23T19:05:38,240008405+01:00](https://github.com/user-attachments/assets/c949ade2-2d3b-4678-a36e-0ff725859e05)
-
-- **On Screen Display**
-- Light
-
-![2025-03-23T18:47:25,513704415+01:00](https://github.com/user-attachments/assets/86351939-d32a-4063-bd6f-c4f2b9e7292d)
-
-- Dark
-
-![2025-03-23T19:06:59,375609741+01:00](https://github.com/user-attachments/assets/3ea5eb01-1042-4740-ad88-ee59212dc50c)
-
-- **System Menu**
-- Laptop (Light)
-
-![2025-03-23T18:38:30,002859605+01:00](https://github.com/user-attachments/assets/c520f03b-f365-4782-8008-591a8993eaef)
-
-- Desktop (Dark)
-
-![2025-03-23T19:09:22,826684018+01:00](https://github.com/user-attachments/assets/8c701cb4-d675-4bf9-97fa-cf3eceaa9545)
-
-</details>
-
 ______________________________________________________________________
 
 ### ⛓️ Dependencies
@@ -241,3 +173,71 @@ https://github.com/user-attachments/assets/7a7851e3-9ebc-4f52-8b0f-e9a062122d9e
 <b>Full Bar Mode & Cava in Bar</b>
 
 ![2025-04-19T03:22:32,664157108+02:00](https://github.com/user-attachments/assets/458f11ac-2de2-455c-847b-15bd515a8f48)
+
+<details>
+   <summary><h3></b>Detailed Widget List</h3></summary>
+
+- **Main Status Bar**
+
+![2025-04-10 18-58-06](https://github.com/user-attachments/assets/1952d0ed-c9ca-4966-a91f-5f45aae5fdf6)
+
+![2025-04-10 23-47-32](https://github.com/user-attachments/assets/e05e8861-2e76-417a-a7b3-369f155b20c1)
+
+- Laptop (Light)
+
+![2025-03-23T18:37:29,615714672+01:00](https://github.com/user-attachments/assets/8656aa43-7793-476b-9e12-f0a58eeccbfb)
+
+- Desktop (Dark)
+
+![2025-03-23T18:53:49,228938439+01:00](https://github.com/user-attachments/assets/01e4e84c-1901-4532-a924-3a86696aa22c)
+
+- **App Launcher**
+- Light
+
+![2025-03-23T18:41:51,470421774+01:00](https://github.com/user-attachments/assets/ae8b69a8-8fc1-4a48-a18e-77a8af6f83c8)
+
+- Dark
+
+![2025-03-23T18:56:24,165287965+01:00](https://github.com/user-attachments/assets/3760a241-913f-4d31-a90b-f1a6d85b59bf)
+
+- **Logout Menu**
+- Light
+
+![2025-03-23T19:00:49,303694058+01:00](https://github.com/user-attachments/assets/df572fad-1783-45fe-b7ca-a43fd3d55319)
+
+- Dark
+
+![2025-03-23T18:40:10,844462569+01:00](https://github.com/user-attachments/assets/53eb4206-b33d-459c-b3b4-d6cb1154c4f3)
+
+- **Music Player with CAVA**
+
+![2025-04-10T00:02:06,878048376+02:00](https://github.com/user-attachments/assets/cefb1942-4f9b-430e-b499-55ebf32e55e5) ![2025-04-10 18-22-52-8](https://github.com/user-attachments/assets/512b6658-d7e5-44aa-95cc-7a180cf28203)
+
+- **Notifications**
+- Light
+
+![2025-03-23T18:42:09,143344616+01:00](https://github.com/user-attachments/assets/cacd60a8-4941-40d4-802c-54a683ff8b34)
+
+- Dark
+
+![2025-03-23T19:05:38,240008405+01:00](https://github.com/user-attachments/assets/c949ade2-2d3b-4678-a36e-0ff725859e05)
+
+- **On Screen Display**
+- Light
+
+![2025-03-23T18:47:25,513704415+01:00](https://github.com/user-attachments/assets/86351939-d32a-4063-bd6f-c4f2b9e7292d)
+
+- Dark
+
+![2025-03-23T19:06:59,375609741+01:00](https://github.com/user-attachments/assets/3ea5eb01-1042-4740-ad88-ee59212dc50c)
+
+- **System Menu**
+- Laptop (Light)
+
+![2025-03-23T18:38:30,002859605+01:00](https://github.com/user-attachments/assets/c520f03b-f365-4782-8008-591a8993eaef)
+
+- Desktop (Dark)
+
+![2025-03-23T19:09:22,826684018+01:00](https://github.com/user-attachments/assets/8c701cb4-d675-4bf9-97fa-cf3eceaa9545)
+
+</details>

@@ -81,4 +81,15 @@ App.start({
       }
     });
   },
+  requestHandler(request: string, res: (response: any) => void) {
+    if (request === "launcher") {
+      App.toggle_window("launcher");
+      res("app launcher toggled");
+    } else if (request === "logout") {
+      App.toggle_window("logout-menu");
+      res("logout menu toggled");
+    } else {
+      res("not found");
+    }
+  },
 });

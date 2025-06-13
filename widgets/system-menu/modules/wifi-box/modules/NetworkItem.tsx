@@ -52,9 +52,6 @@ export const NetworkItem = ({ network }) => {
         {isActive.get() && (
           <image halign={Gtk.Align.END} iconName="emblem-ok-symbolic" />
         )}
-        {savedNetworks.get().includes(network.ssid) && !isActive.get() && (
-          <image halign={Gtk.Align.END} iconName="document-save-symbolic" />
-        )}
       </box>
     </button>
   );

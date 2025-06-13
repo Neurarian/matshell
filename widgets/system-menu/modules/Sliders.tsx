@@ -5,6 +5,7 @@ import Brightness from "utils/brightness.ts";
 
 export const Sliders = () => {
   const speaker = Wp.get_default()!.audio.defaultSpeaker;
+  const microphone = Wp.get_default()!.get_default_microphone();
   const brightness = Brightness.get_default();
 
   return (
@@ -18,6 +19,25 @@ export const Sliders = () => {
             speaker.volume = self.value;
           }}
           value={bind(speaker, "volume")}
+          valign={Gtk.Align.CENTER}
+          hexpand={true}
+        />
+      </box>
+      <box
+        cssClasses={["volume"]}
+        visible={bind(microphone, "path").as(
+          (mic) => mic !== null,
+        )}
+      >
+        <button onClicked={() => execAsync("pwvucontrol")}>
+          <image iconName={bind(microphone, "volumeIcon")} />
+        </button>
+        <slider
+          onChangeValue={(self) => {
+            microphone.volume = self.value;
+            print(microphone.get_path());
+          }}
+          value={bind(microphone, "volume")}
           valign={Gtk.Align.CENTER}
           hexpand={true}
         />

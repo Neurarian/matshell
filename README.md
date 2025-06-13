@@ -229,7 +229,6 @@ ______________________________________________________________________
 https://github.com/user-attachments/assets/7a7851e3-9ebc-4f52-8b0f-e9a062122d9e
 
 </p>
-## Screenshots
 
 ### 🌚 Dark Theme (Desktop)
 

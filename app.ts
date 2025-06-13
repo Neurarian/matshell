@@ -25,7 +25,7 @@ function reloadCss() {
 App.start({
   icons: icons,
   css: css,
-  instanceName: "js",
+  instanceName: "matshell",
   requestHandler(request: string, res: (response: any) => void) {
     if (request === "launcher") {
       App.toggle_window("launcher");

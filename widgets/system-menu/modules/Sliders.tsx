@@ -35,7 +35,6 @@ export const Sliders = () => {
         <slider
           onChangeValue={(self) => {
             microphone.volume = self.value;
-            print(microphone.get_path());
           }}
           value={bind(microphone, "volume")}
           valign={Gtk.Align.CENTER}

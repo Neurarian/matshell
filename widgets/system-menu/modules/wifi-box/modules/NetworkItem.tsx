@@ -50,7 +50,7 @@ export const NetworkItem = ({ network }) => {
           />
         )}
         {isActive.get() && (
-          <image halign={Gtk.Align.END} iconName="emblem-ok-symbolic" />
+          <image halign={Gtk.Align.END} iconName="object-select-symbolic" />
         )}
       </box>
     </button>

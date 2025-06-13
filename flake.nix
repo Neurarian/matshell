@@ -72,18 +72,9 @@
 
     # Create a static map for all systems.
     # Required for deprecated hm-module options. TODO: Remove after grace period.
-    sys = import systems;
-    matshellDeps = builtins.listToAttrs (
-      map
-      (system: {
-        name = system;
-        value = mkMatshellDeps system;
-      })
-      sys
-    );
   in
     flake-parts.lib.mkFlake {inherit inputs;} {
-      systems = sys;
+      systems = import systems;
 
       perSystem = {system, ...}: let
         pkgs = mkPkgs system;
@@ -97,7 +88,7 @@
             };
             entry = "app.ts";
             gtk4 = true;
-            extraPackages = matshellDeps.${system} ++ [ags.packages.${system}.default];
+            extraPackages = (mkMatshellDeps system) ++ [ags.packages.${system}.default];
           };
         in
           pkgs.runCommand "copy-matshell-styles" {
@@ -155,7 +146,6 @@
           default = self.homeManagerModules.matshell;
           matshell = import ./nix/hm-module.nix self;
         };
-        inherit matshellDeps; #TODO: Deprecated. Remove after grave period
       };
     };
 }

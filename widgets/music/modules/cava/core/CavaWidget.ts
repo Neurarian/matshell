@@ -1,3 +1,4 @@
+import { Accessor } from "ags";
 import { Gtk, Gdk } from "ags/gtk4";
 import Cava from "gi://AstalCava";
 import GObject from "gi://GObject";
@@ -123,32 +124,11 @@ export const CavaWidget = GObject.registerClass(
           drawCatmullRom(this, snapshot, values, bars);
       }
     }
-
-    // Set style from binding (for use with reactive properties)
-    set_style_from_binding(binding: any) {
-      if (
-        typeof binding === "object" &&
-        "subscribe" in binding &&
-        "get" in binding
-      ) {
-        // Handle it as a binding object
-        const updateStyle = () => {
-          this._style = getStyleEnum(binding.get());
-          this.queue_draw();
-        };
-
-        // Init
-        updateStyle();
-
-        // Subscribe to changes
-        return binding.subscribe(updateStyle);
-      }
-    }
   },
 );
 
 export function CavaDraw(props: {
-  style?: CavaStyle | string | { subscribe: Function; get: Function };
+  style?: CavaStyle | string | Accessor<string>;
   hexpand?: boolean;
   vexpand?: boolean;
 }) {
@@ -157,12 +137,35 @@ export function CavaDraw(props: {
   cavaWidget.set_hexpand(props.hexpand ?? false);
   cavaWidget.set_vexpand(props.vexpand ?? false);
 
+  // Handle style prop with proper gnim accessor support
   if (props.style !== undefined) {
     if (typeof props.style === "string" || typeof props.style === "number") {
       cavaWidget.style = getStyleEnum(props.style);
-    } else {
-      // Handle binding object
-      cavaWidget.set_style_from_binding(props.style);
+    } else if (
+      props.style !== null &&
+      "get" in props.style &&
+      "subscribe" in props.style
+    ) {
+      const accessor = props.style as Accessor<string>;
+
+      const initialValue = accessor.get();
+      cavaWidget.style = getStyleEnum(initialValue);
+
+      const unsubscribe = accessor.subscribe(() => {
+        const newValue = accessor.get();
+        cavaWidget.style = getStyleEnum(newValue);
+      });
+
+      (cavaWidget as any)._unsubscribeStyle = unsubscribe;
+
+      const originalDispose = cavaWidget.vfunc_dispose.bind(cavaWidget);
+      cavaWidget.vfunc_dispose = function () {
+        if ((this as any)._unsubscribeStyle) {
+          (this as any)._unsubscribeStyle();
+          (this as any)._unsubscribeStyle = null;
+        }
+        originalDispose.call(this);
+      };
     }
   }
 

@@ -1,7 +1,5 @@
-import { bind } from "astal";
-import { Gtk } from "astal/gtk4";
+import { Gtk } from "ags/gtk4";
 import options from "options.ts";
-import AstalComboBoxText from "./AstalComboBoxText.tsx";
 
 export function OptionSelect({ option, label, choices = [] }) {
   return (
@@ -12,40 +10,33 @@ export function OptionSelect({ option, label, choices = [] }) {
         hexpand={true}
         cssClasses={["option-label"]}
       />
-      <AstalComboBoxText
+      <Gtk.ComboBoxText
         cssClasses={["option-dropdown"]}
         onChanged={(self) => {
-          if (self.get_active_text() === undefined) {
-            console.log("Got undefined!");
-          } else if (self.get_active_text() !== undefined) {
-            console.log(
-              `Updating option ${option} to value: ${self.get_active_text()}`,
-            );
-            options[option].value = self.get_active_text();
+          const selectedText = self.get_active_text();
+          if (selectedText) {
+            console.log(`Updating option ${option} to value: ${selectedText}`);
+            options[option].value = selectedText;
           }
         }}
-        active={bind(options[option]).as((val) => {
-          // Handle undefined or missing values
-          if (val === undefined) {
-            console.log(
-              `Option ${option} is undefined, defaulting to first choice`,
-            );
-            return 0; // Default to first item
-          }
+        $={(self) => {
+          // Populate items
+          choices.forEach((choice) => {
+            self.append_text(choice);
+          });
+          const currentValue = options[option].get();
+          const initialIndex = choices.indexOf(currentValue);
 
-          const index = choices.indexOf(val);
-          if (index === -1) {
-            console.log(
-              `Option ${option} value "${val}" not found in choices, defaulting to first choice`,
-            );
-            return 0; // Value not in choices, default to first item
+          if (initialIndex !== -1) {
+            self.set_active(initialIndex);
+          } else {
+            self.set_active(0);
+            if (choices.length > 0) {
+              options[option].value = choices[0];
+            }
           }
-
-          return index;
-        })}
-      >
-        {choices.map((choice) => ({ text: choice }))}
-      </AstalComboBoxText>
+        }}
+      />
     </box>
   );
 }

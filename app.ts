@@ -53,7 +53,7 @@ app.start({
     MusicPlayer();
     Applauncher(); 
     LogoutMenu();
-    // ControlPanel();
+    ControlPanel();
 
     const hypr = Hyprland.get_default();
 

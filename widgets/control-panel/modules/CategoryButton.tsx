@@ -1,22 +1,43 @@
-import { App, Gtk } from "astal/gtk4";
-import { bind, Variable } from "astal";
+import app from "ags/gtk4/app";
+import { Gtk } from "ags/gtk4";
+import { createState } from "ags";
 
 export function CategoryButton({
   title,
   icon = null,
-  expanded = Variable(false),
+  expanded = null,
   onToggle = () => {},
   children,
 }) {
+  const [logicalVisible, setLogicalVisible] = createState(
+    expanded ? expanded.get() : false,
+  );
+
+  // Sync with external state if provided
+  if (expanded) {
+    expanded.subscribe(() => {
+      const externalValue = expanded.get();
+      if (logicalVisible.get() !== externalValue) {
+        setLogicalVisible(externalValue);
+      }
+    });
+  }
+
+  const toggleExpanded = () => {
+    const newValue = !logicalVisible.get();
+    setLogicalVisible(newValue);
+    onToggle();
+  };
+
   return (
-    <box vertical>
-      <button onClicked={onToggle} cssClasses={["category-button"]}>
+    <box orientation={Gtk.Orientation.VERTICAL}>
+      <button onClicked={toggleExpanded} cssClasses={["category-button"]}>
         <box hexpand={true}>
           {icon && <image iconName={icon} />}
           <label label={title} halign={Gtk.Align.START} hexpand={true} />
           <image
             iconName="pan-end-symbolic"
-            cssClasses={bind(expanded).as((e) =>
+            cssClasses={logicalVisible((e) =>
               e ? ["arrow-indicator", "arrow-down"] : ["arrow-indicator"],
             )}
           />
@@ -26,36 +47,37 @@ export function CategoryButton({
       <revealer
         transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
         transitionDuration={300}
-        revealChild={bind(expanded)}
-        setup={() => {
-          const windowListener = App.connect("window-toggled", (_, window) => {
-            window.name === "control-panel" &&
-              expanded.get() &&
-              expanded.set(false);
-          });
-          bind(expanded).subscribe((expanded) => {
-            if (!expanded) {
-              // Super cheap fix until the revealer bug is fixed:
-              // https://github.com/Aylur/astal/issues/258
-
-              // As this is one unified revealer button, collapsing any of these
-              // will close the entire window and collapse all other revealers.
-
-              // This is not very user friendly at the moment, but I prefer this
-              // over the the mess that results from the revealer not retracting.
-              App.toggle_window("control-panel");
-              App.toggle_window("control-panel");
+        revealChild={logicalVisible}
+        onNotifyChildRevealed={(revealer) => {
+          const window = app.get_window("control-panel");
+          if (window) {
+            // Force window to recalculate its size after animation
+            if (!revealer.childRevealed) {
+               // Use GTK's resize mechanism. Fixes https://github.com/Aylur/astal/issues/258
+                window.set_default_size(-1, -1);
+            }
+          }
+        }}
+        $={(self) => {
+          const windowListener = app.connect("window-toggled", (_, window) => {
+            if (
+              window.name === "control-panel" &&
+              !window.visible &&
+              logicalVisible.get()
+            ) {
+              setLogicalVisible(false);
             }
           });
 
-          return () => {
-            // Clean up the listener when component is destroyed
-            App.disconnect(windowListener);
-            bind(expanded).unsubscribe();
+          (self as any)._cleanup = () => {
+            app.disconnect(windowListener);
           };
         }}
       >
-        <box cssClasses={["category-content"]} vertical>
+        <box
+          cssClasses={["category-content"]}
+          orientation={Gtk.Orientation.VERTICAL}
+        >
           {children}
         </box>
       </revealer>

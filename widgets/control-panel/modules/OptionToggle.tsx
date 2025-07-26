@@ -1,5 +1,5 @@
-import { bind } from "astal";
-import { Gtk } from "astal/gtk4";
+import { createBinding } from "ags";
+import { Gtk } from "ags/gtk4";
 import options from "options.ts";
 
 export function OptionToggle({ option, label, icon = null }) {
@@ -14,7 +14,7 @@ export function OptionToggle({ option, label, icon = null }) {
       />
       <switch
         cssClasses={["option-switch"]}
-        active={bind(options[option])}
+        active={options[option]}
         onNotifyActive={(self) => {
           console.log(`Toggle ${option} changed to: ${self.active}`);
           options[option].value = self.active;

@@ -1,6 +1,6 @@
-import { Astal, App, Gtk } from "astal/gtk4";
-import { Variable, bind } from "astal";
-
+import app from "ags/gtk4/app";
+import { Astal, Gtk } from "ags/gtk4";
+import { createState, createBinding } from "ags";
 import { OptionToggle } from "./modules/OptionToggle.tsx";
 import { OptionSelect } from "./modules/OptionSelect.tsx";
 import { Section } from "./modules/Section.tsx";
@@ -11,11 +11,12 @@ import options from "options.ts";
 export default function ControlPanel() {
   const { TOP, BOTTOM, LEFT } = Astal.WindowAnchor;
 
-  const visible = Variable(false);
-  const matshellSettingsExpanded = Variable(false);
-  const barExpanded = Variable(false);
-  const cavaExpanded = Variable(false);
-  const systemMenuExpanded = Variable(false);
+  const [visible, _setVisible] = createState(false);
+  const [matshellSettingsExpanded, setMatshellSettingsExpanded] =
+    createState(false);
+  const [barExpanded, setBarExpanded] = createState(false);
+  const [cavaExpanded, setCavaExpanded] = createState(false);
+  const [systemMenuExpanded, setSystemMenuExpanded] = createState(false);
 
   const cavaStyleOptions = [
     "catmull_rom",
@@ -34,7 +35,7 @@ export default function ControlPanel() {
     <window
       name="control-panel"
       cssClasses={["control-panel"]}
-      anchor={bind(options["bar.position"]).as((pos) => {
+      anchor={options["bar.position"]((pos) => {
         switch (pos) {
           case "top":
             return TOP | LEFT;
@@ -46,13 +47,13 @@ export default function ControlPanel() {
       })}
       exclusivity={Astal.Exclusivity.NORMAL}
       layer={Astal.Layer.TOP}
-      application={App}
-      visible={bind(visible)}
+      application={app}
+      visible={visible}
       widthRequest={285}
     >
-      <box vertical>
+      <box orientation={Gtk.Orientation.VERTICAL}>
         <button
-          onClicked={() => App.toggle_window("launcher")}
+          onClicked={() => app.toggle_window("launcher")}
           cssClasses={["category-button"]}
         >
           <box hexpand={true}>
@@ -69,22 +70,20 @@ export default function ControlPanel() {
           title="Matshell Settings"
           icon="preferences-system-symbolic"
           expanded={matshellSettingsExpanded}
-          onToggle={() =>
-            matshellSettingsExpanded.set(!matshellSettingsExpanded.get())
-          }
+          onToggle={() => setMatshellSettingsExpanded((prev) => !prev)}
         >
           {/* Idk why, but children wont render if first child is a box */}
           <></>
-          <box vertical>
+          <box orientation={Gtk.Orientation.VERTICAL}>
             {/* Bar Settings Category */}
             <CategoryButton
               title="Bar"
               icon="topbar-show-symbolic"
               expanded={barExpanded}
-              onToggle={() => barExpanded.set(!barExpanded.get())}
+              onToggle={() => setBarExpanded((prev) => !prev)}
             >
               <></>
-              <box vertical>
+              <box orientation={Gtk.Orientation.VERTICAL}>
                 <Section title="Bar Settings">
                   <OptionSelect
                     option="bar.position"
@@ -109,10 +108,10 @@ export default function ControlPanel() {
               title="Cava"
               icon="audio-x-generic-symbolic"
               expanded={cavaExpanded}
-              onToggle={() => cavaExpanded.set(!cavaExpanded.get())}
+              onToggle={() => setCavaExpanded((prev) => !prev)}
             >
               <></>
-              <box vertical margin={10}>
+              <box orientation={Gtk.Orientation.VERTICAL}>
                 <Section title="Cava Settings Bar">
                   <OptionToggle option="bar.modules.cava.show" label="Enable" />
                   <OptionSelect
@@ -144,10 +143,10 @@ export default function ControlPanel() {
               title="System Menu"
               icon="emblem-system-symbolic"
               expanded={systemMenuExpanded}
-              onToggle={() => systemMenuExpanded.set(!systemMenuExpanded.get())}
+              onToggle={() => setSystemMenuExpanded((prev) => !prev)}
             >
               <></>
-              <box vertical margin={10}>
+              <box orientation={Gtk.Orientation.VERTICAL}>
                 <Section title="System Menu Settings">
                   <OptionToggle
                     option="system-menu.modules.wifi.enableGnomeControlCenter"

@@ -1,8 +1,8 @@
-import { Gtk } from "astal/gtk4";
+import { Gtk } from "ags/gtk4";
 
 export function Section({ title, children }) {
   return (
-    <box vertical>
+    <box orientation={Gtk.Orientation.VERTICAL}>
       <label label={title} halign={Gtk.Align.CENTER} cssClasses={["section-label"]} />
       {children}
     </box>

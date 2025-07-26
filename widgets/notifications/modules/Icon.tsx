@@ -1,4 +1,4 @@
-import { Gtk } from "astal/gtk4";
+import { Gtk } from "ags/gtk4";
 import Notifd from "gi://AstalNotifd";
 import { fileExists, isIcon } from "utils/notifd.ts";
 

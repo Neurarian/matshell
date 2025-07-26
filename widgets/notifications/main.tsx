@@ -1,7 +1,7 @@
-import { Astal } from "astal/gtk4";
+import { Astal, Gtk } from "ags/gtk4";
 import Notifd from "gi://AstalNotifd";
 import Hyprland from "gi://AstalHyprland";
-import { bind } from "astal";
+import { createBinding, For } from "ags";
 import { hyprToGdk } from "utils/hyprland.ts";
 import { NotificationWidget } from "./modules/Notification.tsx";
 
@@ -10,23 +10,27 @@ export default function Notifications() {
   const hyprland = Hyprland.get_default();
   const { TOP, RIGHT } = Astal.WindowAnchor;
 
+  // Create bindings for the accessors
+  const focusedMonitor = createBinding(hyprland, "focused-monitor");
+  const notifications = createBinding(notifd, "notifications");
+
   return (
     <window
       name="notifications"
-      gdkmonitor={bind(hyprland, "focused-monitor").as(
-        (focused: Hyprland.Monitor) => hyprToGdk(focused),
+      gdkmonitor={focusedMonitor((focused: Hyprland.Monitor) =>
+        hyprToGdk(focused),
       )}
       anchor={TOP | RIGHT}
-      visible={bind(notifd, "notifications").as(
-        (notifications) => notifications.length > 0,
-      )}
-      child={
-        <box vertical={true} cssClasses={["notifications"]}>
-          {bind(notifd, "notifications").as((notifications) =>
-            notifications.map((n) => <NotificationWidget notification={n} />),
-          )}
-        </box>
-      }
-    />
+      visible={notifications((notifs) => notifs.length > 0)}
+    >
+      <box
+        orientation={Gtk.Orientation.VERTICAL}
+        cssClasses={["notifications"]}
+      >
+        <For each={notifications}>
+          {(notification) => <NotificationWidget notification={notification} />}
+        </For>
+      </box>
+    </window>
   );
 }

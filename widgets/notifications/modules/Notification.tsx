@@ -1,5 +1,5 @@
-import { bind } from "astal";
-import { Gtk } from "astal/gtk4";
+import { Gtk } from "ags/gtk4";
+import { createBinding } from "ags";
 import Notifd from "gi://AstalNotifd";
 import { NotificationIcon } from "./Icon.tsx";
 import { time, urgency, createTimeoutManager } from "utils/notifd.ts";
@@ -19,11 +19,14 @@ export function NotificationWidget({
     () => notification.dismiss(),
     TIMEOUT_DELAY,
   );
+
   return (
     <box
-      setup={(self) => {
+      $={(self) => {
         // Set up timeout
         timeoutManager.setupTimeout();
+
+        // Create click gesture controller
         const clickGesture = Gtk.GestureClick.new();
         clickGesture.set_button(0); // 0 means any button
         clickGesture.connect("pressed", (gesture, _) => {
@@ -33,7 +36,7 @@ export function NotificationWidget({
 
             switch (button) {
               case 1: // PRIMARY/LEFT
-                actions.length > 0 && n.invoke(actions[0]);
+                actions.length > 0 && notification.invoke(actions[0]);
                 break;
               case 2: // MIDDLE
                 notifd.notifications?.forEach((n) => {
@@ -50,13 +53,24 @@ export function NotificationWidget({
         });
         self.add_controller(clickGesture);
 
+        const motionController = new Gtk.EventControllerMotion();
+
+        motionController.connect("enter", () => {
+          timeoutManager.handleHover();
+        });
+
+        motionController.connect("leave", () => {
+          timeoutManager.handleHoverLost();
+        });
+
+        self.add_controller(motionController);
+
+        // Cleanup on unrealize
         self.connect("unrealize", () => {
           timeoutManager.cleanup();
         });
       }}
-      onHoverEnter={timeoutManager.handleHover}
-      onHoverLeave={timeoutManager.handleHoverLost}
-      vertical
+      orientation={Gtk.Orientation.VERTICAL}
       vexpand={false}
       cssClasses={["notification", `${urgency(notification)}`]}
       name={notification.id.toString()}
@@ -65,7 +79,7 @@ export function NotificationWidget({
         <label
           cssClasses={["app-name"]}
           halign={CENTER}
-          label={bind(notification, "app_name")}
+          label={createBinding(notification, "app_name")}
         />
         <label
           cssClasses={["time"]}
@@ -86,7 +100,7 @@ export function NotificationWidget({
           {NotificationIcon(notification)}
         </box>
         <box
-          vertical
+          orientation={Gtk.Orientation.VERTICAL}
           cssClasses={["text-content"]}
           hexpand={true}
           halign={CENTER}
@@ -96,7 +110,7 @@ export function NotificationWidget({
             cssClasses={["title"]}
             valign={CENTER}
             wrap={false}
-            label={bind(notification, "summary")}
+            label={createBinding(notification, "summary")}
           />
           {notification.body && (
             <label
@@ -104,7 +118,7 @@ export function NotificationWidget({
               valign={CENTER}
               wrap={true}
               maxWidthChars={50}
-              label={bind(notification, "body")}
+              label={createBinding(notification, "body")}
             />
           )}
         </box>

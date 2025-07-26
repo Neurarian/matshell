@@ -1,4 +1,6 @@
 {
+  description = "Matshell: a GTK4 Material Design desktop shell powered by Astal";
+
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
@@ -10,14 +12,20 @@
       url = "systems";
     };
 
+    astal = {
+      url = "github:aylur/astal";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     ags = {
       url = "github:aylur/ags";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.astal = {
         url = "github:aylur/astal";
-        inputs.nixpkgs.follows = "nixpkgs";
+        inputs.nixpkgs.follows = "astal";
       };
     };
+
     matugen = {
       url = "github:InioX/matugen";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,6 +40,7 @@
   outputs = inputs @ {
     self,
     nixpkgs,
+    astal,
     ags,
     systems,
     flake-parts,
@@ -41,21 +50,25 @@
       import nixpkgs {
         inherit system;
       };
-    mkMatshellDeps = system: let
+    mkNativeBuildInputs = system: let
       pkgs = mkPkgs system;
-      agsPkgs = ags.packages.${system};
+    in (with pkgs; [
+      wrapGAppsHook
+      gobject-introspection
+    ]);
+
+    mkBuildInputs = system: let
+      pkgs = mkPkgs system;
+      astalPkgs = astal.packages.${system};
     in
       (with pkgs; [
-        wrapGAppsHook
-        gobject-introspection
+        glib
+        gjs
         typescript
-        dart-sass
-        mission-center
-        gnome-control-center
-        imagemagick
         libgtop
       ])
-      ++ (with agsPkgs; [
+      ++ (with astalPkgs; [
+        astal4
         io
         notifd
         apps
@@ -69,9 +82,6 @@
         battery
         powerprofiles
       ]);
-
-    # Create a static map for all systems.
-    # Required for deprecated hm-module options. TODO: Remove after grace period.
   in
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = import systems;
@@ -80,15 +90,35 @@
         pkgs = mkPkgs system;
       in {
         packages.default = let
-          matshell-bundle = ags.lib.bundle {
-            inherit pkgs;
-            name = "matshell";
-            src = builtins.path {
-              path = ./.;
-            };
-            entry = "app.ts";
-            gtk4 = true;
-            extraPackages = (mkMatshellDeps system) ++ [ags.packages.${system}.default];
+          matshell-bundle = pkgs.stdenv.mkDerivation {
+            pname = "matshell";
+            version = "0.1";
+
+            src = ./.;
+
+            nativeBuildInputs =
+              mkNativeBuildInputs system
+              ++ [ags.packages.${system}.default];
+
+            buildInputs = mkBuildInputs system;
+
+            installPhase = ''
+              mkdir -p $out/bin
+              ags bundle app.ts $out/bin/matshell
+            '';
+            preFixup = ''
+              gappsWrapperArgs+=(
+                --prefix PATH : ${
+                pkgs.lib.makeBinPath (with pkgs; [
+                  # runtime executables
+                  dart-sass
+                  mission-center
+                  gnome-control-center
+                  imagemagick
+                ])
+              }
+              )
+            '';
           };
         in
           pkgs.runCommand "copy-matshell-styles" {
@@ -135,9 +165,8 @@
         };
 
         devShells.default = pkgs.mkShell {
-          inputsFrom = builtins.attrValues {
-            inherit (self.packages.${system}) default;
-          };
+          inputsFrom = [self.packages.${system}.default];
+          buildInputs = mkBuildInputs system;
         };
       };
 

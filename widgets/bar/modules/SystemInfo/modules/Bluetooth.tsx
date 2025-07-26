@@ -1,4 +1,4 @@
-import { bind } from "astal";
+import { createBinding } from "ags";
 import Bluetooth from "gi://AstalBluetooth";
 import { getBluetoothIcon, getBluetoothText } from "utils/bluetooth.ts";
 
@@ -7,13 +7,15 @@ export default function Blue() {
   return (
     <image
       cssClasses={["bluetooth", "module"]}
-      visible={bind(bluetooth, "adapter")}
-      iconName={bind(bluetooth, "devices").as(() =>
-        getBluetoothIcon(bluetooth),
-      )}
-      tooltipText={bind(bluetooth, "devices").as((devices) =>
-        getBluetoothText(devices, bluetooth),
-      )}
+      visible={createBinding(bluetooth, "adapter")}
+      iconName={createBinding(
+        bluetooth,
+        "devices",
+      )(() => getBluetoothIcon(bluetooth))}
+      tooltipText={createBinding(
+        bluetooth,
+        "devices",
+      )((devices) => getBluetoothText(devices, bluetooth))}
     />
   );
 }

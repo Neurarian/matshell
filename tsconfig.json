@@ -4,18 +4,15 @@
         "allowImportingTsExtensions": true,
         "allowJs": true,
         "baseUrl": ".",
-        "experimentalDecorators": true,
+        "experimentalDecorators": false,
         "jsx": "react-jsx",
-        "jsxImportSource": "astal/gtk4",
-        "module": "ES2022",
+        "jsxImportSource": "ags/gtk4",
+        "module": "ES2020",
         "moduleResolution": "Bundler",
         "noImplicitAny": false,
         "paths": {
-            "astal": [
-                "${pkgs.astal3}/share/astal/gjs"
-            ],
-            "astal/*": [
-                "${pkgs.astal3}/share/astal/gjs/*"
+            "ags/*": [
+                "${pkgs.ags}/share/ags/js/src"
             ]
         },
         "strict": true,

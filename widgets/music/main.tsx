@@ -1,41 +1,54 @@
-import { App, Astal } from "astal/gtk4";
+import app from "ags/gtk4/app";
+import { Astal, Gtk } from "ags/gtk4";
 import Mpris from "gi://AstalMpris";
-import { bind, Variable, Gio } from "astal";
+import { createBinding, createState, With } from "ags";
+import Gio from "gi://Gio?version=2.0";
 import { findPlayer, generateBackground } from "utils/mpris";
 import { Cover } from "./modules/Cover";
 import { Info } from "./modules/Info";
 import { CavaDraw } from "./modules/cava";
-import { astalify, Gtk } from "astal/gtk4";
 import options from "options.ts";
 
-const Picture = astalify<Gtk.Picture, Gtk.Picture.ConstructorProps>(
-  Gtk.Picture,
-);
-
 function MusicBox({ player }: { player: Mpris.Player }) {
+  let measureBox: Gtk.Box | null = null;
+
   return (
-    <overlay>
-      <Gtk.ScrolledWindow>
-        <Picture
+    <overlay
+      $={(self) => {
+        // Set measure overlay after the child is added
+        if (measureBox) {
+          self.set_measure_overlay(measureBox, true);
+        }
+      }}
+    >
+      <Gtk.ScrolledWindow $type="overlay">
+        <Gtk.Picture
           cssClasses={["blurred-cover"]}
-          file={bind(player, "cover_art").as((c) =>
-            Gio.file_new_for_path(generateBackground(c)),
-          )}
+          file={createBinding(
+            player,
+            "cover_art",
+          )((c) => Gio.file_new_for_path(generateBackground(c)))}
           contentFit={Gtk.ContentFit.COVER}
         />
       </Gtk.ScrolledWindow>
       <box
         cssClasses={["cava-container"]}
-        type="overlay clip"
-        visible={bind(options["musicPlayer.modules.cava.show"])}
+        $type="overlay"
+        canTarget={false}
+        visible={options["musicPlayer.modules.cava.show"]}
       >
         <CavaDraw
           hexpand
           vexpand
-          style={bind(options["musicPlayer.modules.cava.style"])}
+          style={options["musicPlayer.modules.cava.style"]}
         />
       </box>
-      <box type="overlay measure">
+      <box
+        $type="overlay"
+        $={(self) => {
+          measureBox = self;
+        }}
+      >
         <Cover player={player} />
         <Info player={player} />
       </box>
@@ -46,14 +59,14 @@ function MusicBox({ player }: { player: Mpris.Player }) {
 export default function MusicPlayer() {
   const mpris = Mpris.get_default();
   const { TOP, BOTTOM } = Astal.WindowAnchor;
-  const visible = Variable(false);
+  const [visible, _setVisible] = createState(false);
   return (
     <window
       name="music-player"
       cssClasses={["music", "window"]}
-      application={App}
+      application={app}
       layer={Astal.Layer.OVERLAY}
-      anchor={bind(options["bar.position"]).as((pos) => {
+      anchor={options["bar.position"]((pos) => {
         switch (pos) {
           case "top":
             return TOP;
@@ -64,12 +77,16 @@ export default function MusicPlayer() {
         }
       })}
       keymode={Astal.Keymode.ON_DEMAND}
-      visible={visible()}
+      visible={visible}
     >
       <box>
-        {bind(mpris, "players").as((players) =>
-          players.length > 0 ? <MusicBox player={findPlayer(players)} /> : null,
-        )}
+        <With value={createBinding(mpris, "players")}>
+          {(players) =>
+            players.length > 0 ? (
+              <MusicBox player={findPlayer(players)} />
+            ) : null
+          }
+        </With>
       </box>
     </window>
   );

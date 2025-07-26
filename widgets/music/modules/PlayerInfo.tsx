@@ -1,6 +1,6 @@
-import { Gtk } from "astal/gtk4";
+import { Gtk } from "ags/gtk4";
 import Mpris from "gi://AstalMpris";
-import { bind } from "astal";
+import { createBinding } from "ags";
 import { isIcon } from "utils/notifd";
 
 export function PlayerInfo({ player }: { player: Mpris.Player }) {
@@ -10,8 +10,11 @@ export function PlayerInfo({ player }: { player: Mpris.Player }) {
       <image
         cssClasses={["player-icon"]}
         halign={END}
-        tooltipText={bind(player, "identity")}
-        iconName={bind(player, "entry").as((entry) => {
+        tooltipText={createBinding(player, "identity")}
+        iconName={createBinding(
+          player,
+          "entry",
+        )((entry) => {
           if (entry === "spotify") entry = "spotify-client";
           return isIcon(entry ?? "") ? entry : "multimedia-player-symbolic";
         })}

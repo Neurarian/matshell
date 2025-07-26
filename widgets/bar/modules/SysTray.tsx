@@ -1,35 +1,37 @@
-import { Gtk } from "astal/gtk4";
 import Tray from "gi://AstalTray";
-import { bind } from "astal";
+import { For, createBinding } from "ags";
 
 const tray = Tray.get_default();
+
+export const hasTrayItems = createBinding(
+  tray,
+  "items",
+)((items) => items.length > 0);
 
 function SysTrayItem({ item }) {
   return (
     <menubutton
       cssClasses={["tray-item"]}
-      menuModel={bind(item, "menuModel")}
-      actionGroup={bind(item, "actionGroup").as((ag) => ["dbusmenu", ag])}
-      usePopover={false}
-      tooltipMarkup={bind(item, "tooltipMarkup")}
-      setup={(self) => {
+      tooltipMarkup={createBinding(item, "tooltipMarkup")}
+      $={(self) => {
+        self.menuModel = item.menuModel;
         self.insert_action_group("dbusmenu", item.actionGroup);
+        item.connect("notify::action-group", () => {
+          self.insert_action_group("dbusmenu", item.actionGroup);
+        });
       }}
     >
-      <image gicon={bind(item, "gicon")} />
-      {Gtk.PopoverMenu.new_from_model(item.menuModel)}
+      <image gicon={createBinding(item, "gicon")} />
     </menubutton>
   );
 }
 
-export const hasTrayItems = bind(tray, "items").as((items) => items.length > 0);
-
 export function SysTray() {
   return (
     <box cssClasses={["SysTray", "module"]}>
-      {bind(tray, "items").as((items) =>
-        items.map((item) => <SysTrayItem item={item} />),
-      )}
+      <For each={createBinding(tray, "items")}>
+        {(item) => <SysTrayItem item={item} />}
+      </For>
     </box>
   );
 }

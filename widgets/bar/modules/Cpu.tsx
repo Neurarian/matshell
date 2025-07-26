@@ -1,6 +1,6 @@
-import { bind } from "astal";
+import { createBinding } from "ags";
 import Gsk from "gi://Gsk";
-import { execAsync } from "astal/process";
+import { execAsync } from "ags/process";
 import SystemMonitor from "utils/hwmonitor";
 import { CircularProgressBar } from "widgets/common/circularprogress";
 
@@ -10,7 +10,7 @@ export default function Cpu() {
   return (
     <box cssClasses={["bar-hw-cpu-box"]}>
       <CircularProgressBar
-        percentage={bind(sysmon, "cpuLoad")}
+        percentage={createBinding(sysmon, "cpuLoad")}
         radiusFilled={true}
         inverted={true}
         startAt={-0.75}
@@ -28,7 +28,7 @@ export default function Cpu() {
             }
           }}
           label="memory"
-          tooltipText={bind(sysmon, "cpuFrequency").as((f) => `${f} MHz`)}
+          tooltipText={createBinding(sysmon, "cpuFrequency")((f) => `${f} MHz`)}
         />
       </CircularProgressBar>
     </box>

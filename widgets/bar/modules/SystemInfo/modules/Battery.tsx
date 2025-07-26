@@ -1,4 +1,4 @@
-import { bind } from "astal";
+import { createBinding } from "ags";
 import Battery from "gi://AstalBattery";
 
 export default function Batt() {
@@ -6,9 +6,12 @@ export default function Batt() {
   return (
     <image
       cssClasses={["battery", "module"]}
-      visible={bind(battery, "is-battery")}
-      iconName={bind(battery, "battery-icon-name")}
-      tooltipText={bind(battery, "percentage").as((p) => `Battery on ${Math.round(p * 100)}%`)}
+      visible={createBinding(battery, "is-battery")}
+      iconName={createBinding(battery, "battery-icon-name")}
+      tooltipText={createBinding(
+        battery,
+        "percentage",
+      )((p) => `Battery on ${Math.round(p * 100)}%`)}
     />
   );
 }

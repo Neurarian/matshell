@@ -1,7 +1,8 @@
-import { execAsync, GLib } from "astal";
+import GLib from "gi://GLib?version=2.0";
+import { execAsync } from "ags/process";
 import {
   initializeConfig,
-  defineOption, // Renamed for clarity
+  defineOption,
   ConfigValue,
   saveConfig,
 } from "./utils/option";
@@ -37,8 +38,6 @@ const options = await (async () => {
         defineOption<ConfigValue>(true),
     },
   );
-
-  saveConfig();
   return config;
 })();
 

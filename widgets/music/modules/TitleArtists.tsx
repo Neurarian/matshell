@@ -1,6 +1,6 @@
-import { Gtk } from "astal/gtk4";
+import { Gtk } from "ags/gtk4";
 import Mpris from "gi://AstalMpris";
-import { bind } from "astal";
+import { createBinding } from "ags";
 
 export function Title({ player }: { player: Mpris.Player }) {
   return (
@@ -13,7 +13,7 @@ export function Title({ player }: { player: Mpris.Player }) {
     >
       <label
         cssClasses={["title"]}
-        label={bind(player, "title").as((t) => t || "Nothing playing")}
+        label={createBinding(player, "title")((t) => t || "Nothing playing")}
       />
     </Gtk.ScrolledWindow>
   );
@@ -29,7 +29,7 @@ export function Artists({ player }: { player: Mpris.Player }) {
     >
       <label
         cssClasses={["artists"]}
-        label={bind(player, "artist").as((a) => a || "")}
+        label={createBinding(player, "artist")((a) => a || "")}
       />
     </Gtk.ScrolledWindow>
   );

@@ -1,5 +1,6 @@
 import Mpris from "gi://AstalMpris";
-import { bind } from "astal";
+import { createBinding, createState } from "ags";
+import { Gtk } from "ags/gtk4";
 import { lengthStr } from "utils/mpris";
 
 function PositionLabel({ player }: { player: Mpris.Player }) {
@@ -7,9 +8,10 @@ function PositionLabel({ player }: { player: Mpris.Player }) {
     <label
       cssClasses={["position"]}
       xalign={0}
-      label={bind(player, "position").as((pos) =>
-        player.length > 0 ? lengthStr(pos) : "",
-      )}
+      label={createBinding(
+        player,
+        "position",
+      )((pos) => (player.length > 0 ? lengthStr(pos) : ""))}
     ></label>
   );
 }
@@ -20,8 +22,8 @@ function LengthLabel({ player }: { player: Mpris.Player }) {
       cssClasses={["length"]}
       xalign={1}
       hexpand={true}
-      visible={bind(player, "length").as((l) => l > 0)}
-      label={bind(player, "length").as(lengthStr)}
+      visible={createBinding(player, "length")((l) => l > 0)}
+      label={createBinding(player, "length")(lengthStr)}
     />
   );
 }
@@ -31,19 +33,21 @@ function Position({ player }: { player: Mpris.Player }) {
     <slider
       cssClasses={["position"]}
       hexpand={true}
-      visible={bind(player, "length").as((l) => l > 0)}
-      value={bind(player, "position").as((p) =>
-        player.length > 0 ? p / player.length : 0,
-      )}
-      //using scroll or valueChange signals will cause recursive update issues
-      onButtonReleased={( self ) => (player.position = self.value * player.length)}
+      visible={createBinding(player, "length")((l) => l > 0)}
+      value={createBinding(
+        player,
+        "position",
+      )((p) => (player.length > 0 ? p / player.length : 0))}
+      onChangeValue={({ value }) => {
+        player.position = value * player.length;
+      }}
     />
   );
 }
 
 export function TimeInfo({ player }: { player: Mpris.Player }) {
   return (
-    <box vertical vexpand={true}>
+    <box orientation={Gtk.Orientation.VERTICAL} vexpand={true}>
       <box hexpand={true}>
         <PositionLabel player={player} />
         <LengthLabel player={player} />

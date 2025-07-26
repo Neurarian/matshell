@@ -1,4 +1,4 @@
-import { bind } from "astal";
+import { createBinding } from "ags";
 import Network from "gi://AstalNetwork";
 
 export default function Net() {
@@ -30,12 +30,14 @@ export default function Net() {
   return (
     <image
       cssClasses={["net", "module"]}
-      iconName={bind(network, "connectivity").as(
-        () => `${getNetIcon(network)}`,
-      )}
-      tooltipText={bind(network, "connectivity").as(
-        (connectivity) => `${getNetText(connectivity, network)}`,
-      )}
+      iconName={createBinding(
+        network,
+        "connectivity",
+      )(() => `${getNetIcon(network)}`)}
+      tooltipText={createBinding(
+        network,
+        "connectivity",
+      )((connectivity) => `${getNetText(connectivity, network)}`)}
     />
   );
 }

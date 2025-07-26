@@ -1,17 +1,21 @@
 import Hyprland from "gi://AstalHyprland";
-import { bind } from "astal";
+import { createBinding, For, With } from "ags";
 
-// May implement this later
 function FocusedClient() {
   const hypr = Hyprland.get_default();
-  const focused = bind(hypr, "focusedClient");
+  const focused = createBinding(hypr, "focusedClient");
 
   return (
-    <box cssClasses={["Focused"]} visible={focused.as(Boolean)}>
-      {focused.as(
-        (client) =>
-          client && <label label={bind(client, "title").as(String)} />,
-      )}
+    <box cssClasses={["Focused"]}>
+      <With value={focused}>
+        {(client) =>
+          client && (
+            <label
+              label={createBinding(client, "title")((title) => String(title))}
+            />
+          )
+        }
+      </With>
     </box>
   );
 }
@@ -19,32 +23,52 @@ function FocusedClient() {
 export default function Workspaces() {
   const hypr = Hyprland.get_default();
 
+  const workspaceButtons = createBinding(
+    hypr,
+    "workspaces",
+  )((wss) => {
+    const activeWorkspaces = wss
+      .filter((ws) => !(ws.id >= -99 && ws.id <= -2))
+      .sort((a, b) => a.id - b.id);
+
+    const maxId = activeWorkspaces[activeWorkspaces.length - 1]?.id || 1;
+
+    return [...Array(10)].map((_, i) => {
+      const id = i + 1;
+      const ws = activeWorkspaces.find((w) => w.id === id);
+
+      return {
+        id,
+        workspace: ws,
+        visible: maxId >= id,
+        isActive: ws !== undefined,
+      };
+    });
+  });
+
   return (
     <box cssClasses={["Workspaces"]}>
-      {bind(hypr, "workspaces").as((wss) => {
-        const activeWorkspaces = wss
-          .filter((ws) => !(ws.id >= -99 && ws.id <= -2))
-          .sort((a, b) => a.id - b.id);
-
-        return [...Array(10)].map((_, i) => {
-          const id = i + 1;
-          const ws = activeWorkspaces.find((w) => w.id === id);
-          return (
-            <button
-              visible={activeWorkspaces[activeWorkspaces.length - 1]?.id >= id}
-              cssClasses={bind(hypr, "focusedWorkspace").as((fw) => {
-                const classes = [];
-                ws === fw && classes.push("focused");
-                ws && ws.monitor && classes.push(`monitor${ws.monitor.id}`);
-                return classes;
-              })}
-              onClicked={() => hypr.message(`dispatch workspace ${id}`)}
-            >
-              {id} {/* Add content to make button visible */}
-            </button>
-          );
-        });
-      })}
+      <For each={workspaceButtons}>
+        {(buttonData) => (
+          <button
+            visible={buttonData.visible}
+            cssClasses={createBinding(
+              hypr,
+              "focusedWorkspace",
+            )((fw) => {
+              const classes: string[] = [];
+              if (buttonData.workspace === fw) classes.push("focused");
+              if (buttonData.workspace?.monitor) {
+                classes.push(`monitor${buttonData.workspace.monitor.id}`);
+              }
+              return classes;
+            })}
+            onClicked={() =>
+              hypr.message(`dispatch workspace ${buttonData.id}`)
+            }
+          ></button>
+        )}
+      </For>
     </box>
   );
 }

@@ -1,6 +1,7 @@
 import Mpris from "gi://AstalMpris";
-import GLib from "gi://GLib";
-import { exec, bind } from "astal";
+import GLib from "gi://GLib?version=2.0";
+import { createBinding } from "ags";
+import { exec } from "ags/process";
 
 const mpris = Mpris.get_default();
 const MEDIA_CACHE_PATH = GLib.get_user_cache_dir() + "/media";
@@ -74,10 +75,14 @@ export function filterActivePlayers(players) {
   });
 }
 
-export const hasActivePlayers = bind(mpris, "players").as(
-  (players) => filterActivePlayers(players).length > 0,
-);
-export const firstActivePlayer = bind(mpris, "players").as((players) => {
+export const hasActivePlayers = createBinding(
+  mpris,
+  "players",
+)((players) => filterActivePlayers(players).length > 0);
+export const firstActivePlayer = createBinding(
+  mpris,
+  "players",
+)((players) => {
   const active = filterActivePlayers(players);
   return active.length > 0 ? active[0] : null;
 });

@@ -1,12 +1,7 @@
-import {
-  readFile,
-  readFileAsync,
-  writeFile,
-  Variable,
-  GLib,
-  Gio,
-  monitorFile,
-} from "astal";
+import { Accessor } from "ags";
+import { readFile, readFileAsync, writeFile, monitorFile } from "ags/file";
+import Gio from "gi://Gio?version=2.0";
+import GLib from "gi://GLib?version=2.0";
 
 /**
  * Configuration manager for Astal/AGS
@@ -31,38 +26,72 @@ export type ConfigValue =
   | ConfigValueObject
   | ConfigValueArray;
 
+interface IConfigOption {
+  optionName: string;
+  defaultValue: ConfigValue;
+  useCache: boolean;
+  autoSave: boolean;
+  get value(): ConfigValue;
+  set value(v: ConfigValue);
+  subscribe(cb: (v: ConfigValue) => void): () => void;
+}
+
 // Reactive configuration option
-export class ConfigOption<T extends ConfigValue> extends Variable<T> {
+export class ConfigOption<T extends ConfigValue>
+  extends Accessor<T>
+  implements IConfigOption
+{
+  #value: T;
+  #subs = new Set<(v: T) => void>();
+
+  readonly optionName: string;
   readonly defaultValue: T;
   readonly useCache: boolean;
   readonly autoSave: boolean;
-  readonly name: string;
 
   constructor(
-    name: string,
+    optionName: string,
     defaultValue: T,
-    options: { useCache?: boolean; autoSave?: boolean } = {},
+    opts: { useCache?: boolean; autoSave?: boolean } = {},
   ) {
-    super(defaultValue);
-    this.name = name;
+    super(
+      () => this.#value,
+      (cb) => this.#subscribe(cb),
+    );
+
+    this.#value = defaultValue;
+    this.optionName = optionName;
     this.defaultValue = defaultValue;
-    this.useCache = options.useCache || false;
-    this.autoSave = options.autoSave ?? true;
+    this.useCache = opts.useCache ?? false;
+    this.autoSave = opts.autoSave ?? true;
   }
 
-  // Allow direct value access
   get value(): T {
-    return super.get();
+    return this.#value;
+  }
+  set value(v: T) {
+    this.set(v);
   }
 
-  set value(newValue: T) {
-    super.set(newValue);
+  set(v: T) {
+    if (Object.is(this.#value, v)) return;
+    this.#value = v;
+    this.#subs.forEach((cb) => cb(v));
+  }
+
+  subscribe(cb: (v: T) => void): () => void {
+    return this.#subscribe(cb);
+  }
+
+  #subscribe(cb: (v: T) => void): () => void {
+    this.#subs.add(cb);
+    return () => this.#subs.delete(cb);
   }
 }
 
 // Configuration manager
 export class ConfigManager {
-  private options: Map<string, ConfigOption<ConfigValue>> = new Map();
+  private options = new Map<string, IConfigOption>();
   private cacheDir: string;
   private lastLoadTime: number = 0;
   private subscriptions: Map<string, () => void> = new Map();
@@ -75,23 +104,23 @@ export class ConfigManager {
 
   // Create and register option
   createOption<T extends ConfigValue>(
-    name: string,
+    optionName: string,
     defaultValue: T,
     options: { useCache?: boolean; autoSave?: boolean } = {},
   ): ConfigOption<T> {
-    !name.includes(".") &&
+    !optionName.includes(".") &&
       console.warn(
-        `Warning: Config key "${name}" doesn't use dot notation. This is allowed but not recommended.`,
+        `Warning: Config key "${optionName}" doesn't use dot notation. This is allowed but not recommended.`,
       );
 
-    const option = new ConfigOption<T>(name, defaultValue, options);
-    this.options.set(name, option as ConfigOption<ConfigValue>);
+    const option = new ConfigOption<T>(optionName, defaultValue, options);
+    this.options.set(optionName, option as IConfigOption);
     this.initializeOption(option);
 
     // Add auto-save for non-cached options
     if (!option.useCache && option.autoSave) {
       option.subscribe(() => {
-        console.log(`Auto-saving due to change in ${name}`);
+        console.log(`Auto-saving due to change in ${optionName}`);
         this.save();
       });
     }
@@ -110,44 +139,44 @@ export class ConfigManager {
     if (GLib.file_test(filePath, GLib.FileTest.EXISTS)) {
       try {
         const config = JSON.parse(readFile(filePath) || "{}");
-        if (config[option.name] !== undefined) {
-          option.value = config[option.name] as T;
+        if (config[option.optionName] !== undefined) {
+          option.value = config[option.optionName] as T;
         }
       } catch (err) {
-        console.error(`Failed to initialize option ${option.name}:`, err);
+        console.error(`Failed to initialize option ${option.optionName}:`, err);
       }
     }
 
     // Setup cache saving with proper cleanup handling
     if (option.useCache) {
       // Clean up any existing subscription first
-      if (this.subscriptions.has(option.name)) {
-        const existingCleanup = this.subscriptions.get(option.name);
+      if (this.subscriptions.has(option.optionName)) {
+        const existingCleanup = this.subscriptions.get(option.optionName);
         existingCleanup && existingCleanup();
       }
 
       // Create new subscription and store the cleanup function
       const cleanup = option.subscribe((value) => {
-        this.saveCachedValue(option.name, value);
+        this.saveCachedValue(option.optionName, value);
       });
 
-      this.subscriptions.set(option.name, cleanup);
+      this.subscriptions.set(option.optionName, cleanup);
     }
   }
 
   // Save a cached value
-  private saveCachedValue(name: string, value: ConfigValue): void {
+  private saveCachedValue(optionName: string, value: ConfigValue): void {
     readFileAsync(`${this.cacheDir}/options.json`)
       .then((content) => {
         const cache = JSON.parse(content || "{}");
-        cache[name] = value;
+        cache[optionName] = value;
         writeFile(
           `${this.cacheDir}/options.json`,
           JSON.stringify(cache, null, 2),
         );
       })
       .catch((err) => {
-        console.error(`Failed to save cached value for ${name}:`, err);
+        console.error(`Failed to save cached value for ${optionName}:`, err);
       });
   }
 
@@ -166,9 +195,9 @@ export class ConfigManager {
       if (!fileExists) {
         // Simply create a new file with all non-cached options
         const newConfig: Record<string, ConfigValue> = {};
-        for (const [name, option] of this.options.entries()) {
+        for (const [optionName, option] of this.options.entries()) {
           if (!option.useCache) {
-            newConfig[name] = option.value;
+            newConfig[optionName] = option.value;
           }
         }
         writeFile(this.configPath, JSON.stringify(newConfig, null, 2));
@@ -183,13 +212,13 @@ export class ConfigManager {
       const newConfig: Record<string, ConfigValue> = {};
       let hasChanges = false;
 
-      for (const [name, option] of this.options.entries()) {
+      for (const [optionName, option] of this.options.entries()) {
         if (!option.useCache) {
-          newConfig[name] = option.value;
+          newConfig[optionName] = option.value;
 
           // Check if this value changed
           if (
-            JSON.stringify(existingConfig[name]) !==
+            JSON.stringify(existingConfig[optionName]) !==
             JSON.stringify(option.value)
           ) {
             hasChanges = true;
@@ -233,9 +262,9 @@ export class ConfigManager {
       );
 
       let loadedCount = 0;
-      for (const [name, option] of this.options.entries()) {
-        if (!option.useCache && config[name] !== undefined) {
-          option.value = config[name];
+      for (const [optionName, option] of this.options.entries()) {
+        if (!option.useCache && config[optionName] !== undefined) {
+          option.value = config[optionName];
           loadedCount++;
         }
       }
@@ -269,14 +298,11 @@ export class ConfigManager {
     });
   }
 
-  // Get an option by name
-  getOption<T extends ConfigValue>(name: string): ConfigOption<T> | undefined {
-    return this.options.get(name) as ConfigOption<T> | undefined;
-  }
-
-  // Get all options
-  getAllOptions(): Map<string, ConfigOption<ConfigValue>> {
-    return this.options;
+  // Get an option by optionName
+  getOption<T extends ConfigValue>(
+    optionName: string,
+  ): ConfigOption<T> | undefined {
+    return this.options.get(optionName) as ConfigOption<T> | undefined;
   }
 }
 

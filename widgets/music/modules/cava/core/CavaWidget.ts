@@ -1,4 +1,4 @@
-import { Gtk, Gdk } from "astal/gtk4";
+import { Gtk, Gdk } from "ags/gtk4";
 import Cava from "gi://AstalCava";
 import GObject from "gi://GObject";
 

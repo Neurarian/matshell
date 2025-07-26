@@ -1,6 +1,6 @@
 import Notifd from "gi://AstalNotifd";
-import { GLib } from "astal";
-import { Gtk, Gdk } from "astal/gtk4";
+import GLib from "gi://GLib?version=2.0";
+import { Gtk, Gdk } from "ags/gtk4";
 
 type TimeoutManager = {
   setupTimeout: () => void;

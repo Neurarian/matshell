@@ -1,32 +1,48 @@
-import { App, Gtk } from "astal/gtk4";
-import { execAsync } from "astal/process";
-import { interval } from "astal/time";
-import { Variable, bind } from "astal";
+import app from "ags/gtk4/app";
+import { Gtk } from "ags/gtk4";
+import { execAsync } from "ags/process";
+import { interval } from "ags/time";
+import { createState } from "ags";
 
 export default function Time() {
-  const time = Variable("");
-  const revealPower = Variable(false);
+  const [time, setTime] = createState("");
+  const [revealPower, setRevealPower] = createState(false);
 
   interval(1000, () => {
     execAsync(["date", "+%H 󰇙 %M"])
-      .then((val) => time.set(val.trim()))
+      .then((val) => setTime(val.trim()))
       .catch(console.error);
   });
 
   return (
     <box
-      onHoverEnter={() => revealPower.set(true)}
-      onHoverLeave={() => revealPower.set(false)}
+      $={(self) => {
+        // Create motion event controller
+        const motionController = new Gtk.EventControllerMotion();
+
+        // Handle mouse enter
+        motionController.connect("enter", () => {
+          setRevealPower(true);
+        });
+
+        // Handle mouse leave
+        motionController.connect("leave", () => {
+          setRevealPower(false);
+        });
+
+        // Add controller to the widget
+        self.add_controller(motionController);
+      }}
     >
-      <label cssClasses={["clock"]} label={bind(time)} />
+      <label cssClasses={["clock"]} label={time} />
       <revealer
         transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
         transitionDuration={300}
-        revealChild={bind(revealPower)}
+        revealChild={revealPower}
       >
         <button
           cssClasses={["power-button"]}
-          onClicked={() => App.toggle_window("logout-menu")}
+          onClicked={() => app.toggle_window("logout-menu")}
         >
           <image iconName="system-shutdown-symbolic" />
         </button>

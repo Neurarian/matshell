@@ -1,14 +1,17 @@
 import Bluetooth from "gi://AstalBluetooth";
 import { startBluetoothAgent, BluetoothAgent } from "./bluetooth-agent.ts";
-import { Variable, bind, timeout } from "astal";
+import { createState, createBinding } from "ags";
+import { timeout } from "ags/time";
 
-export const isExpanded = Variable(false);
-export const refreshIntervalId = Variable(null);
-export const selectedDevice = Variable(null);
-export const isConnecting = Variable(false);
-export const errorMessage = Variable("");
-const bluetoothAgent = Variable<BluetoothAgent | null>(null);
-const hasBluetoothAgent = Variable(false);
+export const [isExpanded, setIsExpanded] = createState(false);
+export const [refreshIntervalId, setRefreshIntervalId] = createState(null);
+export const [selectedDevice, setSelectedDevice] = createState(null);
+export const [isConnecting, setIsConnecting] = createState(false);
+export const [errorMessage, setErrorMessage] = createState("");
+const [bluetoothAgent, setBluetoothAgent] = createState<BluetoothAgent | null>(
+  null,
+);
+const [hasBluetoothAgent, setHasBluetoothAgent] = createState(false);
 
 export const getBluetoothIcon = (bt: Bluetooth.Bluetooth) => {
   if (!bt.is_powered) return "bluetooth-disabled-symbolic";
@@ -32,20 +35,20 @@ export const getBluetoothDeviceText = (device) => {
 };
 
 export const ensureBluetoothAgent = () => {
-  if (bluetoothAgent.get() === null) {
+  if (bluetoothAgent === null) {
     console.log("Starting Bluetooth agent");
-    bluetoothAgent.set(startBluetoothAgent());
+    setBluetoothAgent(startBluetoothAgent());
   }
 };
 
 export const stopBluetoothAgent = () => {
-  const agent = bluetoothAgent.get();
+  const agent = bluetoothAgent;
   if (agent) {
     console.log("Stopping Bluetooth agent");
     if (agent.unregister()) {
       console.log("Bluetooth agent stopped successfully");
-      bluetoothAgent.set(null);
-      hasBluetoothAgent.set(false);
+      setBluetoothAgent(null);
+      setHasBluetoothAgent(false);
       return true;
     } else {
       console.error("Failed to stop Bluetooth agent");
@@ -95,7 +98,7 @@ export const pairDevice = (device) => {
   }
 
   // Create a binding for the paired state
-  const pairedBinding = bind(device, "paired");
+  const pairedBinding = createBinding(device, "paired");
 
   // Set up cleanup to run when paired becomes true
   const unsubscribe = pairedBinding.subscribe((paired) => {

@@ -1,6 +1,7 @@
 // Credits to https://github.com/ARKye03
 
-import { Gtk, Gdk } from "astal/gtk4";
+import { Gtk, Gdk } from "ags/gtk4";
+import { Accessor } from "ags";
 import GObject from "gi://GObject";
 import Gsk from "gi://Gsk";
 import Graphene from "gi://Graphene";
@@ -984,9 +985,9 @@ const CircularProgressBarWidget = GObject.registerClass(
   },
 );
 
-// Export the component for Astal with proper binding support
+// Export function
 export function CircularProgressBar(props: {
-  percentage?: number | { subscribe: Function; get: Function };
+  percentage?: number | Accessor<number>;
   inverted?: boolean;
   centerFilled?: boolean;
   radiusFilled?: boolean;
@@ -995,67 +996,52 @@ export function CircularProgressBar(props: {
   fillRule?: Gsk.FillRule;
   startAt?: number;
   endAt?: number;
-  child?: any;
-  children?: any;
+  child?: Gtk.Widget;
+  children?: Gtk.Widget;
 }) {
-  const circularProgressBar = new CircularProgressBarWidget();
-
-  // Handle percentage binding
+  const widget = new CircularProgressBarWidget();
+  // Handle percentage using gnim Accessor API
   if (props.percentage !== undefined) {
     if (
-      typeof props.percentage === "object" &&
-      "subscribe" in props.percentage &&
-      "get" in props.percentage
+      props.percentage !== null &&
+      "get" in props.percentage &&
+      "subscribe" in props.percentage
     ) {
-      circularProgressBar.percentage = props.percentage.get();
+      const accessor = props.percentage as Accessor<number>;
 
-      props.percentage.subscribe((value) => {
-        circularProgressBar.percentage = value;
+      const unsubscribe = accessor.subscribe(() => {
+        const newValue = accessor.get();
+        widget.percentage = typeof newValue === "number" ? newValue : 0;
       });
-    } else {
-      circularProgressBar.percentage = props.percentage as number;
+
+      (widget as any)._unsubscribePercentage = unsubscribe;
+
+      const originalDispose = widget.vfunc_dispose.bind(widget);
+      widget.vfunc_dispose = function () {
+        if ((this as any)._unsubscribePercentage) {
+          (this as any)._unsubscribePercentage();
+          (this as any)._unsubscribePercentage = null;
+        }
+        originalDispose.call(this);
+      };
+    } else if (typeof props.percentage === "number") {
+      widget.percentage = props.percentage;
     }
   }
 
   // Configure other properties
-  if (props.inverted !== undefined) {
-    circularProgressBar.inverted = props.inverted;
-  }
+  if (props.inverted !== undefined) widget.inverted = props.inverted;
+  if (props.centerFilled !== undefined)
+    widget.center_filled = props.centerFilled;
+  if (props.radiusFilled !== undefined)
+    widget.radius_filled = props.radiusFilled;
+  if (props.lineWidth !== undefined) widget.line_width = props.lineWidth;
+  if (props.lineCap !== undefined) widget.line_cap = props.lineCap;
+  if (props.fillRule !== undefined) widget.fill_rule = props.fillRule;
+  if (props.startAt !== undefined) widget.start_at = props.startAt;
+  if (props.endAt !== undefined) widget.end_at = props.endAt;
+  if (props.child !== undefined) widget.child = props.child;
+  if (props.children !== undefined) widget.child = props.children;
 
-  if (props.centerFilled !== undefined) {
-    circularProgressBar.center_filled = props.centerFilled;
-  }
-
-  if (props.radiusFilled !== undefined) {
-    circularProgressBar.radius_filled = props.radiusFilled;
-  }
-
-  if (props.lineWidth !== undefined) {
-    circularProgressBar.line_width = props.lineWidth;
-  }
-
-  if (props.lineCap !== undefined) {
-    circularProgressBar.line_cap = props.lineCap;
-  }
-
-  if (props.fillRule !== undefined) {
-    circularProgressBar.fill_rule = props.fillRule;
-  }
-
-  if (props.startAt !== undefined) {
-    circularProgressBar.start_at = props.startAt;
-  }
-
-  if (props.endAt !== undefined) {
-    circularProgressBar.end_at = props.endAt;
-  }
-
-  if (props.child !== undefined) {
-    circularProgressBar.child = props.child;
-  }
-
-  if (props.children !== undefined) {
-    circularProgressBar.children = props.children;
-  }
-  return circularProgressBar;
+  return widget;
 }

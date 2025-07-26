@@ -1,13 +1,13 @@
-import { Gtk } from "astal/gtk4";
+import { Gtk } from "ags/gtk4";
 import Mpris from "gi://AstalMpris";
-import { bind } from "astal";
+import { createBinding } from "ags";
 
 export function Cover({ player }: { player: Mpris.Player }) {
   return (
     <image
       cssClasses={["cover"]}
       overflow={Gtk.Overflow.HIDDEN}
-      file={bind(player, "coverArt")}
+      file={createBinding(player, "coverArt")}
     />
   );
 }

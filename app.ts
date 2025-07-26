@@ -1,5 +1,7 @@
-import { App } from "astal/gtk4";
-import { exec, monitorFile, GLib } from "astal";
+import  app from "ags/gtk4/app";
+import { exec } from "ags/process";
+import { monitorFile } from "ags/file"
+import GLib from  "gi://GLib?version=2.0";
 import Hyprland from "gi://AstalHyprland";
 import { hyprToGdk } from "utils/hyprland.ts";
 import Bar from "./widgets/bar/main.tsx";
@@ -19,19 +21,19 @@ const styleDirectories = ["abstracts", "components", "layouts", "base"];
 function reloadCss() {
   console.log("scss change detected");
   exec(`sass ${scss} ${css}`);
-  App.apply_css(css);
+  app.apply_css(css);
 }
 
-App.start({
+app.start({
   icons: icons,
   css: css,
   instanceName: "matshell",
   requestHandler(request: string, res: (response: any) => void) {
     if (request === "launcher") {
-      App.toggle_window("launcher");
+      app.toggle_window("launcher");
       res("app launcher toggled");
     } else if (request === "logout") {
-      App.toggle_window("logout-menu");
+      app.toggle_window("logout-menu");
       res("logout menu toggled");
     } else {
       res("not found");
@@ -45,13 +47,13 @@ App.start({
 
     const barNames = new Map<number, string>(); // Map Hyprland ID to window name
 
-    Notifications();
-    OnScreenDisplay();
-    SystemMenu();
+    // Notifications();
+    // OnScreenDisplay();
+    // SystemMenu();
     MusicPlayer();
-    Applauncher();
+    // Applauncher(); 
     LogoutMenu();
-    ControlPanel();
+    // ControlPanel();
 
     const hypr = Hyprland.get_default();
 
@@ -77,12 +79,12 @@ App.start({
       console.log(`Monitor removed - ID: ${id}`);
       const windowName = barNames.get(id);
       if (windowName) {
-        const window = App.get_window(windowName);
+        const window = app.get_window(windowName);
         if (window) {
           console.log(`Removing bar: ${windowName}`);
-          App.toggle_window(windowName);
+          app.toggle_window(windowName);
           window.set_child(null);
-          App.remove_window(window);
+          app.remove_window(window);
         }
         barNames.delete(id);
       }

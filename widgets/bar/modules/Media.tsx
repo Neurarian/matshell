@@ -1,5 +1,6 @@
-import { App, Gtk } from "astal/gtk4";
-import { bind } from "astal";
+import app from "ags/gtk4/app";
+import { Gtk } from "ags/gtk4";
+import { createBinding, With } from "ags";
 import { CavaDraw } from "widgets/music/modules/cava";
 import { firstActivePlayer } from "utils/mpris.ts";
 import options from "options.ts";
@@ -8,16 +9,16 @@ function Cover({ player }) {
   return (
     <overlay>
       <box
-        type={"overlay"}
-        visible={bind(options["bar.modules.media.cava.show"])}
+        $type={"overlay"}
+        canTarget={false}
+        visible={options["bar.modules.media.cava.show"]}
       >
         <CavaDraw vexpand hexpand style={"circular"} />
       </box>
       <image
-        type={"overlay measure"}
         cssClasses={["cover"]}
         overflow={Gtk.Overflow.HIDDEN}
-        file={bind(player, "coverArt")}
+        file={createBinding(player, "coverArt")}
       />
     </overlay>
   );
@@ -27,9 +28,10 @@ function Title({ player }) {
   return (
     <label
       cssClasses={["title", "module"]}
-      label={bind(player, "metadata").as(
-        () => player.title && `${player.artist} - ${player.title}`,
-      )}
+      label={createBinding(
+        player,
+        "metadata",
+      )(() => player.title && `${player.artist} - ${player.title}`)}
     />
   );
 }
@@ -52,11 +54,11 @@ export default function Media() {
   return (
     <button
       cssClasses={["Media"]}
-      onClicked={() => App.toggle_window("music-player")}
+      onClicked={() => app.toggle_window("music-player")}
     >
-      {bind(firstActivePlayer).as((player) =>
-        player ? <MusicBox player={player} /> : "",
-      )}
+      <With value={firstActivePlayer}>
+        {(player) => (player ? <MusicBox player={player} /> : "")}
+      </With>
     </button>
   );
 }

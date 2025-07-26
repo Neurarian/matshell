@@ -1,9 +1,10 @@
-import { execAsync } from "astal/process";
-import { App, Astal, Gdk, Gtk } from "astal/gtk4";
-import { Variable } from "astal";
+import { execAsync } from "ags/process";
+import app from "ags/gtk4/app";
+import { Astal, Gdk, Gtk } from "ags/gtk4";
+import { createState } from "ags";
 
 function hide() {
-  App.get_window("logout-menu")!.hide();
+  app.get_window("logout-menu")!.hide();
 }
 
 function LogoutButton(label: String, command: String) {
@@ -13,29 +14,40 @@ function LogoutButton(label: String, command: String) {
 }
 
 export default function LogoutMenu() {
-  const width = Variable(1000);
-  const visible = Variable(false);
+  const [winWidth, setWinWidth] = createState(1000);
+  const [visible, setVisible] = createState(false);
 
   return (
     <window
       name="logout-menu"
-      visible={visible()}
+      visible={visible}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       keymode={Astal.Keymode.ON_DEMAND}
-      application={App}
+      application={app}
       onShow={(self) => {
-        width.set(self.get_current_monitor().geometry.width);
-      }}
-      onKeyPressed={(self, keyval) => {
-        keyval === Gdk.KEY_Escape && self.hide();
+        setWinWidth(self.get_current_monitor().geometry.width);
       }}
     >
+      <Gtk.EventControllerKey
+        onKeyPressed={({ widget }, keyval: number) => {
+          if (keyval === Gdk.KEY_Escape) {
+            widget.hide();
+          }
+        }}
+      />
       <box cssClasses={["logout-background"]}>
-        <button widthRequest={width((w) => w / 2)} expand onClicked={hide} />
-        <box hexpand={false} vertical valign={Gtk.Align.CENTER}>
+        <button widthRequest={winWidth((w) => w / 2)} onClicked={hide} />
+        <box
+          hexpand={false}
+          orientation={Gtk.Orientation.VERTICAL}
+          valign={Gtk.Align.CENTER}
+        >
           <button onClicked={hide} />
-          <box cssClasses={["logout-menu"]} vertical>
+          <box
+            cssClasses={["logout-menu"]}
+            orientation={Gtk.Orientation.VERTICAL}
+          >
             <box>
               {LogoutButton("lock", "hyprlock")}
               {LogoutButton("bedtime", "systemctl suspend || loginctl suspend")}
@@ -59,9 +71,9 @@ export default function LogoutMenu() {
               )}
             </box>
           </box>
-          <button expand onClicked={hide} />
+          <button onClicked={hide} />
         </box>
-        <button widthRequest={width((w) => w / 2)} expand onClicked={hide} />
+        <button widthRequest={winWidth((w) => w / 2)} onClicked={hide} />
       </box>
     </window>
   );

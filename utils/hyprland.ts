@@ -1,4 +1,5 @@
-import { App, Gdk } from "astal/gtk4";
+import { Gdk } from "ags/gtk4";
+import app from "ags/gtk4/app";
 import Hyprland from "gi://AstalHyprland";
 
 /* Match Hyprland monitor to GDK monitor
@@ -8,7 +9,7 @@ On my setup GDK coordinates and hyprland coordinates are flipped,
 so I cant match by coordinates. */
 
 export function hyprToGdk(monitor: Hyprland.Monitor): Gdk.Monitor | null {
-  const monitors = App.get_monitors();
+  const monitors = app.get_monitors();
   if (!monitors || monitors.length === 0) return null;
 
   for (let gdkmonitor of monitors) {

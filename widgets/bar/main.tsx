@@ -1,5 +1,5 @@
-import { App, Astal, Gtk, Gdk } from "astal/gtk4";
-import { bind } from "astal";
+import app from "ags/gtk4/app";
+import { Astal, Gtk, Gdk } from "ags/gtk4";
 import { SysTray, hasTrayItems } from "./modules/SysTray.tsx";
 import Separator from "./modules/Separator.tsx";
 import Workspaces from "./modules/Workspaces.tsx";
@@ -23,13 +23,14 @@ function Bar({ gdkmonitor, ...props }: any) {
       visible
       name="bar"
       namespace="bar"
-      cssClasses={bind(options["bar.style"]).as((style) => {
-        return ["Bar", `bar-style-${style}`];
-      })}
+      cssClasses={options["bar.style"]((s) => [
+        "Bar",
+        `bar-style-${s ?? "expanded"}`,
+      ])}
       gdkmonitor={gdkmonitor}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
-      application={App}
-      anchor={bind(options["bar.position"]).as((pos) => {
+      application={app}
+      anchor={options["bar.position"]((pos) => {
         switch (pos) {
           case "top":
             return TOP | LEFT | RIGHT;
@@ -39,44 +40,37 @@ function Bar({ gdkmonitor, ...props }: any) {
             return TOP | LEFT | RIGHT;
         }
       })}
-      marginTop={bind(options["bar.position"]).as((pos) => {
-        if (pos === "top") return 5;
-        else return 0;
-      })}
+      marginTop={options["bar.position"]((pos) => (pos === "top" ? 5 : 0))}
       marginLeft={5}
       marginRight={5}
-      marginBottom={bind(options["bar.position"]).as((pos) => {
-        if (pos === "bottom") return 5;
-        else return 0;
-      })}
+      marginBottom={options["bar.position"]((pos) =>
+        pos === "bottom" ? 5 : 0,
+      )}
       {...props}
     >
       <overlay>
         <box
-          type="overlay clip"
-          visible={bind(options["bar.modules.cava.show"])}
+          $type={"overlay"}
+          canTarget={false}
+          visible={options["bar.modules.cava.show"]}
         >
-          <CavaDraw
-            vexpand
-            hexpand
-            style={bind(options["bar.modules.cava.style"])}
-          />
+          <CavaDraw vexpand hexpand style={options["bar.modules.cava.style"]} />
         </box>
-        <centerbox type="overlay measure" cssClasses={["centerbox"]}>
-          <box hexpand halign={Gtk.Align.START}>
-            <box visible={bind(options["bar.modules.showOsIcon"])}>
+        <centerbox cssClasses={["centerbox"]}>
+          <box hexpand halign={Gtk.Align.START} $type="start">
+            <box visible={options["bar.modules.showOsIcon"]}>
               <OsIcon />
             </box>
             <Workspaces />
           </box>
-          <box visible={bind(hasActivePlayers)}>
+          <box visible={hasActivePlayers} $type="center">
             <Media />
           </box>
-          <box hexpand halign={Gtk.Align.END}>
+          <box hexpand halign={Gtk.Align.END} $type="end">
             <SysTray />
-            <Separator visible={bind(hasTrayItems)} />
-            <Cpu />
+            <Separator visible={hasTrayItems} />
             <Mem />
+            <Cpu />
             <Separator />
             <SystemInfo />
             <Separator />

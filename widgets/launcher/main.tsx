@@ -1,11 +1,13 @@
+import app from "ags/gtk4/app";
+import { Astal, Gdk, Gtk } from "ags/gtk4";
+import Pango from "gi://Pango";
 import Apps from "gi://AstalApps";
-import { App, Astal, Gdk, Gtk, hook } from "astal/gtk4";
-import { Variable } from "astal";
+import { createState, For } from "ags";
 
 const MAX_ITEMS = 8;
 
 function hide() {
-  App.get_window("launcher")!.hide();
+  app.get_window("launcher")!.hide();
 }
 
 function AppButton({ app }: { app: Apps.Application }) {
@@ -19,8 +21,13 @@ function AppButton({ app }: { app: Apps.Application }) {
     >
       <box>
         <image iconName={app.iconName} />
-        <box valign={Gtk.Align.CENTER} vertical>
-          <label cssClasses={["name"]} truncate xalign={0} label={app.name} />
+        <box valign={Gtk.Align.CENTER} orientation={Gtk.Orientation.VERTICAL}>
+          <label
+            cssClasses={["name"]}
+            ellipsize={Pango.EllipsizeMode.END}
+            xalign={0}
+            label={app.name}
+          />
           {app.description && (
             <label
               cssClasses={["description"]}
@@ -38,78 +45,96 @@ function AppButton({ app }: { app: Apps.Application }) {
 export default function Applauncher() {
   const { CENTER } = Gtk.Align;
   const apps = new Apps.Apps();
-  const width = Variable(1000);
+  const [width, setWidth] = createState(1000);
+  const [text, setText] = createState("");
+  const [visible, _setVisible] = createState(false);
 
-  const text = Variable("");
-  const visible = Variable(false);
-  const list = text((text) => apps.fuzzy_query(text).slice(0, MAX_ITEMS));
+  // Create computed list from text state
+  const list = text((text) =>
+    text ? apps.fuzzy_query(text).slice(0, MAX_ITEMS) : [],
+  );
+
   const onEnter = () => {
-    apps.fuzzy_query(text.get())?.[0].launch();
-    hide();
+    const query = apps.fuzzy_query(text);
+    if (query && query.length > 0) {
+      query[0].launch();
+      hide();
+    }
   };
+
+  let searchEntry: Gtk.Entry;
 
   return (
     <window
       name="launcher"
-      visible={visible()}
+      visible={visible}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       keymode={Astal.Keymode.ON_DEMAND}
-      application={App}
+      application={app}
       onShow={(self) => {
-        width.set(self.get_current_monitor().geometry.width);
+        setWidth(self.get_current_monitor().geometry.width);
       }}
-      onKeyPressed={(self, keyval) => {
-        keyval === Gdk.KEY_Escape && self.hide();
+      onNotifyVisible={({ visible }) => {
+        if (visible && searchEntry) {
+          searchEntry.set_text("");
+          searchEntry.grab_focus();
+        }
       }}
     >
+      <Gtk.EventControllerKey
+        onKeyPressed={({ widget }, keyval: number) => {
+          if (keyval === Gdk.KEY_Escape) {
+            widget.hide();
+          }
+        }}
+      />
       <box>
-        <button widthRequest={width((w) => w / 2)} expand onClicked={hide} />
-        <box hexpand={false} vertical valign={Gtk.Align.CENTER}>
+        <button widthRequest={width((w) => w / 2)} onClicked={hide} />
+        <box
+          hexpand={false}
+          orientation={Gtk.Orientation.VERTICAL}
+          valign={Gtk.Align.CENTER}
+        >
           <button onClicked={hide} />
-          <box widthRequest={500} cssClasses={["applauncher"]} vertical>
+          <box
+            widthRequest={500}
+            cssClasses={["applauncher"]}
+            orientation={Gtk.Orientation.VERTICAL}
+          >
             <box cssClasses={["search"]}>
               <image iconName="system-search-symbolic" />
               <entry
+                $={(self) => (searchEntry = self)}
                 placeholderText="Search..."
-                text={text.get()}
-                setup={(self) => {
-                  hook(self, App, "window-toggled", (_, win) => {
-                    const winName = win.name;
-
-                    if (winName == "launcher") {
-                      self.set_text("");
-                      self.grab_focus();
-                    }
-                  });
-                }}
-                onNotifyText={(self) => text.set(self.text)}
-                primary-icon-sensitive={true}
+                text={text}
+                onNotifyText={(self) => setText(self.text)}
+                primaryIconSensitive={true}
                 onActivate={onEnter}
                 hexpand={true}
               />
             </box>
             <box
               spacing={6}
-              vertical
+              orientation={Gtk.Orientation.VERTICAL}
               cssClasses={["apps"]}
-              visible={list.as((l) => l.length > 0)}
+              visible={list((l) => l.length > 0)}
             >
-              {list.as((list) => list.map((app) => <AppButton app={app} />))}
+              <For each={list}>{(app) => <AppButton app={app} />}</For>
             </box>
             <box
               halign={CENTER}
               cssClasses={["not-found"]}
-              vertical
-              visible={list.as((l) => l.length === 0)}
+              orientation={Gtk.Orientation.VERTICAL}
+              visible={list((l) => l.length === 0)}
             >
               <image iconName="system-search-symbolic" />
               <label label="No match found" />
             </box>
           </box>
-          <button expand onClicked={hide} />
+          <button onClicked={hide} />
         </box>
-        <button widthRequest={width((w) => w / 2)} expand onClicked={hide} />
+        <button widthRequest={width((w) => w / 2)} onClicked={hide} />
       </box>
     </window>
   );

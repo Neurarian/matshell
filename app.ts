@@ -51,7 +51,7 @@ app.start({
     // OnScreenDisplay();
     // SystemMenu();
     MusicPlayer();
-    // Applauncher(); 
+    Applauncher(); 
     LogoutMenu();
     // ControlPanel();
 

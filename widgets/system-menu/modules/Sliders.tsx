@@ -1,5 +1,6 @@
-import { Gtk } from "astal/gtk4";
-import { execAsync, bind } from "astal";
+import { Gtk } from "ags/gtk4";
+import { execAsync } from "ags/process";
+import { createBinding } from "ags";
 import Wp from "gi://AstalWp";
 import Brightness from "utils/brightness.ts";
 
@@ -9,34 +10,32 @@ export const Sliders = () => {
   const brightness = Brightness.get_default();
 
   return (
-    <box cssClasses={["sliders"]} vertical>
+    <box cssClasses={["sliders"]} orientation={Gtk.Orientation.VERTICAL}>
       <box cssClasses={["volume"]}>
         <button onClicked={() => execAsync("pwvucontrol")}>
-          <image iconName={bind(speaker, "volumeIcon")} />
+          <image iconName={createBinding(speaker, "volumeIcon")} />
         </button>
         <slider
           onChangeValue={(self) => {
             speaker.volume = self.value;
           }}
-          value={bind(speaker, "volume")}
+          value={createBinding(speaker, "volume")}
           valign={Gtk.Align.CENTER}
           hexpand={true}
         />
       </box>
       <box
         cssClasses={["volume"]}
-        visible={bind(microphone, "path").as(
-          (mic) => mic !== null,
-        )}
+        visible={createBinding(microphone, "path")((mic) => mic !== null)}
       >
         <button onClicked={() => execAsync("pwvucontrol")}>
-          <image iconName={bind(microphone, "volumeIcon")} />
+          <image iconName={createBinding(microphone, "volumeIcon")} />
         </button>
         <slider
           onChangeValue={(self) => {
             microphone.volume = self.value;
           }}
-          value={bind(microphone, "volume")}
+          value={createBinding(microphone, "volume")}
           valign={Gtk.Align.CENTER}
           hexpand={true}
         />
@@ -44,7 +43,7 @@ export const Sliders = () => {
       <box cssClasses={["brightness"]} visible={brightness.hasBacklight}>
         <image iconName="display-brightness-symbolic" />
         <slider
-          value={bind(brightness, "screen")}
+          value={createBinding(brightness, "screen")}
           onChangeValue={(self) => {
             brightness.screen = self.value;
           }}

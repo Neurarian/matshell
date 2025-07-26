@@ -1,6 +1,6 @@
-import { App, Astal } from "astal/gtk4";
-import { bind } from "astal";
-import Variable from "astal/variable";
+import { Astal } from "ags/gtk4";
+import app from "ags/gtk4/app";
+import { createBinding } from "ags";
 import Hyprland from "gi://AstalHyprland";
 
 import { hyprToGdk } from "utils/hyprland";
@@ -9,17 +9,18 @@ import options from "options.ts";
 
 export default function OnScreenDisplay() {
   const { TOP, BOTTOM } = Astal.WindowAnchor;
-  const visible = Variable(false);
   const hyprland = Hyprland.get_default();
+
   return (
     <window
-      visible={visible()}
+      visible
       name="osd"
       layer={Astal.Layer.OVERLAY}
-      gdkmonitor={bind(hyprland, "focused-monitor").as(
-        (focused: Hyprland.Monitor) => hyprToGdk(focused),
-      )}
-      anchor={bind(options["bar.position"]).as((pos) => {
+      gdkmonitor={createBinding(
+        hyprland,
+        "focused-monitor",
+      )((focused: Hyprland.Monitor) => hyprToGdk(focused))}
+      anchor={options["bar.position"]((pos) => {
         switch (pos) {
           case "top":
             return BOTTOM;
@@ -29,11 +30,11 @@ export default function OnScreenDisplay() {
             return BOTTOM;
         }
       })}
-      application={App}
+      application={app}
       keymode={Astal.Keymode.ON_DEMAND}
       namespace="osd"
     >
-      <OnScreenProgress visible={visible} />
+      <OnScreenProgress />
     </window>
   );
 }

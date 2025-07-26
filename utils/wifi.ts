@@ -1,17 +1,18 @@
-import { execAsync, Variable } from "astal";
+import { execAsync } from "ags/process";
+import { createState } from "ags";
 import Network from "gi://AstalNetwork";
 
 // State trackers
-export const availableNetworks = Variable([]);
-export const savedNetworks = Variable([]);
-export const activeNetwork = Variable(null);
-export const isConnecting = Variable(false);
-export const showPasswordDialog = Variable(false);
-export const errorMessage = Variable("");
-export const isExpanded = Variable(false);
-export const passwordInput = Variable("");
-export const selectedNetwork = Variable(null);
-export const scanTimer = Variable(null);
+export const [availableNetworks, setAvailableNetworks] = createState([]);
+export const [savedNetworks, setSavedNetworks] = createState([]);
+export const [activeNetwork, setActiveNetwork] = createState(null);
+export const [isConnecting, setIsConnecting] = createState(false);
+export const [showPasswordDialog, setShowPasswordDialog] = createState(false);
+export const [errorMessage, setErrorMessage] = createState("");
+export const [isExpanded, setIsExpanded] = createState(false);
+export const [passwordInput, setPasswordInput] = createState("");
+export const [selectedNetwork, setSelectedNetwork] = createState(null);
+export const [scanTimer, setScanTimer] = createState(null);
 
 // Function to scan for available networks
 export const scanNetworks = () => {
@@ -44,16 +45,16 @@ export const scanNetworks = () => {
       }
     });
 
-    availableNetworks.set(uniqueNetworks);
+    setAvailableNetworks(uniqueNetworks);
 
     // Update active network
     network.wifi.activeAccessPoint
-      ? activeNetwork.set({
+      ? setActiveNetwork({
           ssid: network.wifi.activeAccessPoint.ssid,
           strength: network.wifi.activeAccessPoint.strength,
           secured: network.wifi.activeAccessPoint.flags !== 0,
         })
-      : activeNetwork.set(null);
+      : setActiveNetwork(null);
   }
 };
 
@@ -66,17 +67,16 @@ export const getSavedNetworks = () => {
           .split("\n")
           .filter((line) => line.includes("802-11-wireless"))
           .map((line) => line.split(":")[0].trim());
-        savedNetworks.set(savedWifiNetworks);
+        setSavedNetworks(savedWifiNetworks);
       }
     })
     .catch((error) => console.error("Error fetching saved networks:", error));
 };
 
 // Function to connect to a network
-
 export const connectToNetwork = (ssid, password = null) => {
-  isConnecting.set(true);
-  errorMessage.set("");
+  setIsConnecting(true);
+  setErrorMessage("");
   const network = Network.get_default();
   const currentSsid = network.wifi.ssid;
 
@@ -88,15 +88,15 @@ export const connectToNetwork = (ssid, password = null) => {
 
     execAsync(["bash", "-c", command])
       .then(() => {
-        showPasswordDialog.set(false);
-        isConnecting.set(false);
+        setShowPasswordDialog(false);
+        setIsConnecting(false);
         scanNetworks();
         getSavedNetworks();
       })
       .catch((error) => {
         console.error("Connection error:", error);
-        isConnecting.set(false);
-        errorMessage.set("Check Password");
+        setIsConnecting(false);
+        setErrorMessage("Check Password");
 
         // Immediately remove network again when the connection failed
         execAsync(["bash", "-c", `nmcli connection show "${ssid}" 2>/dev/null`])
@@ -136,7 +136,7 @@ export const connectToNetwork = (ssid, password = null) => {
 export const disconnectNetwork = (ssid) => {
   execAsync(["bash", "-c", `nmcli connection down "${ssid}"`])
     .then(() => {
-      scanNetworks(); // Refresh network list
+      scanNetworks();
     })
     .catch((error) => {
       console.error("Disconnect error:", error);
@@ -147,8 +147,8 @@ export const disconnectNetwork = (ssid) => {
 export const forgetNetwork = (ssid) => {
   execAsync(["bash", "-c", `nmcli connection delete "${ssid}"`])
     .then(() => {
-      getSavedNetworks(); // Refresh saved networks list
-      scanNetworks(); // Refresh network list
+      getSavedNetworks();
+      scanNetworks();
     })
     .catch((error) => {
       console.error("Forget network error:", error);

@@ -1,21 +1,25 @@
-import { bind } from "astal";
-import { Gtk } from "astal/gtk4";
+import { Gtk } from "ags/gtk4";
 import {
   selectedNetwork,
-  showPasswordDialog,
+  setShowPasswordDialog,
   passwordInput,
+  setPasswordInput,
   connectToNetwork,
   errorMessage,
+  setErrorMessage,
   isConnecting,
   scanTimer,
+  setScanTimer,
 } from "utils/wifi.ts";
 
-// Password dialog component
 export const PasswordDialog = () => {
   return (
-    <box vertical cssClasses={["password-dialog"]}>
+    <box
+      orientation={Gtk.Orientation.VERTICAL}
+      cssClasses={["password-dialog"]}
+    >
       <label
-        label={bind(selectedNetwork).as((sn) => (sn ? sn.ssid : ""))}
+        label={selectedNetwork((sn) => (sn ? sn.ssid : ""))}
         cssClasses={["password-label"]}
       />
       <box cssClasses={["password-search"]}>
@@ -23,30 +27,25 @@ export const PasswordDialog = () => {
         <entry
           placeholderText="Enter Password..."
           visibility={false}
-          onChanged={(entry) => {
-            passwordInput.set(entry.text);
+          text={passwordInput}
+          onNotifyText={(self) => {
+            setPasswordInput(self.text);
             scanTimer.get()?.cancel();
-            scanTimer.set(null);
+            setScanTimer(null);
           }}
           onActivate={() =>
             connectToNetwork(selectedNetwork.get()?.ssid, passwordInput.get())
           }
         />
       </box>
-      <box visible={bind(errorMessage).as((e) => e !== "")}>
-        <label
-          label={bind(errorMessage)}
-          hexpand
-          cssClasses={["error-message"]}
-        />
+      <box visible={errorMessage((e) => e !== "")}>
+        <label label={errorMessage} hexpand cssClasses={["error-message"]} />
       </box>
       <box>
         <button
-          label={bind(isConnecting).as((c) =>
-            c ? "Connecting..." : "Connect",
-          )}
+          label={isConnecting((c) => (c ? "Connecting..." : "Connect"))}
           cssClasses={["connect-button", "button"]}
-          sensitive={!isConnecting.get()}
+          sensitive={isConnecting((c) => !c)}
           onClicked={() =>
             connectToNetwork(selectedNetwork.get()?.ssid, passwordInput.get())
           }
@@ -57,8 +56,8 @@ export const PasswordDialog = () => {
           hexpand
           cssClasses={["cancel-button", "button"]}
           onClicked={() => {
-            showPasswordDialog.set(false);
-            errorMessage.set("");
+            setShowPasswordDialog(false);
+            setErrorMessage("");
           }}
         />
       </box>

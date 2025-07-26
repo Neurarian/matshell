@@ -1,5 +1,6 @@
-import { bind, Variable } from "astal";
-import { Gtk, App } from "astal/gtk4";
+import app from "ags/gtk4/app";
+import { Gtk } from "ags/gtk4";
+import { createState, createBinding, createComputed, onCleanup } from "ags";
 import Pango from "gi://Pango";
 import {
   connectToDevice,
@@ -13,9 +14,16 @@ import {
 
 // Device Item component
 export const BluetoothItem = ({ device }) => {
-  const itemButtonsRevealed = Variable(false);
-  const connectionButtonIcon = Variable.derive(
-    [bind(device, "connected"), bind(device, "connecting")],
+  const [itemButtonsRevealed, setItemButtonsRevealed] = createState(false);
+
+  const deviceConnected = createBinding(device, "connected");
+  const devicePaired = createBinding(device, "paired");
+  const deviceTrusted = createBinding(device, "trusted");
+  const deviceConnecting = createBinding(device, "connecting");
+
+  // Create computed value for connection button icon
+  const connectionButtonIcon = createComputed(
+    [deviceConnected, deviceConnecting],
     (connected, connecting) => {
       if (connected) return "bluetooth-active-symbolic";
       else if (connecting) return "bluetooth-acquiring-symbolic";
@@ -24,19 +32,16 @@ export const BluetoothItem = ({ device }) => {
   );
 
   return (
-    <box vertical={true} cssClasses={["bt-device-item"]}>
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["bt-device-item"]}>
       <button
         hexpand={true}
-        cssClasses={bind(device, "connected").as((connected) =>
+        cssClasses={deviceConnected((connected) =>
           connected
             ? ["network-item", "network-item-connected"]
             : ["network-item", "network-item-disconnected"],
         )}
         onClicked={() => {
-          itemButtonsRevealed.set(!itemButtonsRevealed.get());
-        }}
-        onDestroy={() => {
-          connectionButtonIcon.drop();
+          setItemButtonsRevealed((prev) => !prev);
         }}
       >
         <label
@@ -46,94 +51,103 @@ export const BluetoothItem = ({ device }) => {
           label={getBluetoothDeviceText(device)}
         />
       </button>
+
       <revealer
-        setup={() => {
-          bind(isExpanded).as((parentExpanded) => {
-            // Close revealer if parent revealer is closed
-            // Super cheap fix until the revealer bug is fixed
-            // https://github.com/Aylur/astal/issues/258
-            //itemButtonsRevealed.set(false); // use this instead when fixed
-            !parentExpanded &&
-              (App.toggle_window("system-menu"),
-              App.toggle_window("system-menu"));
-          });
-          const windowListener = App.connect("window-toggled", (_, window) => {
-            window.name == "system-menu" &&
-              itemButtonsRevealed.get() &&
-              itemButtonsRevealed.set(false);
-
-            !isExpanded && itemButtonsRevealed.set(false);
-          });
-
-          return () => {
-            // Clean up the listener when component is destroyed
-            App.disconnect(windowListener);
-          };
-        }}
-        revealChild={itemButtonsRevealed()}
+        revealChild={itemButtonsRevealed}
         transitionDuration={200}
         transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+        onNotifyChildRevealed={(revealer) => {
+          const window = app.get_window("system-menu");
+          if (window && !revealer.childRevealed) {
+            // Use GTK's resize mechanism. Fixes https://github.com/Aylur/astal/issues/258
+            window.set_default_size(-1, -1);
+          }
+        }}
+        $={(_self) => {
+          // Close revealer if parent revealer is closed
+          const unsubscribeParent = isExpanded.subscribe((parentExpanded) => {
+            if (!parentExpanded) {
+              setItemButtonsRevealed(false);
+            }
+          });
+
+          const windowListener = app.connect("window-toggled", (_, window) => {
+            if (
+              window.name === "system-menu" &&
+              !window.visible &&
+              itemButtonsRevealed.get()
+            ) {
+              setItemButtonsRevealed(false);
+            }
+          });
+
+          onCleanup(() => {
+            app.disconnect(windowListener);
+            unsubscribeParent();
+          });
+        }}
       >
         <box
-          vertical={false}
+          orientation={Gtk.Orientation.HORIZONTAL}
           cssClasses={["bt-button-container"]}
           homogeneous={true}
         >
           <button
             hexpand={true}
-            cssClasses={bind(device, "connected").as((connected) =>
+            cssClasses={deviceConnected((connected) =>
               connected
                 ? ["button", "connect-button"]
                 : ["button-disabled", "connect-button"],
             )}
-            visible={bind(device, "paired")}
+            visible={devicePaired}
             onClicked={() => {
-              !device.connecting &&
-                (device.connected
+              if (!deviceConnecting.get()) {
+                deviceConnected.get()
                   ? disconnectDevice(device)
-                  : connectToDevice(device));
+                  : connectToDevice(device);
+              }
             }}
-            tooltipText={bind(device, "connected").as((paired) =>
-              paired ? "Disconnect" : "Connect",
+            tooltipText={deviceConnected((connected) =>
+              connected ? "Disconnect" : "Connect",
             )}
           >
-            <image iconName={connectionButtonIcon()} />
+            <image iconName={connectionButtonIcon} />
           </button>
+
           <button
             hexpand={true}
-            cssClasses={bind(device, "trusted").as((trusted) =>
+            cssClasses={deviceTrusted((trusted) =>
               trusted
                 ? ["button", "trust-button"]
                 : ["button-disabled", "trust-button"],
             )}
-            visible={bind(device, "paired")}
+            visible={devicePaired}
             onClicked={() => toggleTrust(device)}
-            tooltipText={bind(device, "trusted").as((paired) =>
-              paired ? "Untrust" : "Trust",
+            tooltipText={deviceTrusted((trusted) =>
+              trusted ? "Untrust" : "Trust",
             )}
           >
             <image
-              iconName={bind(device, "trusted").as((trusted) =>
+              iconName={deviceTrusted((trusted) =>
                 trusted ? "security-high-symbolic" : "security-low-symbolic",
               )}
             />
           </button>
+
           <button
             hexpand={true}
-            cssClasses={bind(device, "paired").as((paired) =>
+            cssClasses={devicePaired((paired) =>
               paired
                 ? ["button", "pair-button"]
                 : ["button-disabled", "pair-button"],
             )}
             onClicked={() => {
-              device.paired ? unpairDevice(device) : pairDevice(device);
+              devicePaired.get() ? unpairDevice(device) : pairDevice(device);
             }}
-            tooltipText={bind(device, "paired").as((paired) =>
-              paired ? "Unpair" : "Pair",
-            )}
+            tooltipText={devicePaired((paired) => (paired ? "Unpair" : "Pair"))}
           >
             <image
-              iconName={bind(device, "paired").as((paired) =>
+              iconName={devicePaired((paired) =>
                 paired
                   ? "network-transmit-receive-symbolic"
                   : "network-offline-symbolic",

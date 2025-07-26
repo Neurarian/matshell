@@ -48,8 +48,8 @@ app.start({
     const barNames = new Map<number, string>(); // Map Hyprland ID to window name
 
     Notifications();
-    // OnScreenDisplay();
-    // SystemMenu();
+    OnScreenDisplay();
+    SystemMenu();
     MusicPlayer();
     Applauncher(); 
     LogoutMenu();

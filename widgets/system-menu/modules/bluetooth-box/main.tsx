@@ -1,12 +1,13 @@
-import { bind } from "astal";
-import { App, Gtk } from "astal/gtk4";
+import app from "ags/gtk4/app";
+import { Gtk } from "ags/gtk4";
+import { createBinding, onCleanup } from "ags";
 import Bluetooth from "gi://AstalBluetooth";
 import { BluetoothDevices } from "./modules/BluetoothDevices.tsx";
 import {
   getBluetoothIcon,
   getBluetoothText,
-  scanDevices,
   isExpanded,
+  setIsExpanded,
 } from "utils/bluetooth.ts";
 
 // Main Bluetooth Box component
@@ -14,28 +15,30 @@ export const BluetoothBox = () => {
   const bluetooth = Bluetooth.get_default();
 
   return (
-    <box cssClasses={["toggle"]} vertical={true}>
+    <box cssClasses={["toggle"]} orientation={Gtk.Orientation.VERTICAL}>
       {/* Bluetooth Toggle Header */}
       <box>
         <button
           onClicked={() => {
             bluetooth.toggle();
           }}
-          cssClasses={bind(bluetooth, "is_powered").as((powered) =>
-            powered ? ["button"] : ["button-disabled"],
-          )}
+          cssClasses={createBinding(
+            bluetooth,
+            "is_powered",
+          )((powered) => (powered ? ["button"] : ["button-disabled"]))}
         >
           <image
-            iconName={bind(bluetooth, "devices").as(() =>
-              getBluetoothIcon(bluetooth),
-            )}
+            iconName={createBinding(
+              bluetooth,
+              "devices",
+            )(() => getBluetoothIcon(bluetooth))}
           />
         </button>
         <button
           hexpand={true}
           onClicked={() => {
             if (bluetooth.is_powered) {
-              isExpanded.set(!isExpanded.get());
+              setIsExpanded((prev) => !prev);
             }
           }}
         >
@@ -48,7 +51,7 @@ export const BluetoothBox = () => {
             <image
               iconName="pan-end-symbolic"
               halign={Gtk.Align.END}
-              cssClasses={bind(isExpanded).as((expanded) =>
+              cssClasses={isExpanded((expanded) =>
                 expanded
                   ? ["arrow-indicator", "arrow-down"]
                   : ["arrow-indicator"],
@@ -62,35 +65,28 @@ export const BluetoothBox = () => {
       <revealer
         transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
         transitionDuration={250}
-        revealChild={bind(isExpanded)}
-        setup={() => {
-          const windowListener = App.connect("window-toggled", (_, window) => {
-            window.name === "system-menu" &&
-              isExpanded.get() &&
-              isExpanded.set(false);
-          });
-          bind(isExpanded).subscribe((expanded) => {
-            const bluetoothPowered = bluetooth.is_powered;
-            const isDiscovering = bluetooth.adapter.discovering;
-
-            if (expanded && bluetoothPowered && !isDiscovering) {
-              // Start scanning when expanded and not already discovering
-              scanDevices();
-            } else if (!expanded) {
-              // When not expanded, always apply the revealer bug fix
-
-              // Super cheap fix until the revealer bug is fixed
-              // https://github.com/Aylur/astal/issues/258
-              App.toggle_window("system-menu");
-              App.toggle_window("system-menu");
+        revealChild={isExpanded}
+        onNotifyChildRevealed={(revealer) => {
+          const window = app.get_window("system-menu");
+          if (window && !revealer.childRevealed) {
+            // Use GTK's resize mechanism. Fixes https://github.com/Aylur/astal/issues/258
+            window.set_default_size(-1, -1);
+          }
+        }}
+        $={(self) => {
+          const windowListener = app.connect("window-toggled", (_, window) => {
+            if (
+              window.name === "system-menu" &&
+              !window.visible &&
+              isExpanded
+            ) {
+              setIsExpanded(false);
             }
           });
 
-          return () => {
-            // Clean up the listener when component is destroyed
-            App.disconnect(windowListener);
-            bind(isExpanded).unsubscribe();
-          };
+          onCleanup(() => {
+            app.disconnect(windowListener);
+          });
         }}
       >
         {/* Bluetooth Devices */}

@@ -1,121 +1,103 @@
-import { Gtk, hook } from "astal/gtk4";
+import { Gtk } from "ags/gtk4";
+import { createState, onCleanup } from "ags";
 import Pango from "gi://Pango";
-import Variable from "astal/variable";
 import Wp from "gi://AstalWp";
 import Brightness from "utils/brightness";
 import Bluetooth from "gi://AstalBluetooth";
-import OSDManager from "utils/osd.ts";
 
-export default function OnScreenProgress({
-  visible,
-}: {
-  visible: Variable<boolean>;
-}) {
-  // Audio endpoints
-  const speaker = Wp.get_default()!.get_default_speaker();
-  const microphone = Wp.get_default()!.get_default_microphone();
+export default function OnScreenProgress() {
+  const [value, setValue] = createState(0);
+  const [label, setLabel] = createState("");
+  const [icon, setIcon] = createState("");
+  const [visible, setVisible] = createState(false);
+  const [hasProgress, setHasProgress] = createState(true);
+
+  let currentTimeout: any = null;
+  const TIMEOUT_DELAY = 2000;
+
+  const show = (
+    val: number,
+    text: string,
+    iconName: string,
+    progress = true,
+  ) => {
+    setValue(val);
+    setLabel(text);
+    setIcon(iconName);
+    setHasProgress(progress);
+    setVisible(true);
+
+    if (currentTimeout) clearTimeout(currentTimeout);
+    currentTimeout = setTimeout(() => setVisible(false), TIMEOUT_DELAY);
+  };
+
+  // Audio
+  [
+    Wp.get_default()?.get_default_speaker(),
+    Wp.get_default()?.get_default_microphone(),
+  ]
+    .filter(Boolean)
+    .forEach((endpoint) => {
+      const id = endpoint!.connect("notify::volume", () =>
+        show(
+          endpoint!.volume,
+          endpoint!.description || "",
+          endpoint!.volumeIcon,
+        ),
+      );
+      onCleanup(() => endpoint!.disconnect(id));
+    });
 
   // Brightness
-  let brightness: Brightness | null = null;
   try {
-    brightness = Brightness.get_default();
-  } catch (e) {
-    console.log(
-      "Brightness controls unavailable. If you're on desktop this is not an issue.",
+    const brightness = Brightness.get_default();
+    const id = brightness.connect("notify::screen", () =>
+      show(
+        brightness.screen,
+        "Screen Brightness",
+        "display-brightness-symbolic",
+      ),
     );
-  }
+    onCleanup(() => brightness.disconnect(id));
+  } catch {}
 
-  // Bluetooth
+  // Bluetooth: with my bt adapter only functional when in active mode
   const bluetooth = Bluetooth.get_default();
+  const btId = bluetooth.connect("notify::devices", () => {
+    bluetooth.devices.forEach((device) => {
+      device.connect("notify::connected", () => {
+        const message = device.connected
+          ? `Connected: ${device.name || device.address}`
+          : `Disconnected: ${device.name || device.address}`;
 
-  // OSDManager vars
-  const value = Variable(0);
-  const labelText = Variable("");
-  const iconName = Variable("");
-  const showProgress = Variable(false);
+        show(0, message, device.icon || "bluetooth-active-symbolic", false);
+      });
+    });
+  });
 
-  const osd = new OSDManager({
-    visible,
-    value,
-    label: labelText,
-    icon: iconName,
-    showProgress,
+  onCleanup(() => {
+    try {
+      bluetooth.disconnect(btId);
+    } catch {}
   });
 
   return (
     <revealer
+      revealChild={visible}
       transitionType={Gtk.RevealerTransitionType.CROSSFADE}
-      transitionDuration={300}
-      revealChild={visible()}
-      setup={(self) => {
-        const handleVolumeChange = (endpoint: Wp.Endpoint) => () => {
-          {
-            osd.show(
-              endpoint.volume,
-              endpoint.description || "",
-              endpoint.volumeIcon,
-            );
-          }
-        };
-        brightness &&
-          hook(self, brightness, "notify::screen", () =>
-            osd.show(
-              brightness.screen,
-              "Screen Brightness",
-              "display-brightness-symbolic",
-            ),
-          );
-
-        speaker &&
-          hook(self, speaker, "notify::volume", handleVolumeChange(speaker));
-
-        microphone &&
-          hook(
-            self,
-            microphone,
-            "notify::volume",
-            handleVolumeChange(microphone),
-          );
-
-        bluetooth &&
-          hook(self, bluetooth, "notify::devices", () => {
-            bluetooth.devices.forEach((device) => {
-              // Monitor connection state changes for new devices
-              hook(self, device, "notify::connected", () => {
-                device.connected
-                  ? osd.show(
-                      0,
-                      `Connected: ${device.name || device.address}`,
-                      device.icon,
-                      false,
-                    )
-                  : osd.show(
-                      0,
-                      `Disconnected: ${device.name || device.address}`,
-                      device.icon,
-                      false,
-                    );
-              });
-            });
-          });
-      }}
     >
       <box cssClasses={["osd"]}>
-        <image iconName={iconName()} />
-
-        <box vertical>
+        <image iconName={icon} />
+        <box orientation={Gtk.Orientation.VERTICAL}>
           <label
-            label={labelText()}
+            label={label}
             maxWidthChars={24}
-            widthRequest={250}
+            widthRequest={200}
+            halign={Gtk.Align.CENTER}
             ellipsize={Pango.EllipsizeMode.END}
+            wrap={false}
           />
-
-          <levelbar
-            valign={Gtk.Align.CENTER}
-            value={value()}
-            visible={showProgress()}
-          />
+          <levelbar value={value} visible={hasProgress} />
         </box>
       </box>
     </revealer>

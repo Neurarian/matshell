@@ -1,11 +1,11 @@
 import PowerProfiles from "gi://AstalPowerProfiles";
-import { Gtk } from "astal/gtk4";
-import { Variable, bind } from "astal";
+import { Gtk } from "ags/gtk4";
+import { createBinding, createState, For } from "ags";
 
-const isExpanded = Variable(false);
+const [isExpanded, setIsExpanded] = createState(false);
 const powerProfiles = PowerProfiles.get_default();
 
-const formatProfileName = (name: String) =>
+const formatProfileName = (name: string) =>
   name.charAt(0).toUpperCase() + name.substring(1).replace("-", " ");
 
 const ProfileItem = ({ icon, label, onClicked, cssClasses = [""] }) => (
@@ -18,32 +18,40 @@ const ProfileItem = ({ icon, label, onClicked, cssClasses = [""] }) => (
 );
 
 export const PowerProfileBox = () => {
-  const profiles = powerProfiles.get_profiles();
+  const profiles = createBinding(powerProfiles, "profiles");
 
   return (
-    <box vertical cssClasses={["power-profiles"]}>
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["power-profiles"]}>
       <ProfileItem
         cssClasses={["current-profile"]}
-        icon={bind(powerProfiles, "icon-name")}
-        label={bind(powerProfiles, "active-profile").as(formatProfileName)}
-        onClicked={() => isExpanded.set(!isExpanded.get())}
+        icon={createBinding(powerProfiles, "icon-name")}
+        label={createBinding(
+          powerProfiles,
+          "active-profile",
+        )(formatProfileName)}
+        onClicked={() => setIsExpanded((prev) => !prev)}
       />
       <revealer
         transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
         transitionDuration={300}
-        revealChild={bind(isExpanded)}
+        revealChild={isExpanded}
       >
-        <box vertical cssClasses={["profile-options"]}>
-          {profiles.map((profile: PowerProfiles.PowerProfiles) => (
-            <ProfileItem
-              icon={`power-profile-${profile.profile}-symbolic`}
-              label={formatProfileName(profile.profile)}
-              onClicked={() => {
-                powerProfiles.set_active_profile(profile.profile);
-                isExpanded.set(false);
-              }}
-            />
-          ))}
+        <box
+          orientation={Gtk.Orientation.VERTICAL}
+          cssClasses={["profile-options"]}
+        >
+          <For each={profiles}>
+            {(profile) => (
+              <ProfileItem
+                icon={`power-profile-${profile.profile}-symbolic`}
+                label={formatProfileName(profile.profile)}
+                onClicked={() => {
+                  powerProfiles.set_active_profile(profile.profile);
+                  setIsExpanded(false);
+                }}
+              />
+            )}
+          </For>
         </box>
       </revealer>
     </box>

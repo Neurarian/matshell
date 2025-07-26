@@ -15,7 +15,7 @@ function LogoutButton(label: String, command: String) {
 
 export default function LogoutMenu() {
   const [winWidth, setWinWidth] = createState(1000);
-  const [visible, setVisible] = createState(false);
+  const [visible, _setVisible] = createState(false);
 
   return (
     <window

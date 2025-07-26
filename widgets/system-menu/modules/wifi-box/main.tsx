@@ -1,6 +1,9 @@
-import { Variable, execAsync, bind, interval } from "astal";
+import app from "ags/gtk4/app";
+import { Gtk } from "ags/gtk4";
+import { createBinding, createState, For, onCleanup } from "ags";
+import { execAsync } from "ags/process";
+import { interval } from "ags/time";
 import Network from "gi://AstalNetwork";
-import { App, Gtk } from "astal/gtk4";
 import { NetworkItem } from "./modules/NetworkItem.tsx";
 import { PasswordDialog } from "./modules/PasswordDialog.tsx";
 import {
@@ -12,17 +15,21 @@ import {
   getSavedNetworks,
   disconnectNetwork,
   forgetNetwork,
-  isExpanded,
   scanTimer,
+  setScanTimer,
 } from "utils/wifi.ts";
 import options from "options.ts";
 
 // Main WiFi Box component
 export const WiFiBox = () => {
   const network = Network.get_default();
+  const [isExpanded, setIsExpanded] = createState(false);
 
   return (
-    <box vertical cssClasses={["wifi-menu", "toggle"]}>
+    <box
+      orientation={Gtk.Orientation.VERTICAL}
+      cssClasses={["wifi-menu", "toggle"]}
+    >
       {/* WiFi Toggle Header */}
       <box cssClasses={["toggle", "wifi-toggle"]}>
         <button
@@ -31,18 +38,19 @@ export const WiFiBox = () => {
               ? network.wifi.set_enabled(false)
               : network.wifi.set_enabled(true);
           }}
-          cssClasses={bind(network.wifi, "enabled").as((enabled) =>
-            enabled ? ["button"] : ["button-disabled"],
-          )}
+          cssClasses={createBinding(
+            network.wifi,
+            "enabled",
+          )((enabled) => (enabled ? ["button"] : ["button-disabled"]))}
         >
-          <image iconName={bind(network.wifi, "icon_name")} />
+          <image iconName={createBinding(network.wifi, "icon_name")} />
         </button>
         <button
           hexpand={true}
           onClicked={() => {
             if (network.wifi.enabled) {
-              isExpanded.set(!isExpanded.get());
-              if (isExpanded.get()) {
+              setIsExpanded((prev) => !prev);
+              if (!isExpanded.get()) {
                 scanNetworks();
                 getSavedNetworks();
               }
@@ -53,15 +61,18 @@ export const WiFiBox = () => {
             <label
               hexpand={true}
               xalign={0}
-              label={bind(network.wifi, "ssid").as(
+              label={createBinding(
+                network.wifi,
+                "ssid",
+              )(
                 (ssid) =>
                   ssid || (network.wifi.enabled ? "Not Connected" : "WiFi Off"),
               )}
             />
             <image
               iconName="pan-end-symbolic"
-              halign={Gtk.Align.END}
-              cssClasses={bind(isExpanded).as((expanded) =>
+              halign={Gtk.Align.End}
+              cssClasses={isExpanded((expanded) =>
                 expanded
                   ? ["arrow-indicator", "arrow-down"]
                   : ["arrow-indicator"],
@@ -71,78 +82,105 @@ export const WiFiBox = () => {
         </button>
       </box>
 
-      {/* Networks List Revealer */}
       <revealer
         transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
         transitionDuration={300}
-        revealChild={bind(isExpanded)}
-        setup={() => {
-          bind(isExpanded).subscribe((expanded) => {
+        revealChild={isExpanded}
+        onNotifyChildRevealed={(revealer) => {
+          const window = app.get_window("system-menu");
+          if (window && !revealer.childRevealed) {
+            window.set_default_size(-1, -1);
+          }
+        }}
+        $={(self) => {
+          const unsubscribeExpanded = isExpanded.subscribe(() => {
+            const expanded = isExpanded.get();
+
             if (expanded) {
-              // Cancel any existing timer first
               scanTimer.get()?.cancel();
+              setScanTimer(null);
 
-              network.wifi?.enabled &&
-                scanTimer.set(
-                  interval(10000, () => {
-                    scanNetworks();
-                    getSavedNetworks();
-                  }),
-                );
+              if (network.wifi?.enabled) {
+                const newTimer = interval(10000, () => {
+                  scanNetworks();
+                  getSavedNetworks();
+                });
+                setScanTimer(newTimer);
+              }
             } else {
-              // Cancel timer when collapsed
               scanTimer.get()?.cancel();
-              scanTimer.set(null);
-
-              // Apply revealer bug fix when collapsed
-              App.toggle_window("system-menu");
-              App.toggle_window("system-menu");
+              setScanTimer(null);
             }
           });
 
-          // Monitor window toggling to prevent permanent network scan
-          const windowListener = App.connect("window-toggled", (_, window) => {
-            window.name === "system-menu" &&
-              isExpanded.get() &&
-              isExpanded.set(false);
+          const windowListener = app.connect("window-toggled", (_, window) => {
+            if (
+              window.name === "system-menu" &&
+              !window.visible &&
+              isExpanded.get()
+            ) {
+              setIsExpanded(false);
+            }
           });
 
-          return () => {
+          onCleanup(() => {
             scanTimer.get()?.cancel();
-            scanTimer.set(null);
-            App.disconnect(windowListener);
-            bind(isExpanded).unsubscribe();
-          };
+            setScanTimer(null);
+            app.disconnect(windowListener);
+            unsubscribeExpanded();
+          });
         }}
       >
-        <box vertical cssClasses={["network-list"]}>
-          <box visible={bind(showPasswordDialog)}>
+        <box
+          orientation={Gtk.Orientation.VERTICAL}
+          cssClasses={["network-list"]}
+        >
+          {/* Password Dialog */}
+          <box visible={showPasswordDialog}>
             <PasswordDialog />
           </box>
 
           {/* Available Networks */}
-          <label label="Available Networks" cssClasses={["section-label"]} />
-          {bind(availableNetworks).as((networks) =>
-            networks.length === 0 ? (
+          <box orientation={Gtk.Orientation.VERTICAL}>
+            <label label="Available Networks" cssClasses={["section-label"]} />
+
+            {/* Empty state container */}
+            <box
+              visible={availableNetworks((networks) => networks.length === 0)}
+            >
               <label label="No networks found" cssClasses={["empty-label"]} />
-            ) : (
-              networks.map((network) => <NetworkItem network={network} />)
-            ),
-          )}
+            </box>
+
+            {/* Networks list container */}
+            <box
+              orientation={Gtk.Orientation.VERTICAL}
+              visible={availableNetworks((networks) => networks.length > 0)}
+            >
+              <For each={availableNetworks}>
+                {(network) => <NetworkItem network={network} />}
+              </For>
+            </box>
+          </box>
 
           {/* Saved Networks */}
-          {bind(savedNetworks).as((networks) => {
-            // Filter out networks already shown in available networks
-            const filteredNetworks = networks.filter(
-              (ssid) => !availableNetworks.get().some((n) => n.ssid === ssid),
-            );
-
-            // Only render the section if there are filtered networks to show
-            return filteredNetworks.length > 0 ? (
-              <box vertical>
-                <label label="Saved Networks" cssClasses={["section-label"]} />
-                {filteredNetworks.map((ssid) => (
-                  <box cssClasses={["saved-network"]}>
+          <box
+            orientation={Gtk.Orientation.VERTICAL}
+            visible={savedNetworks((saved) => {
+              const filtered = saved.filter(
+                (ssid) => !availableNetworks.get().some((n) => n.ssid === ssid),
+              );
+              return filtered.length > 0;
+            })}
+          >
+            <label label="Saved Networks" cssClasses={["section-label"]} />
+            <For each={savedNetworks}>
+              {(ssid) => {
+                // Only render if not in available networks
+                const shouldShow = !availableNetworks
+                  .get()
+                  .some((n) => n.ssid === ssid);
+                return (
+                  <box cssClasses={["saved-network"]} visible={shouldShow}>
                     <label label={ssid} />
                     <box hexpand={true} />
                     <button
@@ -151,13 +189,12 @@ export const WiFiBox = () => {
                       onClicked={() => forgetNetwork(ssid)}
                     />
                   </box>
-                ))}
-              </box>
-            ) : (
-              ""
-            );
-          })}
+                );
+              }}
+            </For>
+          </box>
 
+          {/* Controls Container */}
           <box hexpand>
             {/* Refresh Button */}
             <button
@@ -170,46 +207,45 @@ export const WiFiBox = () => {
             >
               <image iconName="view-refresh-symbolic" />
             </button>
+
             {/* Connected Network Options */}
             <box hexpand>
-              {bind(activeNetwork).as((active) =>
-                active ? (
-                  <box vertical cssClasses={["connected-network"]} hexpand>
-                    <button
-                      label="Disconnect"
-                      cssClasses={["disconnect-button"]}
-                      onClicked={() => disconnectNetwork(active.ssid)}
-                    />
-                  </box>
-                ) : (
-                  ""
-                ),
-              )}
-            </box>
-            {/* Advanced Settings Button */}
-            {bind(
-              options["system-menu.modules.wifi.enableGnomeControlCenter"],
-            ).as((gcc) =>
-              gcc ? (
+              <box
+                orientation={Gtk.Orientation.VERTICAL}
+                cssClasses={["connected-network"]}
+                hexpand
+                visible={activeNetwork((active) => active !== null)}
+              >
                 <button
-                  cssClasses={["settings-button"]}
-                  halign={Gtk.Align.END}
-                  hexpand={false}
+                  label="Disconnect"
+                  cssClasses={["disconnect-button"]}
                   onClicked={() => {
-                    execAsync([
-                      "sh",
-                      "-c",
-                      "XDG_CURRENT_DESKTOP=GNOME gnome-control-center wifi",
-                    ]);
-                    isExpanded.set(false);
+                    const active = activeNetwork.get();
+                    if (active) disconnectNetwork(active.ssid);
                   }}
-                >
-                  <image iconName={"emblem-system-symbolic"} />
-                </button>
-              ) : (
-                ""
-              ),
-            )}
+                />
+              </box>
+            </box>
+
+            {/* Advanced Settings Button */}
+            <button
+              cssClasses={["settings-button"]}
+              halign={Gtk.Align.End}
+              hexpand={false}
+              visible={
+                options["system-menu.modules.wifi.enableGnomeControlCenter"]
+              }
+              onClicked={() => {
+                execAsync([
+                  "sh",
+                  "-c",
+                  "XDG_CURRENT_DESKTOP=GNOME gnome-control-center wifi",
+                ]);
+                setIsExpanded(false);
+              }}
+            >
+              <image iconName={"emblem-system-symbolic"} />
+            </button>
           </box>
         </box>
       </revealer>

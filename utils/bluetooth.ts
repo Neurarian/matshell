@@ -1,8 +1,9 @@
 import Bluetooth from "gi://AstalBluetooth";
 import { startBluetoothAgent, BluetoothAgent } from "./bluetooth-agent.ts";
-import { createState, createBinding } from "ags";
+import { createState, createBinding, createComputed } from "ags";
 import { timeout } from "ags/time";
 
+// Export both accessors and setters for AGS v3 compatibility
 export const [isExpanded, setIsExpanded] = createState(false);
 export const [refreshIntervalId, setRefreshIntervalId] = createState(null);
 export const [selectedDevice, setSelectedDevice] = createState(null);
@@ -25,24 +26,23 @@ export const getBluetoothText = (bt: Bluetooth.Bluetooth) => {
 };
 
 export const getBluetoothDeviceText = (device) => {
-  {
-    let battery_str = "";
-    if (device.connected && device.battery_percentage > 0) {
-      battery_str = ` ${device.battery_percentage * 100}%`;
-    }
-    return `${device.name} ${battery_str}`;
+  let battery_str = "";
+  if (device.connected && device.battery_percentage > 0) {
+    battery_str = ` ${device.battery_percentage * 100}%`;
   }
+  return `${device.name} ${battery_str}`;
 };
 
 export const ensureBluetoothAgent = () => {
-  if (bluetoothAgent === null) {
+  if (bluetoothAgent.get() === null) {
     console.log("Starting Bluetooth agent");
     setBluetoothAgent(startBluetoothAgent());
+    setHasBluetoothAgent(true);
   }
 };
 
 export const stopBluetoothAgent = () => {
-  const agent = bluetoothAgent;
+  const agent = bluetoothAgent.get();
   if (agent) {
     console.log("Stopping Bluetooth agent");
     if (agent.unregister()) {
@@ -73,9 +73,9 @@ export const stopScan = () => {
 export const connectToDevice = (device) => {
   if (!device) return;
 
-  isConnecting.set(true);
+  setIsConnecting(true);
   device.connect_device(() => {
-    isConnecting.set(false);
+    setIsConnecting(false);
   });
 };
 
@@ -123,7 +123,7 @@ export const pairDevice = (device) => {
     console.log("Pairing timeout reached");
     unsubscribe();
 
-    agentWasStarted && stopBluetoothAgent();
+    if (agentWasStarted) stopBluetoothAgent();
   });
 
   try {
@@ -133,7 +133,7 @@ export const pairDevice = (device) => {
     console.error("Error pairing device:", error);
     unsubscribe();
 
-    agentWasStarted && stopBluetoothAgent();
+    if (agentWasStarted) stopBluetoothAgent();
   }
 };
 

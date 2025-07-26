@@ -1,109 +1,129 @@
-import { execAsync, bind } from "astal";
-import { Gtk } from "astal/gtk4";
+import { execAsync } from "ags/process";
+import { Gtk } from "ags/gtk4";
+import { createBinding, createComputed, For } from "ags";
 import { BluetoothItem } from "./BluetoothItem.tsx";
 import Bluetooth from "gi://AstalBluetooth";
-import { scanDevices, stopScan, isExpanded } from "utils/bluetooth.ts";
+import {
+  scanDevices,
+  stopScan,
+  isExpanded,
+  setIsExpanded,
+} from "utils/bluetooth.ts";
 import options from "options.ts";
 
 export const BluetoothDevices = () => {
   const bluetooth = Bluetooth.get_default();
 
+  // Create reactive accessors for each device category
+  const devices = createBinding(bluetooth, "devices");
+
+  const connectedDevices = createComputed([devices], (deviceList) =>
+    deviceList.filter((device) => device.name != null && device.connected),
+  );
+
+  const pairedDevices = createComputed([devices], (deviceList) =>
+    deviceList.filter(
+      (device) => device.name != null && device.paired && !device.connected,
+    ),
+  );
+
+  const unpairedDevices = createComputed([devices], (deviceList) =>
+    deviceList.filter((device) => device.name != null && !device.paired),
+  );
+
+  // Computed for empty state and section visibility
+  const hasDevices = createComputed(
+    [devices],
+    (deviceList) =>
+      deviceList.filter((device) => device.name != null).length > 0,
+  );
+
+  const hasKnownDevices = createComputed(
+    [connectedDevices, pairedDevices],
+    (connected, paired) => connected.length > 0 || paired.length > 0,
+  );
+
   return (
-    <box marginTop={4} vertical cssClasses={["network-list"]}>
-      {bind(bluetooth, "devices").as((devices) => {
-        const validDevices = devices.filter((device) => device.name != null);
+    <box
+      marginTop={4}
+      orientation={Gtk.Orientation.VERTICAL}
+      cssClasses={["network-list"]}
+    >
+      {/* Empty state - always render container */}
+      <box visible={hasDevices((has) => !has)}>
+        <label label="No devices found" cssClasses={["empty-label"]} />
+      </box>
 
-        // Categorize devices
-        const connectedDevices = validDevices.filter(
-          (device) => device.connected,
-        );
-        const pairedDevices = validDevices.filter(
-          (device) => device.paired && !device.connected,
-        );
-        const unparedDevices = validDevices.filter((device) => !device.paired);
+      {/* Known Devices Section - always render container */}
+      <box orientation={Gtk.Orientation.VERTICAL} visible={hasKnownDevices}>
+        <label label="My Devices" cssClasses={["section-label"]} />
 
-        // Any known devices (connected or paired)
-        const knownDevices = [...connectedDevices, ...pairedDevices];
+        {/* Connected devices container - always render */}
+        <box
+          orientation={Gtk.Orientation.VERTICAL}
+          visible={connectedDevices((devices) => devices.length > 0)}
+        >
+          <For each={connectedDevices}>
+            {(device) => <BluetoothItem device={device} />}
+          </For>
+        </box>
 
-        if (validDevices.length === 0)
-          return (
-            <label label="No devices found" cssClasses={["empty-label"]} />
-          );
+        {/* Paired devices container - always render */}
+        <box
+          orientation={Gtk.Orientation.VERTICAL}
+          visible={pairedDevices((devices) => devices.length > 0)}
+        >
+          <For each={pairedDevices}>
+            {(device) => <BluetoothItem device={device} />}
+          </For>
+        </box>
+      </box>
 
-        return (
-          <>
-            {knownDevices.length > 0 && (
-              <>
-                {/* Known Devices Section */}
-                <label label="My Devices" cssClasses={["section-label"]} />
-                {/* Connected devices first */}
-                {connectedDevices.map((device) => (
-                  <BluetoothItem device={device} />
-                ))}
-                {/* Then paired but not connected devices */}
-                {pairedDevices.map((device) => (
-                  <BluetoothItem device={device} />
-                ))}
-              </>
+      {/* Available/Unpaired Devices Section - always render container */}
+      <box
+        orientation={Gtk.Orientation.VERTICAL}
+        visible={unpairedDevices((devices) => devices.length > 0)}
+      >
+        <label label="Available Devices" cssClasses={["section-label"]} />
+        <For each={unpairedDevices}>
+          {(device) => <BluetoothItem device={device} />}
+        </For>
+      </box>
+
+      {/* Control buttons - always render */}
+      <box hexpand visible={hasDevices}>
+        <button
+          halign={Gtk.Align.START}
+          cssClasses={["refresh-button"]}
+          onClicked={() => {
+            bluetooth.adapter?.discovering ? stopScan() : scanDevices();
+          }}
+        >
+          <image
+            iconName={createBinding(
+              bluetooth.adapter,
+              "discovering",
+            )((discovering) =>
+              discovering ? "process-stop-symbolic" : "view-refresh-symbolic",
             )}
+          />
+        </button>
 
-            {/* Available/Unpaired Devices Section */}
-            {unparedDevices.length > 0 && (
-              <>
-                <label
-                  label="Available Devices"
-                  cssClasses={["section-label"]}
-                />
-                {unparedDevices.map((device) => (
-                  <BluetoothItem device={device} />
-                ))}
-              </>
-            )}
+        <box hexpand />
 
-            {/* Control buttons */}
-            <box hexpand>
-              <button
-                halign={Gtk.Align.START}
-                cssClasses={["refresh-button"]}
-                onClicked={() => {
-                  bluetooth.adapter.discovering ? stopScan() : scanDevices();
-                }}
-              >
-                <image
-                  iconName={bind(bluetooth.adapter, "discovering").as(
-                    (discovering) =>
-                      discovering
-                        ? "process-stop-symbolic"
-                        : "view-refresh-symbolic",
-                  )}
-                />
-              </button>
-
-              <box hexpand />
-
-              {bind(
-                options["system-menu.modules.bluetooth.enableOverskride"],
-              ).as((overskride) =>
-                overskride ? (
-                  <button
-                    cssClasses={["settings-button"]}
-                    halign={Gtk.Align.END}
-                    hexpand={false}
-                    onClicked={() => {
-                      execAsync("overskride");
-                      isExpanded.set(false);
-                    }}
-                  >
-                    <image iconName={"emblem-system-symbolic"} />
-                  </button>
-                ) : (
-                  ""
-                ),
-              )}
-            </box>
-          </>
-        );
-      })}
+        <button
+          cssClasses={["settings-button"]}
+          halign={Gtk.Align.END}
+          hexpand={false}
+          visible={options["system-menu.modules.bluetooth.enableOverskride"]}
+          onClicked={() => {
+            execAsync("overskride");
+            setIsExpanded(false);
+          }}
+        >
+          <image iconName={"emblem-system-symbolic"} />
+        </button>
+      </box>
     </box>
   );
 };

@@ -21,7 +21,7 @@ export const NetworkItem = ({ network }) => {
         if (apManager.requiresPasswordDialog()) {
           setSelectedNetwork(network);
           setShowPasswordDialog(true);
-          setPasswordDialog("");
+          setPasswordInput("");
         } else {
           apManager.connect();
         }

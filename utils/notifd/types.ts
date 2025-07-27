@@ -27,7 +27,6 @@ export interface StoredNotification {
   time: number;
   actions: Array<{ label: string; action: string }>;
   urgency: Notifd.Urgency;
-  dismissed: boolean;
   seen: boolean;
 }
 

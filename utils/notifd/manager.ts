@@ -43,7 +43,6 @@ export class NotificationManager {
       time: notification.time * 1000,
       actions: notification.actions || [],
       urgency: notification.urgency || Notifd.Urgency.NORMAL,
-      dismissed: false,
       seen: false,
     };
 
@@ -55,7 +54,8 @@ export class NotificationManager {
   dismissNotification(id: number): void {
     const notification = this.notifications.get(id);
     if (notification) {
-      notification.dismissed = true;
+      console.log(`Deleting notification: ${notification.summary}`);
+      this.notifications.delete(id);
       this.updateState();
       this.persistNotifications();
     }
@@ -78,15 +78,16 @@ export class NotificationManager {
   clearVisibleNotifications() {
     const visibleNotifications = this.limitedActiveNotifications.get();
     visibleNotifications.forEach((notification) => {
-      this.dismissNotification(notification.id);
+      this.notifications.delete(notification.id);
     });
+    this.updateState();
+    this.persistNotifications();
   }
 
   clearAllNotifications() {
-    const allActiveNotifications = this.activeNotifications.get();
-    allActiveNotifications.forEach((notification) => {
-      this.dismissNotification(notification.id);
-    });
+    this.notifications.clear();
+    this.updateState();
+    this.persistNotifications();
   }
 
   get allNotifications() {
@@ -96,13 +97,13 @@ export class NotificationManager {
   get unreadCount() {
     return createComputed(
       [this.notificationState],
-      (notifications) =>
-        notifications.filter((n) => !n.dismissed && !n.seen).length,
+      (notifications) => notifications.filter((n) => !n.seen).length,
     );
   }
   get activeNotifications() {
-    return createComputed([this.notificationState], (notifications) =>
-      notifications.filter((n) => !n.dismissed),
+    return createComputed(
+      [this.notificationState],
+      (notifications) => notifications,
     );
   }
 
@@ -140,14 +141,14 @@ export class NotificationManager {
   }
 
   get limitedActiveNotifications() {
-    return createComputed([this.activeNotifications], (notifications) =>
+    return createComputed([this.notificationState], (notifications) =>
       notifications.slice(0, this.maxVisibleNotifications),
     );
   }
 
   get moreNotificationsInfo() {
     return createComputed(
-      [this.activeNotifications, this.limitedActiveNotifications],
+      [this.notificationState, this.limitedActiveNotifications],
       (allActive, limited) => {
         const totalCount = allActive.length;
         const shownCount = limited.length;

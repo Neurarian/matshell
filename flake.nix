@@ -103,8 +103,10 @@
             buildInputs = mkBuildInputs system;
 
             installPhase = ''
-              mkdir -p $out/bin
+              mkdir -p $out/bin $out/share
               ags bundle app.ts $out/bin/matshell
+              cp -r style $out/share/
+              cp -r assets/icons $out/share/
             '';
             preFixup = ''
               gappsWrapperArgs+=(
@@ -131,6 +133,7 @@
 
             # Create a wrapper script for matshell to copy files that require mutability out of the store
             mv $out/bin/matshell $out/bin/.matshell-unwrapped
+
 
             makeWrapper $out/bin/.matshell-unwrapped $out/bin/matshell \
               --run 'STYLE_DIR="$HOME/.config/ags/style"

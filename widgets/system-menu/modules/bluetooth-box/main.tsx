@@ -10,7 +10,6 @@ import {
   setIsExpanded,
 } from "utils/bluetooth.ts";
 
-// Main Bluetooth Box component
 export const BluetoothBox = () => {
   const bluetooth = Bluetooth.get_default();
 

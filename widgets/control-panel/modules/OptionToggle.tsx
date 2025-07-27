@@ -1,4 +1,3 @@
-import { createBinding } from "ags";
 import { Gtk } from "ags/gtk4";
 import options from "options.ts";
 

@@ -92,6 +92,7 @@ const ProgressArcWidget = GObject.registerClass(
     },
   },
   class ProgressArcWidget extends Gtk.Widget {
+    // GTK4 widget methods are provided at runtime by GObject system. Ignore TS complaints.
     // Private properties
     private _center_x: number = 0;
     private _center_y: number = 0;
@@ -102,7 +103,7 @@ const ProgressArcWidget = GObject.registerClass(
     private _start_at: number = 0;
     private _end_at: number = 1;
     private _inverted: boolean = false;
-    private _updating_geometry: boolean = false; // New flag to prevent recursive updates
+    private _updating_geometry: boolean = false;
 
     constructor() {
       super();
@@ -469,7 +470,6 @@ const CenterFillWidget = GObject.registerClass(
   },
 );
 
-// RadiusFill widget - handles the radius fill
 const RadiusFillWidget = GObject.registerClass(
   {
     CssName: "radius",
@@ -542,7 +542,6 @@ const RadiusFillWidget = GObject.registerClass(
       this.queue_draw();
     }
 
-    // Getters and setters
     get center_x(): number {
       return this._center_x;
     }
@@ -609,7 +608,6 @@ const RadiusFillWidget = GObject.registerClass(
   },
 );
 
-// Main CircularProgressBar widget
 const CircularProgressBarWidget = GObject.registerClass(
   {
     CssName: "circularprogress",
@@ -690,7 +688,6 @@ const CircularProgressBarWidget = GObject.registerClass(
     },
   },
   class CircularProgressBarWidget extends Gtk.Widget {
-    // Private properties
     private _inverted: boolean = false;
     private _center_filled: boolean = false;
     private _radius_filled: boolean = false;
@@ -726,7 +723,7 @@ const CircularProgressBarWidget = GObject.registerClass(
 
       this.connect("notify", () => this.queue_draw());
     }
-    // Property getters and setters
+
     get inverted(): boolean {
       return this._inverted;
     }
@@ -985,7 +982,6 @@ const CircularProgressBarWidget = GObject.registerClass(
   },
 );
 
-// Export function
 export function CircularProgressBar(props: {
   percentage?: number | Accessor<number>;
   inverted?: boolean;
@@ -1029,7 +1025,6 @@ export function CircularProgressBar(props: {
     }
   }
 
-  // Configure other properties
   if (props.inverted !== undefined) widget.inverted = props.inverted;
   if (props.centerFilled !== undefined)
     widget.center_filled = props.centerFilled;

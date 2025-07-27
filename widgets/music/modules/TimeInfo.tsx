@@ -1,5 +1,5 @@
 import Mpris from "gi://AstalMpris";
-import { createBinding, createState } from "ags";
+import { createBinding } from "ags";
 import { Gtk } from "ags/gtk4";
 import { lengthStr } from "utils/mpris";
 

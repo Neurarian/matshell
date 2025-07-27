@@ -3,7 +3,6 @@ import { startBluetoothAgent, BluetoothAgent } from "./bluetooth-agent.ts";
 import { createState, createBinding, createComputed } from "ags";
 import { timeout } from "ags/time";
 
-// Export both accessors and setters for AGS v3 compatibility
 export const [isExpanded, setIsExpanded] = createState(false);
 export const [refreshIntervalId, setRefreshIntervalId] = createState(null);
 export const [selectedDevice, setSelectedDevice] = createState(null);
@@ -55,7 +54,7 @@ export const stopBluetoothAgent = () => {
       return false;
     }
   }
-  return true; // No agent running
+  return true;
 };
 
 // Scanning functions

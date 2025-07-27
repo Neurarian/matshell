@@ -9,6 +9,8 @@ const kbd = exec(`bash -c "ls -w1 /sys/class/leds | head -1"`);
 
 @register({ GTypeName: "Brightness" })
 export default class Brightness extends GObject.Object {
+  // @ts-ignore - notify method is provided by GObject at runtime
+  notify(property: string): void;
   static instance: Brightness;
   static get_default() {
     if (!this.instance) this.instance = new Brightness();
@@ -95,7 +97,7 @@ export default class Brightness extends GObject.Object {
     execAsync(`brightnessctl -d ${kbd} s ${value} -q`)
       .then(() => {
         this.#kbd = value;
-        this.notify("kbd"); // Required when using @setter
+        this.notify("kbd");
       })
       .catch((error) => {
         console.error("Error setting keyboard brightness:", error);
@@ -115,7 +117,7 @@ export default class Brightness extends GObject.Object {
     execAsync(`brightnessctl -d ${screen} set ${Math.floor(percent * 100)}% -q`)
       .then(() => {
         this.#screen = percent;
-        this.notify("screen"); // Required when using @setter
+        this.notify("screen");
       })
       .catch((error) => {
         console.error("Error setting screen brightness:", error);

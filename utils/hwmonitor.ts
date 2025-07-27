@@ -5,6 +5,8 @@ import { readFile } from "ags/file";
 
 @register({ GTypeName: "SystemMonitor" })
 export default class SystemMonitor extends GObject.Object {
+  // @ts-ignore - notify method is provided by GObject at runtime
+  notify(property: string): void;
   static instance: SystemMonitor;
   private static readonly CPU_INFO_PATH = "/proc/cpuinfo";
 

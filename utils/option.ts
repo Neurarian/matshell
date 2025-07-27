@@ -4,7 +4,7 @@ import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
 
 /**
- * Configuration manager for Astal/AGS
+ * Configuration manager for ags
  *
  * To keep it simple, configuration exclusively
  * uses flattened dot notation for paths:
@@ -167,7 +167,7 @@ export class ConfigManager {
   // Save a cached value
   private saveCachedValue(optionName: string, value: ConfigValue): void {
     readFileAsync(`${this.cacheDir}/options.json`)
-      .then((content) => {
+      .then((content: string) => {
         const cache = JSON.parse(content || "{}");
         cache[optionName] = value;
         writeFile(
@@ -285,7 +285,7 @@ export class ConfigManager {
 
   // Watch for configuration file changes
   watchChanges(): void {
-    monitorFile(this.configPath, (_, event) => {
+    monitorFile(this.configPath, (_, event: Gio.FileMonitorEvent) => {
       if (
         event === Gio.FileMonitorEvent.CHANGED ||
         event === Gio.FileMonitorEvent.CHANGES_DONE_HINT ||

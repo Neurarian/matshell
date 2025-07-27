@@ -45,6 +45,7 @@ export const CavaWidget = GObject.registerClass(
     },
   },
   class CavaWidget extends Gtk.Widget {
+    // GTK4 widget methods are provided at runtime by GObject system. Ignore TS complaints.
     public cava = Cava.get_default()!;
     private _style: CavaStyle = CavaStyle.CATMULL_ROM;
 

@@ -17,20 +17,16 @@ export default function Time() {
   return (
     <box
       $={(self) => {
-        // Create motion event controller
         const motionController = new Gtk.EventControllerMotion();
 
-        // Handle mouse enter
         motionController.connect("enter", () => {
           setRevealPower(true);
         });
 
-        // Handle mouse leave
         motionController.connect("leave", () => {
           setRevealPower(false);
         });
 
-        // Add controller to the widget
         self.add_controller(motionController);
       }}
     >

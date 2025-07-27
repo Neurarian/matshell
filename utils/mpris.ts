@@ -55,8 +55,8 @@ export function lengthStr(length: number) {
   return min + ":" + sec;
 }
 
-export function filterActivePlayers(players) {
-  return players.filter((player) => {
+export function filterActivePlayers(players: Mpris.Player[]) {
+  return players.filter((player: Mpris.Player) => {
     // Check for essential properties that indicate a usable player
     if (!player.title && !player.artist) {
       return false;
@@ -78,11 +78,11 @@ export function filterActivePlayers(players) {
 export const hasActivePlayers = createBinding(
   mpris,
   "players",
-)((players) => filterActivePlayers(players).length > 0);
+)((players: Mpris.Player[]) => filterActivePlayers(players).length > 0);
 export const firstActivePlayer = createBinding(
   mpris,
   "players",
-)((players) => {
+)((players: Mpris.Player[]) => {
   const active = filterActivePlayers(players);
   return active.length > 0 ? active[0] : null;
 });

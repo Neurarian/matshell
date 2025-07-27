@@ -6,7 +6,6 @@ import Bluetooth from "gi://AstalBluetooth";
 import {
   scanDevices,
   stopScan,
-  isExpanded,
   setIsExpanded,
 } from "utils/bluetooth.ts";
 import options from "options.ts";
@@ -49,16 +48,16 @@ export const BluetoothDevices = () => {
       orientation={Gtk.Orientation.VERTICAL}
       cssClasses={["network-list"]}
     >
-      {/* Empty state - always render container */}
+      {/* Empty state */}
       <box visible={hasDevices((has) => !has)}>
         <label label="No devices found" cssClasses={["empty-label"]} />
       </box>
 
-      {/* Known Devices Section - always render container */}
+      {/* Known Devices Section */}
       <box orientation={Gtk.Orientation.VERTICAL} visible={hasKnownDevices}>
         <label label="My Devices" cssClasses={["section-label"]} />
 
-        {/* Connected devices container - always render */}
+        {/* Connected devices */}
         <box
           orientation={Gtk.Orientation.VERTICAL}
           visible={connectedDevices((devices) => devices.length > 0)}
@@ -68,7 +67,7 @@ export const BluetoothDevices = () => {
           </For>
         </box>
 
-        {/* Paired devices container - always render */}
+        {/* Paired devices */}
         <box
           orientation={Gtk.Orientation.VERTICAL}
           visible={pairedDevices((devices) => devices.length > 0)}
@@ -79,7 +78,7 @@ export const BluetoothDevices = () => {
         </box>
       </box>
 
-      {/* Available/Unpaired Devices Section - always render container */}
+      {/* Available/Unpaired Devices */}
       <box
         orientation={Gtk.Orientation.VERTICAL}
         visible={unpairedDevices((devices) => devices.length > 0)}
@@ -90,7 +89,7 @@ export const BluetoothDevices = () => {
         </For>
       </box>
 
-      {/* Control buttons - always render */}
+      {/* Control buttons */}
       <box hexpand visible={hasDevices}>
         <button
           halign={Gtk.Align.START}

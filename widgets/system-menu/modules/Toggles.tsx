@@ -10,11 +10,9 @@ export const Toggles = () => {
   const bluetooth = Bluetooth.get_default();
   const network = Network.get_default();
 
-  // Create bindings for the GObject properties
   const bluetoothAdapter = createBinding(bluetooth, "adapter");
   const networkPrimary = createBinding(network, "primary");
 
-  // Use createComputed instead of Variable.derive
   const renderToggleBox = createComputed(
     [bluetoothAdapter, networkPrimary],
     (hasAdapter, primary) => hasAdapter || primary === Network.Primary.WIFI,

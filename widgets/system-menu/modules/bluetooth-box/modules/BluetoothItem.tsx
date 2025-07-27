@@ -12,7 +12,6 @@ import {
   getBluetoothDeviceText,
 } from "utils/bluetooth.ts";
 
-// Device Item component
 export const BluetoothItem = ({ device }) => {
   const [itemButtonsRevealed, setItemButtonsRevealed] = createState(false);
 

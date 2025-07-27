@@ -1,55 +1,51 @@
 import Pango from "gi://Pango";
 import { Gtk } from "ags/gtk4";
 import {
-  activeNetwork,
-  savedNetworks,
   setSelectedNetwork,
   setShowPasswordDialog,
   setPasswordInput,
-  connectToNetwork,
-} from "utils/wifi.ts";
+  createAccessPointManager,
+} from "utils/wifi";
 
 export const NetworkItem = ({ network }) => {
-
-  const isActive = activeNetwork((active) => active?.ssid === network.ssid);
+  const apManager = createAccessPointManager(network);
 
   return (
     <button
       hexpand
+      cssClasses={apManager.connectionClasses}  // Keep CSS classes on button
+      sensitive={apManager.canConnect}
       onClicked={() => {
-        if (isActive.get()) return;
+        if (!apManager.canConnect.get()) return;
 
-        const isSaved = savedNetworks.get().includes(network.ssid);
-
-        if (network.secured && !isSaved) {
-          // Show password dialog only for secured networks that are not saved
+        if (apManager.requiresPasswordDialog()) {
           setSelectedNetwork(network);
           setShowPasswordDialog(true);
-          setPasswordInput("");
+          setPasswordDialog("");
         } else {
-          // Directly connect to: 1) open networks, or 2) saved networks
-          connectToNetwork(network.ssid);
+          apManager.connect();
         }
       }}
     >
-      <box cssClasses={["network-item"]} hexpand>
-        <image iconName={network.iconName} />
+      <box hexpand>
+        <image iconName={apManager.displayInfo((info) => info.iconName)} />
         <label
-          label={network.ssid}
+          label={apManager.displayInfo((info) => info.ssid)}
           maxWidthChars={18}
-          ellipsize={Pango.EllipsizeMode.END}
+          ellipsize={Pango.EllipsizeMode.End}
         />
         <box hexpand={true} />
-        {network.secured && (
-          <image
-            halign={Gtk.Align.END}
-            iconName="network-wireless-encrypted-symbolic"
-          />
-        )}
+
+        {/* Status icons */}
         <image
-          halign={Gtk.Align.END}
+          halign={Gtk.Align.End}
+          iconName="network-wireless-encrypted-symbolic"
+          visible={apManager.displayInfo((info) => info.secured)}
+        />
+        <image
+          halign={Gtk.Align.End}
           iconName="object-select-symbolic"
-          visible={isActive}
+          visible={apManager.displayInfo((info) => info.isActive)}
         />
       </box>
     </button>

@@ -1,18 +1,29 @@
 import { Gtk } from "ags/gtk4";
+import app from "ags/gtk4/app";
 import {
   selectedNetwork,
   setShowPasswordDialog,
   passwordInput,
   setPasswordInput,
-  connectToNetwork,
   errorMessage,
   setErrorMessage,
   isConnecting,
   scanTimer,
   setScanTimer,
-} from "utils/wifi.ts";
+  connectToNetwork,
+} from "utils/wifi";
 
 export const PasswordDialog = () => {
+  // Cancel handler with window resize
+  const handleCancel = () => {
+    setShowPasswordDialog(false);
+    setErrorMessage("");
+    const window = app.get_window("system-menu");
+    if (window) {
+      window.set_default_size(-1, -1);
+    }
+  };
+
   return (
     <box
       orientation={Gtk.Orientation.VERTICAL}
@@ -55,10 +66,7 @@ export const PasswordDialog = () => {
           halign={Gtk.Align.END}
           hexpand
           cssClasses={["cancel-button", "button"]}
-          onClicked={() => {
-            setShowPasswordDialog(false);
-            setErrorMessage("");
-          }}
+          onClicked={handleCancel}
         />
       </box>
     </box>

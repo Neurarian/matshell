@@ -11,13 +11,13 @@ import {
   savedNetworks,
   activeNetwork,
   showPasswordDialog,
+  scanTimer,
+  setScanTimer,
   scanNetworks,
   getSavedNetworks,
   disconnectNetwork,
   forgetNetwork,
-  scanTimer,
-  setScanTimer,
-} from "utils/wifi.ts";
+} from "utils/wifi";
 import options from "options.ts";
 
 // Main WiFi Box component
@@ -133,7 +133,7 @@ export const WiFiBox = () => {
       >
         <box
           orientation={Gtk.Orientation.VERTICAL}
-          cssClasses={["network-list"]}
+          cssClasses={["system-menu-list"]}
         >
           {/* Password Dialog */}
           <box visible={showPasswordDialog}>
@@ -148,7 +148,12 @@ export const WiFiBox = () => {
             <box
               visible={availableNetworks((networks) => networks.length === 0)}
             >
-              <label label="No networks found" cssClasses={["empty-label"]} />
+              <label
+                label="No networks found"
+                cssClasses={["empty-label"]}
+                halign={Gtk.Align.CENTER}
+                hexpand
+              />
             </box>
 
             {/* Networks list container */}

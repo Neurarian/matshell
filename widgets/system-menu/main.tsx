@@ -6,6 +6,7 @@ import { Sliders } from "./modules/Sliders.tsx";
 import { Toggles } from "./modules/Toggles.tsx";
 import { PowerProfileBox } from "./modules/PowerProfileBox.tsx";
 import { BatteryBox } from "./modules/BatteryBox.tsx";
+import { NotificationBox } from "./modules/notification-center/main.tsx";
 import options from "options.ts";
 
 export default function SystemMenu() {
@@ -13,6 +14,7 @@ export default function SystemMenu() {
   const hasProfiles = powerprofiles?.get_profiles()?.length > 0;
   const { TOP, BOTTOM, RIGHT } = Astal.WindowAnchor;
   const [visible, _setVisible] = createState(false);
+
   return (
     <window
       name="system-menu"
@@ -40,6 +42,7 @@ export default function SystemMenu() {
         {hasProfiles && <PowerProfileBox />}
         <Sliders />
         <BatteryBox />
+        <NotificationBox />
       </box>
     </window>
   );

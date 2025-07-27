@@ -1,6 +1,6 @@
 import { Gtk } from "ags/gtk4";
 import Notifd from "gi://AstalNotifd";
-import { fileExists, isIcon } from "utils/notifd.ts";
+import { fileExists, isIcon } from "utils/notifd";
 
 export function NotificationIcon(notification: Notifd.Notification) {
   const icon =
@@ -8,13 +8,13 @@ export function NotificationIcon(notification: Notifd.Notification) {
   if (!icon) return null;
   if (fileExists(icon))
     return (
-      <box expand={false} valign={Gtk.Align.CENTER}>
+      <box  valign={Gtk.Align.CENTER}>
         <image file={icon} />
       </box>
     );
   else if (isIcon(icon))
     return (
-      <box expand={false} valign={Gtk.Align.CENTER}>
+      <box  valign={Gtk.Align.CENTER}>
         <image iconName={icon} />
       </box>
     );

@@ -1,59 +1,111 @@
 import { Gtk } from "ags/gtk4";
-import { createBinding, onCleanup, onMount } from "ags";
-import Notifd from "gi://AstalNotifd";
+import { createState, Accessor } from "ags";
 import { NotificationIcon } from "./Icon.tsx";
-import { time, urgency, createTimeoutManager } from "utils/notifd.ts";
+import {
+  urgency,
+  UnifiedNotification,
+  createNotificationTimeLabel,
+} from "utils/notifd";
 
-export function NotificationWidget({
+export interface BaseNotificationProps {
+  notification: UnifiedNotification;
+  onAction?: (id: number, action: string) => void;
+  onDismiss?: (id: number) => void;
+  onClick?: (button: number, notification: UnifiedNotification) => void;
+  onHover?: () => void;
+  onHoverLost?: () => void;
+
+  // Configuration options for different use cases
+  variant?: "live" | "stored";
+  showDismissButton?: boolean | Accessor<boolean>;
+  showTimeAsRelative?: boolean;
+  maxBodyChars?: number;
+  maxSummaryChars?: number;
+  cssClasses?: string[];
+}
+
+export function BaseNotification({
   notification,
-}: {
-  notification: Notifd.Notification;
-}) {
+  onAction,
+  onDismiss,
+  onClick,
+  onHover,
+  onHoverLost,
+  variant = "live",
+  showDismissButton = false,
+  maxBodyChars = 50,
+  maxSummaryChars = 40,
+  cssClasses = [],
+}: BaseNotificationProps) {
   const { START, CENTER, END } = Gtk.Align;
-  const actions = notification.actions || [];
-  const TIMEOUT_DELAY = 3000;
-  const notifd = Notifd.get_default();
+  const [isHovered, setIsHovered] = createState(false);
 
-  const timeoutManager = createTimeoutManager(
-    () => notification.dismiss(),
-    TIMEOUT_DELAY,
-  );
+  const timeLabel = createNotificationTimeLabel(notification.time, { variant });
 
-  onMount(() => {
-    timeoutManager.setupTimeout();
-  });
-
-  onCleanup(() => {
-    timeoutManager.cleanup();
-  });
-
+  // Default click handling
   const handleClick = (button: number) => {
-    try {
-      switch (button) {
-        case 1: // PRIMARY/LEFT
-          actions.length > 0 && notification.invoke(actions[0]);
-          break;
-        case 2: // MIDDLE
-          notifd.notifications?.forEach((n) => n.dismiss());
-          break;
-        case 3: // SECONDARY/RIGHT
-          notification.dismiss();
-          break;
+    if (onClick) {
+      onClick(button, notification);
+    } else {
+      try {
+        switch (button) {
+          case 1: // PRIMARY/LEFT
+            if (notification.actions.length > 0 && onAction) {
+              onAction(notification.id, notification.actions[0].action);
+            }
+            break;
+          case 2: // MIDDLE
+            // Customized per variant
+            break;
+          case 3: // SECONDARY/RIGHT
+            if (onDismiss) {
+              onDismiss(notification.id);
+            }
+            break;
+        }
+      } catch (error) {
+        console.error("Error handling notification click:", error);
       }
-    } catch (error) {
-      console.error("Error handling notification click:", error);
     }
+  };
+
+  const handleHover = () => {
+    setIsHovered(true);
+    if (onHover) onHover();
+  };
+
+  const handleHoverLost = () => {
+    setIsHovered(false);
+    if (onHoverLost) onHoverLost();
+  };
+
+  const buildCssClasses = (): string[] => {
+    const classes = [
+      "base-notification",
+      `notification-${variant}`,
+      `${urgency(notification)}`,
+      ...cssClasses,
+    ];
+
+    // Could be useful at some point
+    if (variant === "stored") {
+      if (notification.seen) classes.push("notification-seen");
+      else classes.push("notification-unseen");
+      if (notification.dismissed) classes.push("notification-dismissed");
+    }
+
+    return classes;
   };
 
   return (
     <box
       orientation={Gtk.Orientation.VERTICAL}
       vexpand={false}
-      cssClasses={["notification", `${urgency(notification)}`]}
+      cssClasses={buildCssClasses()}
       name={notification.id.toString()}
     >
       <Gtk.GestureClick
-        button={0} // Any button
+        button={0}
         onPressed={(gesture) => {
           const button = gesture.get_current_button();
           handleClick(button);
@@ -61,26 +113,37 @@ export function NotificationWidget({
       />
 
       <Gtk.EventControllerMotion
-        onEnter={() => timeoutManager.handleHover()}
-        onLeave={() => timeoutManager.handleHoverLost()}
+        onEnter={handleHover}
+        onLeave={handleHoverLost}
       />
 
+      {/* Header */}
       <box cssClasses={["header"]}>
         <label
           cssClasses={["app-name"]}
-          halign={CENTER}
-          label={createBinding(notification, "app_name")}
+          halign={variant === "stored" ? START : CENTER}
+          label={notification.appName}
         />
-        <label
-          cssClasses={["time"]}
-          hexpand
-          halign={END}
-          label={time(notification.time)}
-        />
+        <label cssClasses={["time"]} hexpand halign={END} label={timeLabel} />
+
+        {/* Conditional dismiss button */}
+        {(typeof showDismissButton === "boolean"
+          ? showDismissButton
+          : showDismissButton.get()) && (
+          <button
+            cssClasses={["dismiss-button"]}
+            visible={variant === "stored" ? isHovered : true}
+            onClicked={() => onDismiss?.(notification.id)}
+            tooltipText="Dismiss notification"
+          >
+            <image iconName="window-close-symbolic" pixelSize={12} />
+          </button>
+        )}
       </box>
 
-      <Gtk.Separator />
+      <Gtk.Separator cssClasses={["notification-separator"]} />
 
+      {/* Content */}
       <box cssClasses={["content"]}>
         <box
           cssClasses={["thumb"]}
@@ -102,28 +165,31 @@ export function NotificationWidget({
           <label
             cssClasses={["title"]}
             valign={CENTER}
-            wrap={false}
-            label={createBinding(notification, "summary")}
+            wrap={true}
+            label={notification.summary}
+            maxWidthChars={maxSummaryChars}
           />
           {notification.body && (
             <label
               cssClasses={["body"]}
               valign={CENTER}
               wrap={true}
-              maxWidthChars={50}
-              label={createBinding(notification, "body")}
+              maxWidthChars={maxBodyChars}
+              label={notification.body}
             />
           )}
         </box>
       </box>
 
-      {actions.length > 0 && (
+      {/* Actions */}
+      {notification.actions.length > 0 && (
         <box cssClasses={["actions"]}>
-          {actions.map(({ label, action }) => (
+          {notification.actions.map(({ label, action }) => (
             <button
               hexpand
               cssClasses={["action-button"]}
-              onClicked={() => notification.invoke(action)}
+              onClicked={() => onAction?.(notification.id, action)}
+              key={action}
             >
               <label label={label} halign={CENTER} hexpand />
             </button>

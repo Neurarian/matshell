@@ -3,11 +3,7 @@ import { Gtk } from "ags/gtk4";
 import { createBinding, createComputed, For } from "ags";
 import { BluetoothItem } from "./BluetoothItem.tsx";
 import Bluetooth from "gi://AstalBluetooth";
-import {
-  scanDevices,
-  stopScan,
-  setIsExpanded,
-} from "utils/bluetooth.ts";
+import { scanDevices, stopScan, setIsExpanded } from "utils/bluetooth";
 import options from "options.ts";
 
 export const BluetoothDevices = () => {
@@ -46,11 +42,16 @@ export const BluetoothDevices = () => {
     <box
       marginTop={4}
       orientation={Gtk.Orientation.VERTICAL}
-      cssClasses={["network-list"]}
+      cssClasses={["system-menu-list"]}
     >
       {/* Empty state */}
       <box visible={hasDevices((has) => !has)}>
-        <label label="No devices found" cssClasses={["empty-label"]} />
+        <label
+          label="No devices found"
+          cssClasses={["empty-label"]}
+          halign={Gtk.Align.CENTER}
+          hexpand
+        />
       </box>
 
       {/* Known Devices Section */}

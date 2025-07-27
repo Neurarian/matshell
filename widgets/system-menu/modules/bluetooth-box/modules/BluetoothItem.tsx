@@ -1,53 +1,28 @@
 import app from "ags/gtk4/app";
 import { Gtk } from "ags/gtk4";
-import { createState, createBinding, createComputed, onCleanup } from "ags";
+import { createState, onCleanup } from "ags";
 import Pango from "gi://Pango";
-import {
-  connectToDevice,
-  disconnectDevice,
-  pairDevice,
-  unpairDevice,
-  toggleTrust,
-  isExpanded,
-  getBluetoothDeviceText,
-} from "utils/bluetooth.ts";
+import { createDeviceManager, isExpanded } from "utils/bluetooth";
 
 export const BluetoothItem = ({ device }) => {
   const [itemButtonsRevealed, setItemButtonsRevealed] = createState(false);
 
-  const deviceConnected = createBinding(device, "connected");
-  const devicePaired = createBinding(device, "paired");
-  const deviceTrusted = createBinding(device, "trusted");
-  const deviceConnecting = createBinding(device, "connecting");
-
-  // Create computed value for connection button icon
-  const connectionButtonIcon = createComputed(
-    [deviceConnected, deviceConnecting],
-    (connected, connecting) => {
-      if (connected) return "bluetooth-active-symbolic";
-      else if (connecting) return "bluetooth-acquiring-symbolic";
-      else return "bluetooth-disconnected-symbolic";
-    },
-  );
+  const deviceManager = createDeviceManager(device);
 
   return (
     <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["bt-device-item"]}>
       <button
         hexpand={true}
-        cssClasses={deviceConnected((connected) =>
-          connected
-            ? ["network-item", "network-item-connected"]
-            : ["network-item", "network-item-disconnected"],
-        )}
-        onClicked={() => {
-          setItemButtonsRevealed((prev) => !prev);
-        }}
+        cssClasses={deviceManager.connectionClasses}
+        onClicked={() => setItemButtonsRevealed((prev) => !prev)}
       >
         <label
           halign={Gtk.Align.START}
           maxWidthChars={24}
           ellipsize={Pango.EllipsizeMode.END}
-          label={getBluetoothDeviceText(device)}
+          label={deviceManager.displayInfo(
+            (info) => `${info.name}${info.batteryText}`,
+          )}
         />
       </button>
 
@@ -58,16 +33,12 @@ export const BluetoothItem = ({ device }) => {
         onNotifyChildRevealed={(revealer) => {
           const window = app.get_window("system-menu");
           if (window && !revealer.childRevealed) {
-            // Use GTK's resize mechanism. Fixes https://github.com/Aylur/astal/issues/258
             window.set_default_size(-1, -1);
           }
         }}
         $={(_self) => {
-          // Close revealer if parent revealer is closed
           const unsubscribeParent = isExpanded.subscribe((parentExpanded) => {
-            if (!parentExpanded) {
-              setItemButtonsRevealed(false);
-            }
+            if (!parentExpanded) setItemButtonsRevealed(false);
           });
 
           const windowListener = app.connect("window-toggled", (_, window) => {
@@ -91,67 +62,56 @@ export const BluetoothItem = ({ device }) => {
           cssClasses={["bt-button-container"]}
           homogeneous={true}
         >
+          {/* Connect/Disconnect Button */}
           <button
             hexpand={true}
-            cssClasses={deviceConnected((connected) =>
+            cssClasses={deviceManager.isConnected((connected) =>
               connected
                 ? ["button", "connect-button"]
                 : ["button-disabled", "connect-button"],
             )}
-            visible={devicePaired}
+            visible={deviceManager.isPaired}
             onClicked={() => {
-              if (!deviceConnecting.get()) {
-                deviceConnected.get()
-                  ? disconnectDevice(device)
-                  : connectToDevice(device);
-              }
+              deviceManager.isConnected.get()
+                ? deviceManager.disconnect()
+                : deviceManager.connect();
             }}
-            tooltipText={deviceConnected((connected) =>
-              connected ? "Disconnect" : "Connect",
-            )}
+            tooltipText={deviceManager.connectionTooltip}
           >
-            <image iconName={connectionButtonIcon} />
+            <image iconName={deviceManager.connectionIcon} />
           </button>
 
+          {/* Trust Button */}
           <button
             hexpand={true}
-            cssClasses={deviceTrusted((trusted) =>
+            cssClasses={deviceManager.isTrusted((trusted) =>
               trusted
                 ? ["button", "trust-button"]
                 : ["button-disabled", "trust-button"],
             )}
-            visible={devicePaired}
-            onClicked={() => toggleTrust(device)}
-            tooltipText={deviceTrusted((trusted) =>
-              trusted ? "Untrust" : "Trust",
-            )}
+            visible={deviceManager.isPaired}
+            onClicked={() => deviceManager.toggleTrust()}
+            tooltipText={deviceManager.trustTooltip}
           >
-            <image
-              iconName={deviceTrusted((trusted) =>
-                trusted ? "security-high-symbolic" : "security-low-symbolic",
-              )}
-            />
+            <image iconName={deviceManager.trustIcon} />
           </button>
 
+          {/* Pair/Unpair Button */}
           <button
             hexpand={true}
-            cssClasses={devicePaired((paired) =>
+            cssClasses={deviceManager.isPaired((paired) =>
               paired
                 ? ["button", "pair-button"]
                 : ["button-disabled", "pair-button"],
             )}
             onClicked={() => {
-              devicePaired.get() ? unpairDevice(device) : pairDevice(device);
+              deviceManager.isPaired.get()
+                ? deviceManager.unpair()
+                : deviceManager.pair();
             }}
-            tooltipText={devicePaired((paired) => (paired ? "Unpair" : "Pair"))}
+            tooltipText={deviceManager.pairTooltip}
           >
-            <image
-              iconName={devicePaired((paired) =>
-                paired
-                  ? "network-transmit-receive-symbolic"
-                  : "network-offline-symbolic",
-              )}
-            />
+            <image iconName={deviceManager.pairIcon} />
           </button>
         </box>
       </revealer>

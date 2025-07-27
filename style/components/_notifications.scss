@@ -4,7 +4,7 @@
 
 .notification {
   margin: 5px 5px 5px 10px;
-  min-width: 20rem;
+  min-width: 15;
   border-radius: $round2;
   background-color: $bg;
   border: 1px solid transparent;
@@ -24,6 +24,9 @@
       font-size: 0.9rem;
       font-weight: bold;
       color: color.adjust($fg, $alpha: -0.3);
+    }
+    .dismiss-button {
+      margin: -0.5rem 0rem;
     }
   }
 

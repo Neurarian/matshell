@@ -1,6 +1,6 @@
 import { createBinding } from "ags";
 import Bluetooth from "gi://AstalBluetooth";
-import { getBluetoothIcon, getBluetoothText } from "utils/bluetooth.ts";
+import { getBluetoothIcon, getBluetoothText } from "utils/bluetooth";
 
 export default function Blue() {
   const bluetooth = Bluetooth.get_default();
@@ -14,8 +14,8 @@ export default function Blue() {
       )(() => getBluetoothIcon(bluetooth))}
       tooltipText={createBinding(
         bluetooth,
-        "devices",
-      )((devices) => getBluetoothText(devices, bluetooth))}
+        "is_powered",
+      )(() => getBluetoothText(bluetooth))}
     />
   );
 }

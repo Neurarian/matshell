@@ -696,7 +696,7 @@ box.logout-background .logout-menu button label {
   transform: rotate(90deg);
 }
 
-.network-list {
+.system-menu-list { 
   box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
   background: rgba(30, 16, 12, 0.5);

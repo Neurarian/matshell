@@ -8,7 +8,7 @@ import {
   getBluetoothText,
   isExpanded,
   setIsExpanded,
-} from "utils/bluetooth.ts";
+} from "utils/bluetooth";
 
 export const BluetoothBox = () => {
   const bluetooth = Bluetooth.get_default();

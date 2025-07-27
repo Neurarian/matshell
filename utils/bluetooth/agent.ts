@@ -1,10 +1,11 @@
-/* ONLY allows NOINPUTNOOUTPUT!
-If you want to pair devices and access features
-which require more auth, use something like overskride. */
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
+import {
+  bluetoothAgent,
+  setBluetoothAgent,
+  setHasBluetoothAgent,
+} from "./state.ts";
 
-// D-Bus interface constants
 const AGENT_PATH = "/org/bluez/agent";
 const CAPABILITY = "NoInputNoOutput";
 const BLUEZ_SERVICE = "org.bluez";
@@ -191,10 +192,40 @@ export class BluetoothAgent {
   }
 }
 
-// Create and register agent
-export function startBluetoothAgent() {
+export function startBluetoothAgent(): BluetoothAgent | null {
   const agent = new BluetoothAgent();
   if (agent.register()) return agent;
-
   return null;
 }
+
+// Enhanced agent management
+export const ensureBluetoothAgent = (): boolean => {
+  if (bluetoothAgent.get() === null) {
+    console.log("Starting Bluetooth agent");
+    const agent = startBluetoothAgent();
+    if (agent) {
+      setBluetoothAgent(agent);
+      setHasBluetoothAgent(true);
+      return true;
+    }
+    return false;
+  }
+  return true;
+};
+
+export const stopBluetoothAgent = (): boolean => {
+  const agent = bluetoothAgent.get();
+  if (agent) {
+    console.log("Stopping Bluetooth agent");
+    if (agent.unregister()) {
+      console.log("Bluetooth agent stopped successfully");
+      setBluetoothAgent(null);
+      setHasBluetoothAgent(false);
+      return true;
+    } else {
+      console.error("Failed to stop Bluetooth agent");
+      return false;
+    }
+  }
+  return true;
+};

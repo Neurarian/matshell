@@ -6,20 +6,37 @@ import { firstActivePlayer } from "utils/mpris.ts";
 import options from "options.ts";
 
 function Cover({ player }) {
+  let measureBox: Gtk.Widget | null = null;
+
   return (
-    <overlay>
+    <overlay
+      $={(self) => {
+        // Set measure overlay after the child is added
+        if (measureBox) {
+          self.set_measure_overlay(measureBox, true);
+        }
+      }}
+    >
       <box
-        $type={"overlay"}
+        cssClasses={["cava-container"]}
+        $type="overlay"
         canTarget={false}
         visible={options["bar.modules.media.cava.show"]}
       >
         <CavaDraw vexpand hexpand style={"circular"} />
       </box>
-      <image
-        cssClasses={["cover"]}
-        overflow={Gtk.Overflow.HIDDEN}
-        file={createBinding(player, "coverArt")}
-      />
+      <box
+        $type="overlay"
+        $={(self) => {
+          measureBox = self;
+        }}
+      >
+        <image
+          cssClasses={["cover"]}
+          overflow={Gtk.Overflow.HIDDEN}
+          file={createBinding(player, "coverArt")}
+        />
+      </box>
     </overlay>
   );
 }

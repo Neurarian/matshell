@@ -41,16 +41,23 @@ export class BluetoothDeviceManager {
   }
 
   async pair(): Promise<boolean> {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       // Start agent if not running
       let agentWasStarted = false;
       if (!hasBluetoothAgent.get()) {
-        if (!ensureBluetoothAgent()) {
-          console.error("Failed to start Bluetooth agent");
+        try {
+          const agentStarted = await ensureBluetoothAgent();
+          if (!agentStarted) {
+            console.error("Failed to start Bluetooth agent");
+            resolve(false);
+            return;
+          }
+          agentWasStarted = true;
+        } catch (error) {
+          console.error("Error starting Bluetooth agent:", error);
           resolve(false);
           return;
         }
-        agentWasStarted = true;
       }
 
       // Create a binding for the paired state
@@ -67,8 +74,12 @@ export class BluetoothDeviceManager {
           // Stop the agent when paired
           if (agentWasStarted) {
             console.log("Pairing successful, stopping Bluetooth agent");
-            timeout(1000, () => {
-              stopBluetoothAgent();
+            timeout(1000, async () => {
+              try {
+                await stopBluetoothAgent();
+              } catch (error) {
+                console.error("Error stopping Bluetooth agent:", error);
+              }
             });
           }
           resolve(true);
@@ -76,12 +87,21 @@ export class BluetoothDeviceManager {
       });
 
       // Set up timeout for pairing process
-      timeout(30000, () => {
+      timeout(30000, async () => {
         if (!resolved) {
           resolved = true;
           console.log("Pairing timeout reached");
           unsubscribe();
-          if (agentWasStarted) stopBluetoothAgent();
+          if (agentWasStarted) {
+            try {
+              await stopBluetoothAgent();
+            } catch (error) {
+              console.error(
+                "Error stopping Bluetooth agent after timeout:",
+                error,
+              );
+            }
+          }
           resolve(false);
         }
       });
@@ -94,7 +114,16 @@ export class BluetoothDeviceManager {
           resolved = true;
           console.error("Error pairing device:", error);
           unsubscribe();
-          if (agentWasStarted) stopBluetoothAgent();
+          if (agentWasStarted) {
+            try {
+              await stopBluetoothAgent();
+            } catch (stopError) {
+              console.error(
+                "Error stopping Bluetooth agent after pairing error:",
+                stopError,
+              );
+            }
+          }
           resolve(false);
         }
       }

@@ -21,13 +21,51 @@ This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice
 
 ***Now using agsv3.***
 
-## Features
+## ✨ Features
 
 - **Adaptive Layout**: Automatically adapts to desktop or laptop environments by conditionally rendering notebook-specific widgets
 - **Dynamic Material Design Theming**: Change themes on-the-fly using either scripts I botched from [end-4](https://github.com/end-4/dots-hyprland) or via [matugen](https://github.com/InioX/matugen) templates
 - **Multi-monitor Support**: Designed with multi-monitor setups in mind
 - **Hyprland Integration**: Built specifically for the Hyprland compositor
 - **Nix Support**: Support for NixOS / Home-Manager with dedicated module
+
+<details>
+  <summary>Show detailed components list</summary>
+
+### ⚙️ Components
+
+#### 🚀 Core Components
+
+- 📌 Status Bar - Sleek, informative main bar with system information
+
+  - Workspace Management - Themed Hyprland workspace integration
+  - System Tray
+  - Visual Performance Monitoring - CPU & memory
+  - Simple Clock
+
+- 🎧 Music Player - Media controls, music cover themed
+
+  - Audio Visualization - Extensive library of CAVA visualizer styles to choose from
+
+- 🔧 System Menu - Minimalistic core system integration
+
+  - Network Management - WiFi scanning, connection management, and status monitoring
+  - Bluetooth Support - Device pairing, management, and status indicators
+  - Brightness Controls
+  - Audio Controls
+  - Battery Metrics
+  - Power Profiles
+  - Notification Center - Intuitive notification management system & DND mode
+
+- 💤 Logout Menu - wlogout-like but ags
+
+- 🎯 App Launcher - Fast fuzzy search application access
+
+- 💻 On-Screen Display - Tracks Audio, Brightness, and Bluetooth connections
+
+#### 🔧 System Integration
+
+</details>
 
 ______________________________________________________________________
 

@@ -24,6 +24,8 @@ export default class Brightness extends GObject.Object {
   #screen = 0;
   #screenMonitor: any = null;
   #kbdMonitor: any = null;
+  #isSettingScreen = false;
+  #isSettingKbd = false;
 
   constructor() {
     super();
@@ -36,15 +38,20 @@ export default class Brightness extends GObject.Object {
       this.#kbdMax = get(`--device ${kbd} max`);
       this.#kbd = get(`--device ${kbd} get`);
       this.#screenMax = get("max");
-      this.#screen = get("get") / (get("max") || 1);
+      this.#screen = get("get") / this.#screenMax;
 
       this.#screenMonitor = monitorFile(
         `/sys/class/backlight/${screen}/brightness`,
         async (f) => {
+          if (this.#isSettingScreen) return;
+
           try {
             const v = await readFileAsync(f);
-            this.#screen = Number(v) / this.#screenMax;
-            this.notify("screen");
+            const newValue = Number(v) / this.#screenMax;
+            if (Math.abs(this.#screen - newValue) > 0.001) {
+              this.#screen = newValue;
+              this.notify("screen");
+            }
           } catch (error) {
             console.error("Error reading screen brightness:", error);
           }
@@ -54,10 +61,15 @@ export default class Brightness extends GObject.Object {
       this.#kbdMonitor = monitorFile(
         `/sys/class/leds/${kbd}/brightness`,
         async (f) => {
+          if (this.#isSettingKbd) return;
+
           try {
             const v = await readFileAsync(f);
-            this.#kbd = Number(v);
-            this.notify("kbd");
+            const newValue = Number(v);
+            if (this.#kbd !== newValue) {
+              this.#kbd = newValue;
+              this.notify("kbd");
+            }
           } catch (error) {
             console.error("Error reading keyboard brightness:", error);
           }
@@ -94,13 +106,16 @@ export default class Brightness extends GObject.Object {
   set kbd(value: number) {
     if (!this.#hasBacklight || value < 0 || value > this.#kbdMax) return;
 
+    this.#isSettingKbd = true;
     execAsync(`brightnessctl -d ${kbd} s ${value} -q`)
       .then(() => {
-        this.#kbd = value;
-        this.notify("kbd");
+        setTimeout(() => {
+          this.#isSettingKbd = false;
+        }, 100);
       })
       .catch((error) => {
         console.error("Error setting keyboard brightness:", error);
+        this.#isSettingKbd = false;
       });
   }
 
@@ -113,14 +128,23 @@ export default class Brightness extends GObject.Object {
   set screen(percent: number) {
     if (!this.#hasBacklight) return;
 
-    percent = Math.max(0, Math.min(1, percent));
+    percent = Math.max(0.01, Math.min(1, percent)); // Minimum 1% to avoid complete darkness
+
+    this.#isSettingScreen = true;
+    this.#screen = percent;
+    this.notify("screen");
+
     execAsync(`brightnessctl -d ${screen} set ${Math.floor(percent * 100)}% -q`)
       .then(() => {
-        this.#screen = percent;
-        this.notify("screen");
+        setTimeout(() => {
+          this.#isSettingScreen = false;
+        }, 200); 
       })
       .catch((error) => {
         console.error("Error setting screen brightness:", error);
+        this.#isSettingScreen = false;
+        this.#screen = get("get") / this.#screenMax;
+        this.notify("screen");
       });
   }
 

@@ -1,4 +1,4 @@
-export interface NetworkDisplayInfo {
+export interface NetworkInfo{
   ssid: string;
   strength: number;
   secured: boolean;

@@ -31,26 +31,6 @@ export class NotificationManager {
     this.setupNotificationListeners();
   }
 
-  private storeNotification(notification: Notifd.Notification): void {
-    const stored: StoredNotification = {
-      id: notification.id,
-      appName: notification.appName || "Unknown",
-      summary: notification.summary || "",
-      body: notification.body,
-      appIcon: notification.appIcon,
-      image: notification.image,
-      desktopEntry: notification.desktopEntry,
-      time: notification.time * 1000,
-      actions: notification.actions || [],
-      urgency: notification.urgency || Notifd.Urgency.NORMAL,
-      seen: false,
-    };
-
-    this.notifications.set(notification.id, stored);
-    this.updateState();
-    this.persistNotifications();
-  }
-
   dismissNotification(id: number): void {
     const notification = this.notifications.get(id);
     if (notification) {
@@ -90,60 +70,46 @@ export class NotificationManager {
     this.persistNotifications();
   }
 
-  get allNotifications() {
+  get activeNotifications() {
     return this.notificationState;
   }
 
-  get unreadCount() {
-    return createComputed(
-      [this.notificationState],
-      (notifications) => notifications.filter((n) => !n.seen).length,
-    );
-  }
-  get activeNotifications() {
-    return createComputed(
-      [this.notificationState],
-      (notifications) => notifications,
-    );
-  }
-
-  get hasNotifications() {
-    return createComputed(
-      [this.limitedActiveNotifications],
-      (notifications) => notifications.length > 0,
+  get limitedActiveNotifications() {
+    return this.activeNotifications((notifications) =>
+      notifications.slice(0, this.maxVisibleNotifications),
     );
   }
 
   get newNotifications() {
-    return createComputed([this.limitedActiveNotifications], (notifications) =>
+    return this.limitedActiveNotifications((notifications) =>
       notifications.filter((n) => !n.seen),
     );
   }
 
   get readNotifications() {
-    return createComputed([this.limitedActiveNotifications], (notifications) =>
+    return this.limitedActiveNotifications((notifications) =>
       notifications.filter((n) => n.seen),
     );
   }
 
-  get hasNewNotifications() {
-    return createComputed(
-      [this.newNotifications],
+  get unreadCount() {
+    return this.activeNotifications(
+      (notifications) => notifications.filter((n) => !n.seen).length,
+    );
+  }
+
+  get hasNotifications() {
+    return this.limitedActiveNotifications(
       (notifications) => notifications.length > 0,
     );
+  }
+
+  get hasNewNotifications() {
+    return this.newNotifications((notifications) => notifications.length > 0);
   }
 
   get hasReadNotifications() {
-    return createComputed(
-      [this.readNotifications],
-      (notifications) => notifications.length > 0,
-    );
-  }
-
-  get limitedActiveNotifications() {
-    return createComputed([this.notificationState], (notifications) =>
-      notifications.slice(0, this.maxVisibleNotifications),
-    );
+    return this.readNotifications((notifications) => notifications.length > 0);
   }
 
   get moreNotificationsInfo() {
@@ -217,6 +183,26 @@ export class NotificationManager {
     } catch (error) {
       console.error("Failed to load persisted notifications:", error);
     }
+  }
+
+  private storeNotification(notification: Notifd.Notification): void {
+    const stored: StoredNotification = {
+      id: notification.id,
+      appName: notification.appName || "Unknown",
+      summary: notification.summary || "",
+      body: notification.body,
+      appIcon: notification.appIcon,
+      image: notification.image,
+      desktopEntry: notification.desktopEntry,
+      time: notification.time * 1000,
+      actions: notification.actions || [],
+      urgency: notification.urgency || Notifd.Urgency.NORMAL,
+      seen: false,
+    };
+
+    this.notifications.set(notification.id, stored);
+    this.updateState();
+    this.persistNotifications();
   }
 }
 

@@ -1,10 +1,9 @@
-import { createComputed, createBinding } from "ags";
 import { Gtk } from "ags/gtk4";
-
-import { WiFiBox } from "./wifi-box/main.tsx";
-import { BluetoothBox } from "./bluetooth-box/main.tsx";
+import { createComputed, createBinding } from "ags";
 import Bluetooth from "gi://AstalBluetooth";
 import Network from "gi://AstalNetwork";
+import { WiFiBox } from "./wifi-box/main.tsx";
+import { BluetoothBox } from "./bluetooth-box/main.tsx";
 
 export const Toggles = () => {
   const bluetooth = Bluetooth.get_default();
@@ -12,7 +11,6 @@ export const Toggles = () => {
 
   const bluetoothAdapter = createBinding(bluetooth, "adapter");
   const networkPrimary = createBinding(network, "primary");
-
   const renderToggleBox = createComputed(
     [bluetoothAdapter, networkPrimary],
     (hasAdapter, primary) => hasAdapter || primary === Network.Primary.WIFI,

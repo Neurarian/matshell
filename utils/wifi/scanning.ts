@@ -5,6 +5,7 @@ import {
   setSavedNetworks,
   setActiveNetwork,
 } from "./state.ts";
+import type { NetworkInfo } from "./types.ts";
 
 export const scanNetworks = () => {
   const network = Network.get_default();
@@ -27,7 +28,7 @@ export const scanNetworks = () => {
     networks.sort((a, b) => b.strength - a.strength);
 
     // Remove duplicates (same SSID)
-    const uniqueNetworks = [];
+    const uniqueNetworks: NetworkInfo[] = [];
     const seen = new Set();
     networks.forEach((network) => {
       if (!seen.has(network.ssid)) {

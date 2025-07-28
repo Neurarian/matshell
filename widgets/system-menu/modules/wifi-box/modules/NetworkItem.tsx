@@ -13,7 +13,7 @@ export const NetworkItem = ({ network }) => {
   return (
     <button
       hexpand
-      cssClasses={apManager.connectionClasses}  // Keep CSS classes on button
+      cssClasses={apManager.connectionClasses}
       sensitive={apManager.canConnect}
       onClicked={() => {
         if (!apManager.canConnect.get()) return;

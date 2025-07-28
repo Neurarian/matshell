@@ -7,7 +7,6 @@ export const NotificationList = () => {
   const [_hoveredId, setHoveredId] = createState<number | null>(null);
 
   const {
-    limitedActiveNotifications: activeNotifications,
     newNotifications,
     readNotifications,
     hasNotifications,

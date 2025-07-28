@@ -140,8 +140,6 @@ programs.matshell= {
 
 ```
 
-For now, you will have to <ins>remove the ags home-manager module</ins> from your config, as the now deprecated options of the home-manager module required import of the module itself. This conflict will be removed soon.
-
 ## Acknowledgements
 
 This project wouldn't be possible without:

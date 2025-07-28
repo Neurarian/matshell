@@ -12,94 +12,6 @@ export class BluetoothDeviceManager {
     this.device = device;
   }
 
-  get isConnected() {
-    return createBinding(this.device, "connected");
-  }
-
-  get isPaired() {
-    return createBinding(this.device, "paired");
-  }
-
-  get isTrusted() {
-    return createBinding(this.device, "trusted");
-  }
-
-  get isConnecting() {
-    return createBinding(this.device, "connecting");
-  }
-
-  get batteryPercentage() {
-    return createBinding(this.device, "battery_percentage");
-  }
-
-  get displayInfo() {
-    return createComputed(
-      [this.isConnected, this.batteryPercentage],
-      (connected, battery) => ({
-        name: this.device.name || "Unknown Device",
-        batteryText:
-          connected && battery > 0 ? ` ${Math.round(battery * 100)}%` : "",
-        isConnected: connected,
-      }),
-    );
-  }
-
-  get connectionIcon() {
-    return createComputed(
-      [this.isConnected, this.isConnecting],
-      (connected, connecting): BluetoothIconType => {
-        if (connected) return "bluetooth-active-symbolic";
-        if (connecting) return "bluetooth-acquiring-symbolic";
-        return "bluetooth-disconnected-symbolic";
-      },
-    );
-  }
-
-  get connectionClasses() {
-    return createComputed([this.isConnected], (connected) =>
-      connected
-        ? ["network-item", "network-item-connected"]
-        : ["network-item", "network-item-disconnected"],
-    );
-  }
-
-  get trustIcon() {
-    return createComputed([this.isTrusted], (trusted) =>
-      trusted ? "security-high-symbolic" : "security-low-symbolic",
-    );
-  }
-
-  get pairIcon() {
-    return createComputed([this.isPaired], (paired) =>
-      paired ? "network-transmit-receive-symbolic" : "network-offline-symbolic",
-    );
-  }
-
-  get canConnect() {
-    return createComputed(
-      [this.isPaired, this.isConnecting],
-      (paired, connecting) => paired && !connecting,
-    );
-  }
-
-  get connectionTooltip() {
-    return createComputed([this.isConnected], (connected) =>
-      connected ? "Disconnect" : "Connect",
-    );
-  }
-
-  get trustTooltip() {
-    return createComputed([this.isTrusted], (trusted) =>
-      trusted ? "Untrust" : "Trust",
-    );
-  }
-
-  get pairTooltip() {
-    return createComputed([this.isPaired], (paired) =>
-      paired ? "Unpair" : "Pair",
-    );
-  }
-
   async connect(): Promise<boolean> {
     if (!this.canConnect.get()) return false;
 
@@ -216,6 +128,90 @@ export class BluetoothDeviceManager {
       console.error("Error toggling device trust:", error);
       return false;
     }
+  }
+
+  get isConnected() {
+    return createBinding(this.device, "connected");
+  }
+
+  get isPaired() {
+    return createBinding(this.device, "paired");
+  }
+
+  get isTrusted() {
+    return createBinding(this.device, "trusted");
+  }
+
+  get isConnecting() {
+    return createBinding(this.device, "connecting");
+  }
+
+  get batteryPercentage() {
+    return createBinding(this.device, "battery_percentage");
+  }
+
+  get displayInfo() {
+    return createComputed(
+      [this.isConnected, this.batteryPercentage],
+      (connected, battery) => ({
+        name: this.device.name || "Unknown Device",
+        batteryText:
+          connected && battery > 0 ? ` ${Math.round(battery * 100)}%` : "",
+        isConnected: connected,
+      }),
+    );
+  }
+
+  get canConnect() {
+    return createComputed(
+      [this.isPaired, this.isConnecting],
+      (paired, connecting) => paired && !connecting,
+    );
+  }
+
+  get connectionIcon() {
+    return createComputed(
+      [this.isConnected, this.isConnecting],
+      (connected, connecting): BluetoothIconType => {
+        if (connected) return "bluetooth-active-symbolic";
+        if (connecting) return "bluetooth-acquiring-symbolic";
+        return "bluetooth-disconnected-symbolic";
+      },
+    );
+  }
+
+  get trustIcon() {
+    return this.isTrusted((trusted) =>
+      trusted ? "security-high-symbolic" : "security-low-symbolic",
+    );
+  }
+
+  get pairIcon() {
+    return this.isPaired((paired) =>
+      paired ? "network-transmit-receive-symbolic" : "network-offline-symbolic",
+    );
+  }
+
+  get connectionClasses() {
+    return this.isConnected((connected) =>
+      connected
+        ? ["network-item", "network-item-connected"]
+        : ["network-item", "network-item-disconnected"],
+    );
+  }
+
+  get connectionTooltip() {
+    return this.isConnected((connected) =>
+      connected ? "Disconnect" : "Connect",
+    );
+  }
+
+  get trustTooltip() {
+    return this.isTrusted((trusted) => (trusted ? "Untrust" : "Trust"));
+  }
+
+  get pairTooltip() {
+    return this.isPaired((paired) => (paired ? "Unpair" : "Pair"));
   }
 }
 

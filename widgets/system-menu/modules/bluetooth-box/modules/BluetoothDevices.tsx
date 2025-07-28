@@ -8,31 +8,23 @@ import options from "options.ts";
 
 export const BluetoothDevices = () => {
   const bluetooth = Bluetooth.get_default();
-
-  // Create reactive accessors for each device category
   const devices = createBinding(bluetooth, "devices");
-
-  const connectedDevices = createComputed([devices], (deviceList) =>
+  // TODO:This is kinda busy. Refactor?
+  const connectedDevices = devices((deviceList) =>
     deviceList.filter((device) => device.name != null && device.connected),
   );
-
-  const pairedDevices = createComputed([devices], (deviceList) =>
+  const pairedDevices = devices((deviceList) =>
     deviceList.filter(
       (device) => device.name != null && device.paired && !device.connected,
     ),
   );
-
-  const unpairedDevices = createComputed([devices], (deviceList) =>
+  const unpairedDevices = devices((deviceList) =>
     deviceList.filter((device) => device.name != null && !device.paired),
   );
-
-  // Computed for empty state and section visibility
-  const hasDevices = createComputed(
-    [devices],
+  const hasDevices = devices(
     (deviceList) =>
       deviceList.filter((device) => device.name != null).length > 0,
   );
-
   const hasKnownDevices = createComputed(
     [connectedDevices, pairedDevices],
     (connected, paired) => connected.length > 0 || paired.length > 0,

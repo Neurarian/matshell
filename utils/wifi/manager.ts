@@ -1,55 +1,11 @@
 import { createComputed } from "ags";
-import type { NetworkDisplayInfo } from "./types.ts";
+import Network from "gi://AstalNetwork";
+import type { NetworkInfo } from "./types.ts";
 import { connectToNetwork, forgetNetwork } from "./network-operations.ts";
 import { savedNetworks, activeNetwork } from "./state.ts";
 
 export class AccessPointManager {
-  private network: any;
-
-  constructor(network: any) {
-    this.network = network;
-  }
-
-  get displayInfo() {
-    return createComputed(
-      [savedNetworks, activeNetwork],
-      (saved, active): NetworkDisplayInfo => ({
-        ssid: this.network.ssid,
-        strength: this.network.strength,
-        secured: this.network.secured,
-        isActive: active?.ssid === this.network.ssid,
-        isSaved: saved.includes(this.network.ssid),
-        iconName: this.network.iconName,
-      }),
-    );
-  }
-
-  get connectionClasses() {
-    return createComputed([this.displayInfo], (info) =>
-      info.isActive
-        ? ["network-item", "network-item-active"]
-        : ["network-item"],
-    );
-  }
-
-  get needsPassword() {
-    return createComputed(
-      [this.displayInfo],
-      (info) => info.secured && !info.isSaved,
-    );
-  }
-
-  get canConnect() {
-    return createComputed([this.displayInfo], (info) => !info.isActive);
-  }
-
-  get statusIcon() {
-    return createComputed([this.displayInfo], (info) => {
-      if (info.isActive) return "object-select-symbolic";
-      if (info.secured) return "network-wireless-encrypted-symbolic";
-      return null;
-    });
-  }
+  private network: Network.Network;
 
   // Actions
   async connect(password?: string) {
@@ -66,8 +22,50 @@ export class AccessPointManager {
     const info = this.displayInfo.get();
     return info.secured && !info.isSaved;
   }
+
+  constructor(network: Network.Network) {
+    this.network = network;
+  }
+
+  get displayInfo() {
+    return createComputed(
+      [savedNetworks, activeNetwork],
+      (saved, active): NetworkInfo => ({
+        ssid: this.network.ssid,
+        strength: this.network.strength,
+        secured: this.network.secured,
+        isActive: active?.ssid === this.network.ssid,
+        isSaved: saved.includes(this.network.ssid),
+        iconName: this.network.iconName,
+      }),
+    );
+  }
+
+  get canConnect() {
+    return this.displayInfo((info) => !info.isActive);
+  }
+
+  get needsPassword() {
+    return this.displayInfo((info) => info.secured && !info.isSaved);
+  }
+
+  get connectionClasses() {
+    return this.displayInfo((info) =>
+      info.isActive
+        ? ["network-item", "network-item-active"]
+        : ["network-item"],
+    );
+  }
+
+  get statusIcon() {
+    return this.displayInfo((info) => {
+      if (info.isActive) return "object-select-symbolic";
+      if (info.secured) return "network-wireless-encrypted-symbolic";
+      return null;
+    });
+  }
 }
 
-export const createAccessPointManager = (network: any) => {
+export const createAccessPointManager = (network: Network.Network) => {
   return new AccessPointManager(network);
 };

@@ -63,8 +63,6 @@ This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice
 
 - 💻 On-Screen Display - Tracks Audio, Brightness, and Bluetooth connections
 
-#### 🔧 System Integration
-
 </details>
 
 ______________________________________________________________________

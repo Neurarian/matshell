@@ -34,8 +34,6 @@ This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice
 
 ### ⚙️ Components
 
-#### 🚀 Core Components
-
 - 📌 Status Bar - Sleek, informative main bar with system information
 
   - Workspace Management - Themed Hyprland workspace integration

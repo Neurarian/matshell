@@ -24,7 +24,7 @@ This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice
 ## ✨ Features
 
 - **Adaptive Layout**: Automatically adapts to desktop or laptop environments by conditionally rendering notebook-specific widgets
-- **Dynamic Material Design Theming**: Change themes on-the-fly using either scripts I botched from [end-4](https://github.com/end-4/dots-hyprland) or via [matugen](https://github.com/InioX/matugen) templates
+- **Dynamic Material Design Theming**: Change themes on-the-fly via [matugen](https://github.com/InioX/matugen) templates
 - **Multi-monitor Support**: Designed with multi-monitor setups in mind
 - **Hyprland Integration**: Built specifically for the Hyprland compositor
 - **Nix Support**: Support for NixOS / Home-Manager with dedicated module
@@ -72,7 +72,18 @@ ______________________________________________________________________
 
 #### Required:
 
-- ags (& thereby astal)
+- aylurs-gtk-shell-git
+- libastal-hyprland-git
+- libastal-tray-git
+- libastal-notifd-git
+- libastal-apps-git
+- libastal-wireplumber-git
+- libastal-mpris-git
+- libastal-network-git
+- libastal-bluetooth-git
+- libastal-cava-git
+- libastal-battery-git
+- libastal-powerprofiles-git
 - libgtop
 - hyprland
 - coreutils
@@ -82,18 +93,8 @@ ______________________________________________________________________
 - wireplumber
 - bluez & bluez-utils (will also run fine without, but throws some non-critical errors on startup)
 - adwaita-icon-theme
-- Material Symbols Outlined Font
-- Fira Code Nerd Font
-- ***For theming with the end-4 scripts:***
-  - python-materialyoucolor-git
-  - gradience-git
-  - python-libsass
-  - python-material-color-utilities
-  - python-build
-  - python-pillow
-  - python-pywal
-  - python-setuptools-scm
-  - python-wheel
+- ttf-material-symbols-variable-git
+- ttf-firacode-nerd
 - ***For matugen theming:***
   - matugen
   - [image-hct](https://github.com/Neurarian/image-hct) (optional; for additional chroma/tone based theming)
@@ -111,16 +112,21 @@ ______________________________________________________________________
 
 ### 🛠️ Installation
 
-Run the installation script:
+> [!WARNING]
+> If you're using an old version of matshell and want to update or you're using your own setup, you will need to move your old config out of ~/.config/ags/ or delete the folder before running the script, as I am not overwriting existing configs.
+
+Run the installation script (Currently supports Arch-based with [yay](https://github.com/Jguer/yay) only):
 
 ```console
- bash <(curl -s https://raw.githubusercontent.com/Neurarian/matshell/refs/heads/master/install.sh)
+ bash <(curl -s https://raw.githubusercontent.com/Neurarian/matshell/refs/heads/master/scripts/install.sh)
 ```
+
+... and implement the colors into your [hyprland config](https://github.com/Neurarian/NixOS-config/blob/master/home/Liqyid/common/optional/desktop/hypr/hyprland.nix#L39) to your liking.
 
 <details>
   <summary>Manual install</summary>
 
-...Or do it manually by cloning this repo...
+...Or do it manually by installing the dependencies above and cloning this repo.
 
 **❗Make sure to create a backup of your current config if you want to keep it❗**
 
@@ -128,25 +134,102 @@ Run the installation script:
   git clone --depth 1 "https://github.com/Neurarian/matshell" "$XDG_CONFIG_HOME/ags/"
 ```
 
-For the color generation with the end-4-scripts to work, run this command to create the necessary additional directories:
+Finally, add this to your matugen config:
 
-```console
-mkdir -p $XDG_STATE_HOME/ags/{scss,user} $XDG_CACHE_HOME/ags/user/generated
+```toml
+[templates.gtk3]
+input_path = "~/.config/ags/matugen/templates/gtk.css"
+output_path = "~/.config/gtk-3.0/gtk.css"
+
+[templates.gtk4]
+input_path = "~/.config/ags/matugen/templates/gtk.css"
+output_path = "~/.config/gtk-4.0/gtk.css"
+
+[templates.ags]
+input_path = "~/.config/ags/matugen/templates/ags.scss"
+output_path = "~/.config/ags/style/abstracts/_variables.scss"
+
+[templates.hypr]
+input_path = "~/.config/ags/matugen/templates/hyprland_colors.conf"
+output_path = "~/.config/hypr/hyprland_colors.conf"
+
+[templates.hyprlock]
+input_path = "~/.config/ags/matugen/templates/hyprlock_colors.conf"
+output_path = "~/.config/hypr/hyprlock_colors.conf"
 ```
 
 </details>
 
-After using hyprpaper or some other means to set your wallpaper, run the script from [end-4](https://github.com/end-4/dots-hyprland) like this:
+I am using the following script to set a new wallpaper and matugen theme:
 
-```console
-$HOME/.config/ags/scripts/colorgen.sh "$HOME/.cache/current_wallpaper.jpg" --apply --smart
+```bash
+#!/bin/bash
+set -euo pipefail
+
+if [ ! -d ~/Pictures/wallpapers/ ]; then
+  wallpaper_path="$HOME/.config/ags/assets/default_wallpaper"}
+  echo "Required directory: $HOME/Pictures/wallpapers not found. Fallback to default wallpaper"
+else
+  wallpaper_path="$(fd . "$HOME/Pictures/wallpapers" -t f | shuf -n 1)"
+fi
+
+apply_hyprpaper() {
+  # Preload the wallpaper
+  hyprctl hyprpaper preload "$wallpaper_path"
+
+  # Set wallpaper for each monitor
+  hyprctl monitors | rg 'Monitor' | awk '{print $2}' | while read -r monitor; do
+  hyprctl hyprpaper wallpaper "$monitor, $wallpaper_path"
+  done
+}
+
+if [ "$(image-hct "$wallpaper_path" tone)" -gt 60 ]; then
+  mode="light"
+else
+  mode="dark"
+fi
+
+if [ "$(image-hct "$wallpaper_path" chroma)" -lt 20 ]; then
+  scheme="scheme-neutral"
+else
+  scheme="scheme-vibrant"
+fi
+
+# Set Material colortheme
+matugen -t "$scheme" -m "$mode" image "$wallpaper_path"
+
+# Write mode and scheme to the matugen variables SCSS file
+matugen_scss_file="$HOME/.config/ags/style/abstracts/_theme_variables_matugen.scss"
+
+{
+  echo ""
+  echo "/* Theme mode and scheme variables */"
+  if [ "$mode" = "dark" ]; then
+    echo "\$darkmode: true;"
+  else
+    echo "\$darkmode: false;"
+  fi
+  echo "\$material-color-scheme: \"$scheme\";"
+} > "$matugen_scss_file"
+
+# unload previous wallpaper
+hyprctl hyprpaper unload all
+
+# Set the new wallpaper
+apply_hyprpaper
+
+# Send wallpaper image notification
+newwall=$(basename "$wallpaper_path")
+notify-send "Colors and Wallpaper updated" "with image: $newwall"
+
+echo "DONE!"
 ```
 
-The color generation works better with wallpapers that have a bit of chroma.
+This uses a [custom cli utility](https://github.com/Neurarian/image-hct) that you can use to dynamically choose the scheme and mode. Otherwise just pin to one of your liking (e.g., matugen -t "scheme-vibrant" -m "dark" image "$wallpaper_path"). The color generation works better with wallpapers that have a bit of chroma.
 
 #### ❄️ Nix
 
-You can generally test out matshell via the flake exposed package `nix run github:Neurarian/matshell`. For a NixOS implementation and example [script](https://github.com/Neurarian/matshell/blob/master/nix/hm-module.nix) for use with hyprpaper, matugen, and a [custom cli utility](https://github.com/Neurarian/image-hct) to get chroma/tone, you can enable dedicated options in the home-manager module:
+You can generally test out matshell via the flake exposed package `nix run github:Neurarian/matshell`. For a NixOS implementation and example [script](https://github.com/Neurarian/matshell/blob/master/nix/hm-module.nix) for use with hyprpaper, matugen, and the [custom cli utility](https://github.com/Neurarian/image-hct) to get chroma/tone, you can enable dedicated options in the home-manager module:
 
 ```nix
 # ...
@@ -174,17 +257,20 @@ programs.matshell= {
 
 ```
 
+> [!WARNING]
+> As I don't want to overwrite changes people potentially apply to the stylesheets in ~/.config/ags/ or even their current configs, I do not replace config files already present at ~/.config/ags/ on rebuild. This means, If a new version of matshell changed something style related, you may need to delete the old ~/.config/ags/ folder manually and rebuild again for the stylesheets to be up-to-date.
+
 ## Acknowledgements
 
 This project wouldn't be possible without:
 
 - [fufexan's dotfiles](https://github.com/fufexan/dotfiles) for the initial inspiration and foundation
-- [end-4's dots-hyprland](https://github.com/end-4/dots-hyprland) for the color generation scripts
 - [matugen](https://github.com/InioX/matugen) for the amazing Material Color theming utility
 - [saimoomedits' eww-widgets](https://github.com/saimoomedits/eww-widgets) for design influence
 - [kotontrion](https://github.com/kotontrion/kompass) for the GTK4 CAVA Catmull-Rom spline widget
 - [ARKye03](https://github.com/ARKye03) for the GTK4 circular progress widget which is currently still on its way to be merged into Astal
-- [Astal](https://github.com/Aylur/astal) for the powerful widget toolkit
+- [Aylur](https://github.com/Aylur) for the powerful widget toolkit
+- [end-4's dots-hyprland](https://github.com/end-4/dots-hyprland) for some inspiration on the color generation
 
 ______________________________________________________________________
 

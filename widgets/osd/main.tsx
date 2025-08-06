@@ -1,6 +1,7 @@
+import giCairo from "cairo";
 import { Astal } from "ags/gtk4";
 import app from "ags/gtk4/app";
-import { createBinding } from "ags";
+import { createBinding, createState, onCleanup } from "ags";
 import Hyprland from "gi://AstalHyprland";
 
 import { hyprToGdk } from "utils/hyprland";
@@ -10,10 +11,11 @@ import options from "options.ts";
 export default function OnScreenDisplay() {
   const { TOP, BOTTOM } = Astal.WindowAnchor;
   const hyprland = Hyprland.get_default();
+  const [visible, setVisible] = createState(false);
 
   return (
     <window
-      visible
+      visible={visible}
       name="osd"
       layer={Astal.Layer.OVERLAY}
       gdkmonitor={createBinding(
@@ -30,11 +32,24 @@ export default function OnScreenDisplay() {
             return BOTTOM;
         }
       })}
+      $={(self) => {
+        const setClickThrough = () => {
+          self
+            .get_native()
+            ?.get_surface()
+            ?.set_input_region(new giCairo.Region());
+        };
+
+        self.connect("realize", setClickThrough);
+        onCleanup(() => {
+          self.disconnect();
+        });
+      }}
       application={app}
-      keymode={Astal.Keymode.ON_DEMAND}
+      keymode={Astal.Keymode.NONE}
       namespace="osd"
     >
-      <OnScreenProgress />
+      <OnScreenProgress visible={visible} setVisible={setVisible} />
     </window>
   );
 }

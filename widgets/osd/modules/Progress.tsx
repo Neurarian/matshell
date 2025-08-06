@@ -1,3 +1,4 @@
+import app from "ags/gtk4/app";
 import { Gtk } from "ags/gtk4";
 import { createState, onCleanup } from "ags";
 import Pango from "gi://Pango";
@@ -5,11 +6,18 @@ import Wp from "gi://AstalWp";
 import Brightness from "utils/brightness";
 import Bluetooth from "gi://AstalBluetooth";
 
-export default function OnScreenProgress() {
+interface OnScreenProgressProps {
+  visible: boolean;
+  setVisible: (visible: boolean) => void;
+}
+
+export default function OnScreenProgress({
+  visible,
+  setVisible,
+}: OnScreenProgressProps) {
   const [value, setValue] = createState(0);
   const [label, setLabel] = createState("");
   const [icon, setIcon] = createState("");
-  const [visible, setVisible] = createState(false);
   const [hasProgress, setHasProgress] = createState(true);
 
   let currentTimeout: any = null;

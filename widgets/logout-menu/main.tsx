@@ -2,6 +2,7 @@ import { execAsync } from "ags/process";
 import app from "ags/gtk4/app";
 import { Astal, Gdk, Gtk } from "ags/gtk4";
 import { createState } from "ags";
+import { gdkmonitor, currentMonitorWidth } from "utils/monitors.ts";
 
 function hide() {
   app.get_window("logout-menu")!.hide();
@@ -14,20 +15,17 @@ function LogoutButton(label: String, command: String) {
 }
 
 export default function LogoutMenu() {
-  const [winWidth, setWinWidth] = createState(1000);
   const [visible, _setVisible] = createState(false);
 
   return (
     <window
       name="logout-menu"
       visible={visible}
+      gdkmonitor={gdkmonitor}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM}
       exclusivity={Astal.Exclusivity.IGNORE}
       keymode={Astal.Keymode.ON_DEMAND}
       application={app}
-      onShow={(self) => {
-        setWinWidth(self.get_current_monitor().geometry.width);
-      }}
     >
       <Gtk.EventControllerKey
         onKeyPressed={({ widget }, keyval: number) => {
@@ -37,7 +35,10 @@ export default function LogoutMenu() {
         }}
       />
       <box cssClasses={["logout-background"]}>
-        <button widthRequest={winWidth((w) => w / 2)} onClicked={hide} />
+        <button
+          widthRequest={currentMonitorWidth((w) => w / 2)}
+          onClicked={hide}
+        />
         <box
           hexpand={false}
           orientation={Gtk.Orientation.VERTICAL}
@@ -73,7 +74,10 @@ export default function LogoutMenu() {
           </box>
           <button onClicked={hide} />
         </box>
-        <button widthRequest={winWidth((w) => w / 2)} onClicked={hide} />
+        <button
+          widthRequest={currentMonitorWidth((w) => w / 2)}
+          onClicked={hide}
+        />
       </box>
     </window>
   );

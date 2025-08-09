@@ -1,16 +1,13 @@
 import { Astal, Gtk } from "ags/gtk4";
 import Notifd from "gi://AstalNotifd";
-import Hyprland from "gi://AstalHyprland";
 import { createBinding, createComputed, For } from "ags";
-import { hyprToGdk } from "utils/hyprland.ts";
+import { gdkmonitor } from "utils/monitors.ts";
 import { NotificationWidget } from "./modules/LiveNotification.tsx";
 
 export default function Notifications() {
   const notifd = Notifd.get_default();
-  const hyprland = Hyprland.get_default();
   const { TOP, RIGHT } = Astal.WindowAnchor;
 
-  const focusedMonitor = createBinding(hyprland, "focused-monitor");
   const notifications = createBinding(notifd, "notifications");
   const isDndMode = createBinding(notifd, "dont-disturb");
 
@@ -19,15 +16,13 @@ export default function Notifications() {
     (notifs, dndEnabled) => {
       // Hide window completely when DND is on or no notifications
       return !dndEnabled && notifs.length > 0;
-    }
+    },
   );
 
   return (
     <window
       name="notifications"
-      gdkmonitor={focusedMonitor((focused: Hyprland.Monitor) =>
-        hyprToGdk(focused),
-      )}
+      gdkmonitor={gdkmonitor}
       anchor={TOP | RIGHT}
       visible={shouldShowWindow}
     >

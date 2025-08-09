@@ -3,6 +3,7 @@ import { Astal, Gdk, Gtk } from "ags/gtk4";
 import Pango from "gi://Pango";
 import Apps from "gi://AstalApps";
 import { createState, For } from "ags";
+import { gdkmonitor, currentMonitorWidth } from "utils/monitors.ts";
 
 const MAX_ITEMS = 8;
 
@@ -45,7 +46,6 @@ function AppButton({ app }: { app: Apps.Application }) {
 export default function Applauncher() {
   const { CENTER } = Gtk.Align;
   const apps = new Apps.Apps();
-  const [width, setWidth] = createState(1000);
   const [text, setText] = createState("");
   const [visible, _setVisible] = createState(false);
 
@@ -68,13 +68,11 @@ export default function Applauncher() {
     <window
       name="launcher"
       visible={visible}
+      gdkmonitor={gdkmonitor}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM}
-      exclusivity={Astal.Exclusivity.EXCLUSIVE}
+      exclusivity={Astal.Exclusivity.IGNORE}
       keymode={Astal.Keymode.ON_DEMAND}
       application={app}
-      onShow={(self) => {
-        setWidth(self.get_current_monitor().geometry.width);
-      }}
       onNotifyVisible={({ visible }) => {
         if (visible && searchEntry) {
           searchEntry.set_text("");
@@ -90,7 +88,10 @@ export default function Applauncher() {
         }}
       />
       <box>
-        <button widthRequest={width((w) => w / 2)} onClicked={hide} />
+        <button
+          widthRequest={currentMonitorWidth((w) => w / 2)}
+          onClicked={hide}
+        />
         <box
           hexpand={false}
           orientation={Gtk.Orientation.VERTICAL}
@@ -134,7 +135,10 @@ export default function Applauncher() {
           </box>
           <button onClicked={hide} />
         </box>
-        <button widthRequest={width((w) => w / 2)} onClicked={hide} />
+        <button
+          widthRequest={currentMonitorWidth((w) => w / 2)}
+          onClicked={hide}
+        />
       </box>
     </window>
   );

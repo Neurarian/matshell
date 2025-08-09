@@ -2,7 +2,6 @@ import app from "ags/gtk4/app";
 import { exec } from "ags/process";
 import { monitorFile } from "ags/file";
 import GLib from "gi://GLib?version=2.0";
-import Hyprland from "gi://AstalHyprland";
 import Bar from "./widgets/bar/main.tsx";
 import SystemMenu from "./widgets/system-menu/main.tsx";
 import OnScreenDisplay from "./widgets/osd/main.tsx";
@@ -11,11 +10,6 @@ import LogoutMenu from "widgets/logout-menu/main.tsx";
 import Applauncher from "./widgets/launcher/main.tsx";
 import MusicPlayer from "./widgets/music/main.tsx";
 import ControlPanel from "./widgets/control-panel/main.tsx";
-import {
-  createBarForMonitor,
-  removeBarForMonitor,
-  createBarDataMap,
-} from "utils/monitors.ts";
 
 const scss = `${GLib.get_user_config_dir()}/ags/style/main.scss`;
 const css = `${GLib.get_user_config_dir()}/ags/style/main.css`;
@@ -49,9 +43,7 @@ app.start({
       monitorFile(`${GLib.get_user_config_dir()}/ags/style/${dir}`, reloadCss),
     );
 
-    const hypr = Hyprland.get_default();
-    const barData = createBarDataMap();
-
+    Bar();
     Notifications();
     OnScreenDisplay();
     SystemMenu();
@@ -59,19 +51,5 @@ app.start({
     Applauncher();
     LogoutMenu();
     ControlPanel();
-
-    for (const hyprMonitor of hypr.monitors) {
-      createBarForMonitor(hyprMonitor, barData, Bar);
-    }
-
-    hypr.connect("monitor-added", (_, monitor) => {
-      console.log(`Monitor added: ${monitor.name} (ID: ${monitor.id})`);
-      createBarForMonitor(monitor, barData, Bar);
-    });
-
-    hypr.connect("monitor-removed", (_, id) => {
-      console.log(`Monitor removal detected - ID: ${id}`);
-      removeBarForMonitor(id, barData);
-    });
   },
 });

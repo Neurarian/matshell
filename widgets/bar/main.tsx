@@ -1,5 +1,6 @@
 import app from "ags/gtk4/app";
-import { Astal, Gtk, Gdk } from "ags/gtk4";
+import { For, createBinding } from "ags";
+import { Astal, Gtk } from "ags/gtk4";
 import { SysTray, hasTrayItems } from "./modules/SysTray.tsx";
 import Separator from "./modules/Separator.tsx";
 import Workspaces from "./modules/Workspaces.tsx";
@@ -14,7 +15,6 @@ import OsIcon from "./modules/OsIcon.tsx";
 import options from "options.ts";
 
 function Bar({ gdkmonitor, ...props }: any) {
-
   const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor;
 
   return (
@@ -81,15 +81,11 @@ function Bar({ gdkmonitor, ...props }: any) {
   );
 }
 
-export default function (monitor: Gdk.Monitor) {
-  const windowName = `bar-${monitor.get_connector()}`;
-
-  function createBar() {
-    return <Bar gdkmonitor={monitor} name={windowName} />;
-  }
-
-  // Create the initial bar
-  createBar();
-
-  return windowName;
+export default function () {
+  const monitors = createBinding(app, "monitors");
+  return (
+    <For each={monitors} cleanup={(win) => (win as Gtk.Window).destroy()}>
+      {(monitor) => <Bar gdkmonitor={monitor} />}
+    </For>
+  );
 }

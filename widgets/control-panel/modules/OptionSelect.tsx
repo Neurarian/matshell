@@ -15,7 +15,6 @@ export function OptionSelect({ option, label, choices = [] }) {
         onChanged={(self) => {
           const selectedText = self.get_active_text();
           if (selectedText) {
-            console.log(`Updating option ${option} to value: ${selectedText}`);
             options[option].value = selectedText;
           }
         }}

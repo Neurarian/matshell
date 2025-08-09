@@ -83,7 +83,7 @@ export const BluetoothDevices = () => {
       </box>
 
       {/* Control buttons */}
-      <box hexpand visible={hasDevices}>
+      <box hexpand>
         <button
           halign={Gtk.Align.START}
           cssClasses={["refresh-button"]}

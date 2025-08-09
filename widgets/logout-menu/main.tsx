@@ -22,7 +22,7 @@ export default function LogoutMenu() {
       name="logout-menu"
       visible={visible}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM}
-      exclusivity={Astal.Exclusivity.EXCLUSIVE}
+      exclusivity={Astal.Exclusivity.IGNORE}
       keymode={Astal.Keymode.ON_DEMAND}
       application={app}
       onShow={(self) => {

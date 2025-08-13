@@ -127,7 +127,7 @@ Run the installation script (Currently supports Arch-based with [yay](https://gi
 ```
 layerrule=blur, bar
 layerrule=blur, gtk4-layer-shell
-layerrule=ignorezero, bar
+layerrule=ignorealpha 0.2, bar
 layerrule=ignorealpha 0.2, gtk4-layer-shell
 ```
 

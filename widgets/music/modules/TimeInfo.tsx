@@ -29,17 +29,17 @@ function LengthLabel({ player }: { player: Mpris.Player }) {
 }
 
 function Position({ player }: { player: Mpris.Player }) {
+  const length = createBinding(player, "length");
+
   return (
     <slider
       cssClasses={["position"]}
       hexpand={true}
-      visible={createBinding(player, "length")((l) => l > 0)}
-      value={createBinding(
-        player,
-        "position",
-      )((p) => (player.length > 0 ? p / player.length : 0))}
+      visible={length((l) => l > 0)}
+      value={createBinding(player, "position")}
+      max={length}
       onChangeValue={({ value }) => {
-        player.position = value * player.length;
+        player.setPosition?.(value) ?? (player.position = value);
       }}
     />
   );

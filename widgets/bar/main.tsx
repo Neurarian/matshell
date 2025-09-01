@@ -1,5 +1,5 @@
 import app from "ags/gtk4/app";
-import { For, createBinding } from "ags";
+import { For, createBinding, createComputed } from "ags";
 import { Astal, Gtk } from "ags/gtk4";
 import { SysTray, hasTrayItems } from "./modules/SysTray.tsx";
 import Separator from "./modules/Separator.tsx";
@@ -10,12 +10,33 @@ import { CavaDraw } from "widgets/music/modules/cava";
 import Media from "./modules/Media.tsx";
 import { hasActivePlayers } from "utils/mpris.ts";
 import SystemInfo from "./modules/SystemInfo/main.tsx";
-import Time from "./modules/Time.tsx/";
+import Time from "./modules/Time.tsx";
 import OsIcon from "./modules/OsIcon.tsx";
+import ScreenCorners from "widgets/common/screencorners/main.tsx";
 import options from "options.ts";
 
 function Bar({ gdkmonitor, ...props }: any) {
   const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor;
+
+  const marginTop = createComputed(
+    [options["bar.style"], options["bar.position"]],
+    (style, position) => {
+      if (style === "corners") return 0;
+      return position === "top" ? 5 : 0;
+    },
+  );
+
+  const marginBottom = createComputed(
+    [options["bar.style"], options["bar.position"]],
+    (style, position) => {
+      if (style === "corners") return 0;
+      return position === "bottom" ? 5 : 0;
+    },
+  );
+
+  const horizontalMargin = createComputed([options["bar.style"]], (style) =>
+    style === "corners" ? 0 : 5,
+  );
 
   return (
     <window
@@ -39,12 +60,10 @@ function Bar({ gdkmonitor, ...props }: any) {
             return TOP | LEFT | RIGHT;
         }
       })}
-      marginTop={options["bar.position"]((pos) => (pos === "top" ? 5 : 0))}
-      marginLeft={5}
-      marginRight={5}
-      marginBottom={options["bar.position"]((pos) =>
-        pos === "bottom" ? 5 : 0,
-      )}
+      marginTop={marginTop}
+      marginLeft={horizontalMargin}
+      marginRight={horizontalMargin}
+      marginBottom={marginBottom}
       {...props}
     >
       <overlay>
@@ -81,11 +100,19 @@ function Bar({ gdkmonitor, ...props }: any) {
   );
 }
 
+function MonitorSetup({ monitor }: { monitor: any }) {
+  const corners = (
+    <ScreenCorners monitor={monitor} position={options["bar.position"]} />
+  );
+  const bar = <Bar gdkmonitor={monitor} />;
+  return bar;
+}
+
 export default function () {
   const monitors = createBinding(app, "monitors");
   return (
     <For each={monitors} cleanup={(win) => (win as Gtk.Window).destroy()}>
-      {(monitor) => <Bar gdkmonitor={monitor} />}
+      {(monitor) => <MonitorSetup monitor={monitor} />}
     </For>
   );
 }

@@ -93,7 +93,7 @@ export default function ControlPanel() {
                   <OptionSelect
                     option="bar.style"
                     label="Style"
-                    choices={["expanded", "floating"]}
+                    choices={["expanded", "floating", "corners"]}
                   />
                   <OptionToggle
                     option="bar.modules.showOsIcon"

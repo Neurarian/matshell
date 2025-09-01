@@ -1,21 +1,21 @@
 {
-    "$schema": "https://json.schemastore.org/tsconfig",
-    "compilerOptions": {
-        "allowImportingTsExtensions": true,
-        "allowJs": true,
-        "baseUrl": ".",
-        "experimentalDecorators": false,
-        "jsx": "react-jsx",
-        "jsxImportSource": "ags/gtk4",
-        "module": "ES2020",
-        "moduleResolution": "Bundler",
-        "noImplicitAny": false,
-        "paths": {
-            "ags/*": [
-                "${pkgs.ags}/share/ags/js/src"
-            ]
-        },
-        "strict": true,
-        "target": "ES2022"
-    }
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
+    "baseUrl": ".",
+    "experimentalDecorators": false,
+    "jsx": "react-jsx",
+    "jsxImportSource": "ags/gtk4",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "noImplicitAny": false,
+    "paths": {
+      "ags/*": [
+        "${pkgs.ags}/share/ags/js/src"
+      ]
+    },
+    "strict": true,
+    "target": "ES2020"
+  }
 }

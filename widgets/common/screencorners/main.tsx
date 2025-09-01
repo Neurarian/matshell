@@ -4,11 +4,6 @@ import app from "ags/gtk4/app";
 import { onCleanup } from "ags";
 import options from "options.ts";
 
-export interface ScreenCornersProps {
-  monitor: Gdk.Monitor;
-  position: (typeof options)["bar.position"];
-}
-
 function getAnchor(positionAccessor: (typeof options)["bar.position"]) {
   const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor;
   return positionAccessor((pos) => {
@@ -26,7 +21,7 @@ function getAnchor(positionAccessor: (typeof options)["bar.position"]) {
     }
   });
 }
-export default function ScreenCorners({ monitor }: ScreenCornersProps) {
+export default function ScreenCorners({ monitor }: { monitor: Gdk.Monitor }) {
   return (
     <window
       name={options["bar.position"](

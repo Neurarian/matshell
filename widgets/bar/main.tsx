@@ -1,6 +1,6 @@
 import app from "ags/gtk4/app";
 import { For, createBinding, createComputed } from "ags";
-import { Astal, Gtk } from "ags/gtk4";
+import { Astal, Gdk, Gtk } from "ags/gtk4";
 import { SysTray, hasTrayItems } from "./modules/SysTray.tsx";
 import Separator from "./modules/Separator.tsx";
 import Workspaces from "./modules/Workspaces.tsx";
@@ -100,10 +100,8 @@ function Bar({ gdkmonitor, ...props }: any) {
   );
 }
 
-function MonitorSetup({ monitor }: { monitor: any }) {
-  const corners = (
-    <ScreenCorners monitor={monitor} position={options["bar.position"]} />
-  );
+function MonitorSetup({ monitor }: { monitor: Gdk.Monitor }) {
+  const corners = <ScreenCorners monitor={monitor} />;
   const bar = <Bar gdkmonitor={monitor} />;
   return bar;
 }

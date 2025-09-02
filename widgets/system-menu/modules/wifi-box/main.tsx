@@ -71,7 +71,7 @@ export const WiFiBox = () => {
             />
             <image
               iconName="pan-end-symbolic"
-              halign={Gtk.Align.End}
+              halign={Gtk.Align.END}
               cssClasses={isExpanded((expanded) =>
                 expanded
                   ? ["arrow-indicator", "arrow-down"]
@@ -113,15 +113,18 @@ export const WiFiBox = () => {
             }
           });
 
-          const windowListener = app.connect("window-toggled", (_, window) => {
-            if (
-              window.name === "system-menu" &&
-              !window.visible &&
-              isExpanded.get()
-            ) {
-              setIsExpanded(false);
-            }
-          });
+          const windowListener = (app as any).connect(
+            "window-toggled",
+            (_, window) => {
+              if (
+                window.name === "system-menu" &&
+                !window.visible &&
+                isExpanded.get()
+              ) {
+                setIsExpanded(false);
+              }
+            },
+          );
 
           onCleanup(() => {
             scanTimer.get()?.cancel();
@@ -235,11 +238,11 @@ export const WiFiBox = () => {
             {/* Advanced Settings Button */}
             <button
               cssClasses={["settings-button"]}
-              halign={Gtk.Align.End}
+              halign={Gtk.Align.END}
               hexpand={false}
-              visible={
-                options["system-menu.modules.wifi.enableGnomeControlCenter"]
-              }
+              visible={options[
+                "system-menu.modules.wifi.enableGnomeControlCenter"
+              ]((value) => Boolean(value))}
               onClicked={() => {
                 execAsync([
                   "sh",

@@ -1,7 +1,17 @@
 import { Gtk } from "ags/gtk4";
 import options from "options.ts";
 
-export function OptionToggle({ option, label, icon = null }) {
+interface OptionToggleProps {
+  option: string;
+  label: string;
+  icon?: string | null;
+}
+
+export function OptionToggle({
+  option,
+  label,
+  icon = null,
+}: OptionToggleProps) {
   return (
     <box cssClasses={["option-row", "option-toggle"]}>
       {icon && <image iconName={icon} cssClasses={["option-icon"]} />}
@@ -13,7 +23,7 @@ export function OptionToggle({ option, label, icon = null }) {
       />
       <switch
         cssClasses={["option-switch"]}
-        active={options[option]}
+        active={options[option]((value) => Boolean(value))}
         onNotifyActive={(self) => {
           console.log(`Toggle ${option} changed to: ${self.active}`);
           options[option].value = self.active;

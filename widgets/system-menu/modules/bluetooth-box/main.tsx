@@ -73,15 +73,18 @@ export const BluetoothBox = () => {
           }
         }}
         $={(self) => {
-          const windowListener = app.connect("window-toggled", (_, window) => {
-            if (
-              window.name === "system-menu" &&
-              !window.visible &&
-              isExpanded
-            ) {
-              setIsExpanded(false);
-            }
-          });
+          const windowListener = (app as any).connect(
+            "window-toggled",
+            (_, window) => {
+              if (
+                window.name === "system-menu" &&
+                !window.visible &&
+                isExpanded.get()
+              ) {
+                setIsExpanded(false);
+              }
+            },
+          );
 
           onCleanup(() => {
             app.disconnect(windowListener);

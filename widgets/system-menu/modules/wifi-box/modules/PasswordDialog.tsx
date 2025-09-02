@@ -45,7 +45,10 @@ export const PasswordDialog = () => {
             setScanTimer(null);
           }}
           onActivate={() =>
-            connectToNetwork(selectedNetwork.get()?.ssid, passwordInput.get())
+            connectToNetwork(
+              selectedNetwork.get()?.ssid ?? "",
+              passwordInput.get(),
+            )
           }
         />
       </box>
@@ -58,7 +61,10 @@ export const PasswordDialog = () => {
           cssClasses={["connect-button", "button"]}
           sensitive={isConnecting((c) => !c)}
           onClicked={() =>
-            connectToNetwork(selectedNetwork.get()?.ssid, passwordInput.get())
+            connectToNetwork(
+              selectedNetwork.get()?.ssid ?? "",
+              passwordInput.get(),
+            )
           }
         />
         <button

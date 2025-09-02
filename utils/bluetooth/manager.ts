@@ -65,7 +65,8 @@ export class BluetoothDeviceManager {
       let resolved = false;
 
       // Set up cleanup to run when paired becomes true
-      const unsubscribe = pairedBinding.subscribe((paired) => {
+      const unsubscribe = pairedBinding.subscribe(() => {
+        const paired = pairedBinding.get();
         if (paired && !resolved) {
           resolved = true;
           console.log(`Successfully paired with ${this.device.name}`);

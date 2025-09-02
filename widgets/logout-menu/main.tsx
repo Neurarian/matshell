@@ -8,7 +8,7 @@ function hide() {
   app.get_window("logout-menu")!.hide();
 }
 
-function LogoutButton(label: String, command: String) {
+function LogoutButton(label: string, command: string) {
   return (
     <button onClicked={() => execAsync(["sh", "-c", command])} label={label} />
   );

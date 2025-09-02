@@ -26,7 +26,8 @@ app.start({
   icons: icons,
   css: css,
   instanceName: "matshell",
-  requestHandler(request: string, res: (response: any) => void) {
+  requestHandler(argv: string[], res: (response: any) => void) {
+    const request = argv[0];
     if (request === "launcher") {
       app.toggle_window("launcher");
       res("app launcher toggled");

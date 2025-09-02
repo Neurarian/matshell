@@ -45,6 +45,9 @@ export const scanNetworks = () => {
           ssid: network.wifi.activeAccessPoint.ssid,
           strength: network.wifi.activeAccessPoint.strength,
           secured: network.wifi.activeAccessPoint.flags !== 0,
+          isActive: true,
+          isSaved: true,
+          iconName: network.wifi.activeAccessPoint.iconName,
         })
       : setActiveNetwork(null);
   }

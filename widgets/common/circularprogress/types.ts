@@ -1,4 +1,5 @@
-import { Gtk, Gsk } from "ags/gtk4";
+import Gsk from "gi://Gsk";
+import { Gtk } from "ags/gtk4";
 import { Accessor } from "ags";
 
 export interface GeometryUpdate {
@@ -28,6 +29,6 @@ export interface CircularProgressProps {
   fillRule?: Gsk.FillRule;
   startAt?: number;
   endAt?: number;
-  child?: Gtk.Widget;
-  children?: Gtk.Widget;
+  child?: Gtk.Widget | JSX.Element | JSX.Element[];
+  children?: Gtk.Widget | JSX.Element | JSX.Element[];
 }

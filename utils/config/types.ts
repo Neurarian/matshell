@@ -8,7 +8,6 @@ export type ConfigValue =
   | string
   | number
   | boolean
-  | null
   | ConfigValueObject
   | ConfigValueArray;
 

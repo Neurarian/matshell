@@ -107,7 +107,9 @@ export const BluetoothDevices = () => {
           cssClasses={["settings-button"]}
           halign={Gtk.Align.END}
           hexpand={false}
-          visible={options["system-menu.modules.bluetooth.enableOverskride"]}
+          visible={options["system-menu.modules.bluetooth.enableOverskride"](
+            (value) => Boolean(value),
+          )}
           onClicked={() => {
             execAsync("overskride");
             setIsExpanded(false);

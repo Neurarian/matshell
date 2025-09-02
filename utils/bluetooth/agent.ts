@@ -22,24 +22,27 @@ export class BluetoothAgent extends Service {
 
   // DBus methods using gnim decorators
   @method([], [])
-  Release(): void {
+  Release(): [] {
     console.log("[Bluetooth Agent] Release called");
+    return [];
   }
 
   @method([], [])
-  Cancel(): void {
+  Cancel(): [] {
     console.log("[Bluetooth Agent] Cancel called");
+    return [];
   }
 
   @method(["o", "u", "q"], [])
-  DisplayPasskey(device: string, passkey: number, entered: number): void {
+  DisplayPasskey(device: string, passkey: number, entered: number): [] {
     console.log(
       `[Bluetooth Agent] DisplayPasskey: ${device}, ${passkey}, ${entered}`,
     );
+    return [];
   }
 
   @method(["o"], ["s"])
-  RequestPinCode(device: string): string {
+  RequestPinCode(device: string): [string] {
     console.log(`[Bluetooth Agent] RequestPinCode: ${device}`);
     throw new Error(
       "org.bluez.Error.Rejected: This agent only supports automatic pairing",
@@ -47,7 +50,7 @@ export class BluetoothAgent extends Service {
   }
 
   @method(["o"], ["u"])
-  RequestPasskey(device: string): number {
+  RequestPasskey(device: string): [number] {
     console.log(`[Bluetooth Agent] RequestPasskey: ${device}`);
     throw new Error(
       "org.bluez.Error.Rejected: This agent only supports automatic pairing",
@@ -55,7 +58,7 @@ export class BluetoothAgent extends Service {
   }
 
   @method(["o", "u"], [])
-  RequestConfirmation(device: string, passkey: number): void {
+  RequestConfirmation(device: string, passkey: number): [] {
     console.log(`[Bluetooth Agent] RequestConfirmation: ${device}, ${passkey}`);
     throw new Error(
       "org.bluez.Error.Rejected: This agent only supports automatic pairing",
@@ -63,7 +66,7 @@ export class BluetoothAgent extends Service {
   }
 
   @method(["o"], [])
-  RequestAuthorization(device: string): void {
+  RequestAuthorization(device: string): [] {
     console.log(`[Bluetooth Agent] RequestAuthorization: ${device}`);
     throw new Error(
       "org.bluez.Error.Rejected: This agent only supports automatic pairing",
@@ -71,7 +74,7 @@ export class BluetoothAgent extends Service {
   }
 
   @method(["o", "s"], [])
-  AuthorizeService(device: string, uuid: string): void {
+  AuthorizeService(device: string, uuid: string): [] {
     console.log(`[Bluetooth Agent] AuthorizeService: ${device}, ${uuid}`);
     throw new Error(
       "org.bluez.Error.Rejected: This agent only supports automatic pairing",
@@ -101,20 +104,31 @@ export class BluetoothAgent extends Service {
     }
   }
 
-  private async registerWithBlueZ(): Promise<void> {
+  /**
+   * Generic helper method for making DBus calls to BlueZ AgentManager
+   */
+  private async callAgentManager(
+    methodName: string,
+    parameters: GLib.Variant,
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       const connection = Gio.DBus.system;
       connection.call(
         BLUEZ_SERVICE,
         "/org/bluez",
         AGENT_MANAGER_INTERFACE,
-        "RegisterAgent",
-        new GLib.Variant("(os)", [AGENT_PATH, CAPABILITY]),
+        methodName,
+        parameters,
         null,
         Gio.DBusCallFlags.NONE,
         -1,
         null,
         (connection, res) => {
+          if (!connection) {
+            reject(new Error("DBus connection is null"));
+            return;
+          }
+
           try {
             connection.call_finish(res);
             resolve();
@@ -126,29 +140,18 @@ export class BluetoothAgent extends Service {
     });
   }
 
+  private async registerWithBlueZ(): Promise<void> {
+    return this.callAgentManager(
+      "RegisterAgent",
+      new GLib.Variant("(os)", [AGENT_PATH, CAPABILITY]),
+    );
+  }
+
   private async setDefaultAgent(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const connection = Gio.DBus.system;
-      connection.call(
-        BLUEZ_SERVICE,
-        "/org/bluez",
-        AGENT_MANAGER_INTERFACE,
-        "RequestDefaultAgent",
-        new GLib.Variant("(o)", [AGENT_PATH]),
-        null,
-        Gio.DBusCallFlags.NONE,
-        -1,
-        null,
-        (connection, res) => {
-          try {
-            connection.call_finish(res);
-            resolve();
-          } catch (error) {
-            reject(error);
-          }
-        },
-      );
-    });
+    return this.callAgentManager(
+      "RequestDefaultAgent",
+      new GLib.Variant("(o)", [AGENT_PATH]),
+    );
   }
 
   async unregister(): Promise<boolean> {
@@ -165,28 +168,10 @@ export class BluetoothAgent extends Service {
   }
 
   private async unregisterFromBlueZ(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const connection = Gio.DBus.system;
-      connection.call(
-        BLUEZ_SERVICE,
-        "/org/bluez",
-        AGENT_MANAGER_INTERFACE,
-        "UnregisterAgent",
-        new GLib.Variant("(o)", [AGENT_PATH]),
-        null,
-        Gio.DBusCallFlags.NONE,
-        -1,
-        null,
-        (connection, res) => {
-          try {
-            connection.call_finish(res);
-            resolve();
-          } catch (error) {
-            reject(error);
-          }
-        },
-      );
-    });
+    return this.callAgentManager(
+      "UnregisterAgent",
+      new GLib.Variant("(o)", [AGENT_PATH]),
+    );
   }
 }
 

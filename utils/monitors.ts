@@ -31,7 +31,12 @@ function hyprToGdk(monitor: Hyprland.Monitor): Gdk.Monitor | null {
 export const gdkmonitor = createBinding(
   hyprland,
   "focused-monitor",
-)((focused: Hyprland.Monitor) => hyprToGdk(focused));
+)((focused: Hyprland.Monitor) => {
+  const monitor = hyprToGdk(focused);
+  if (monitor) return monitor;
+  const monitors = app.get_monitors();
+  return monitors[0];
+});
 
 export const currentMonitorWidth = createBinding(
   hyprland,

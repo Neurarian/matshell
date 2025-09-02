@@ -139,16 +139,4 @@ export default class Brightness extends GObject.Object {
         this.#settingScreen = false;
       });
   }
-
-  dispose() {
-    if (this.#screenMonitor) {
-      this.#screenMonitor.cancel?.();
-      this.#screenMonitor = null;
-    }
-    if (this.#kbdMonitor) {
-      this.#kbdMonitor.cancel?.();
-      this.#kbdMonitor = null;
-    }
-    super.dispose?.();
-  }
 }

@@ -22,7 +22,7 @@ export {
 } from "./state.ts";
 
 // Types
-export type { NetworkDisplayInfo } from "./types.ts";
+export type { NetworkInfo } from "./types.ts";
 
 // Access Point Manager
 export { AccessPointManager, createAccessPointManager } from "./manager.ts";

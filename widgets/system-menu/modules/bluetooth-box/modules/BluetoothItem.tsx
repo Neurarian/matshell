@@ -37,19 +37,22 @@ export const BluetoothItem = ({ device }) => {
           }
         }}
         $={(_self) => {
-          const unsubscribeParent = isExpanded.subscribe((parentExpanded) => {
-            if (!parentExpanded) setItemButtonsRevealed(false);
+          const unsubscribeParent = isExpanded.subscribe(() => {
+            if (!isExpanded.get()) setItemButtonsRevealed(false);
           });
 
-          const windowListener = app.connect("window-toggled", (_, window) => {
-            if (
-              window.name === "system-menu" &&
-              !window.visible &&
-              itemButtonsRevealed.get()
-            ) {
-              setItemButtonsRevealed(false);
-            }
-          });
+          const windowListener = (app as any).connect(
+            "window-toggled",
+            (_, window) => {
+              if (
+                window.name === "system-menu" &&
+                !window.visible &&
+                itemButtonsRevealed.get()
+              ) {
+                setItemButtonsRevealed(false);
+              }
+            },
+          );
 
           onCleanup(() => {
             app.disconnect(windowListener);

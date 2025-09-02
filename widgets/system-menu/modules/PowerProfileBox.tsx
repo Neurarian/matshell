@@ -41,7 +41,7 @@ export const PowerProfileBox = () => {
           cssClasses={["profile-options"]}
         >
           <For each={profiles}>
-            {(profile) => (
+            {(profile: PowerProfiles.Profile) => (
               <ProfileItem
                 icon={`power-profile-${profile.profile}-symbolic`}
                 label={formatProfileName(profile.profile)}

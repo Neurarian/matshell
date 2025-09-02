@@ -1,13 +1,12 @@
-import app from "ags/gtk4/app";
 import { Gtk } from "ags/gtk4";
-import { createState, onCleanup } from "ags";
+import { createState, onCleanup, Accessor } from "ags";
 import Pango from "gi://Pango";
 import Wp from "gi://AstalWp";
 import Brightness from "utils/brightness";
 import Bluetooth from "gi://AstalBluetooth";
 
 interface OnScreenProgressProps {
-  visible: boolean;
+  visible: boolean | Accessor<boolean>;
   setVisible: (visible: boolean) => void;
 }
 

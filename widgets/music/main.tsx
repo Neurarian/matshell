@@ -35,12 +35,16 @@ function MusicBox({ player }: { player: Mpris.Player }) {
         cssClasses={["cava-container"]}
         $type="overlay"
         canTarget={false}
-        visible={options["musicPlayer.modules.cava.show"]}
+        visible={options["musicPlayer.modules.cava.show"]((value) =>
+          Boolean(value),
+        )}
       >
         <CavaDraw
           hexpand
           vexpand
-          style={options["musicPlayer.modules.cava.style"]}
+          style={options["musicPlayer.modules.cava.style"]((value) =>
+            String(value),
+          )}
         />
       </box>
       <box
@@ -81,7 +85,7 @@ export default function MusicPlayer() {
     >
       <box>
         <With value={createBinding(mpris, "players")}>
-          {(players) =>
+          {(players: Mpris.Player[]) =>
             players.length > 0 ? (
               <MusicBox player={findPlayer(players)} />
             ) : null

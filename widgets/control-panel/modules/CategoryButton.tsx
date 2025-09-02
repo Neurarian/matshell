@@ -1,6 +1,14 @@
 import app from "ags/gtk4/app";
 import { Gtk } from "ags/gtk4";
-import { createState, onCleanup } from "ags";
+import { Accessor, createState, onCleanup } from "ags";
+
+interface CategoryButtonProps {
+  title: string;
+  icon?: string | null;
+  expanded?: Accessor<boolean> | null;
+  onToggle?: () => void;
+  children?: JSX.Element | JSX.Element[];
+}
 
 export function CategoryButton({
   title,
@@ -8,7 +16,7 @@ export function CategoryButton({
   expanded = null,
   onToggle = () => {},
   children,
-}) {
+}: CategoryButtonProps) {
   const [isExpanded, setIsExpanded] = createState(
     expanded ? expanded.get() : false,
   );
@@ -19,7 +27,7 @@ export function CategoryButton({
     onToggle();
   };
 
-  const windowListener = app.connect("window-toggled", (_, window) => {
+  const windowListener = (app as any).connect("window-toggled", (_, window) => {
     if (
       window.name === "control-panel" &&
       !window.visible &&

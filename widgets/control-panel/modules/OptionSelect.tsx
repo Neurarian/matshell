@@ -1,7 +1,17 @@
 import { Gtk } from "ags/gtk4";
 import options from "options.ts";
 
-export function OptionSelect({ option, label, choices = [] }) {
+interface OptionSelectProps {
+  option: string;
+  label: string;
+  choices: string[];
+}
+
+export function OptionSelect({
+  option,
+  label,
+  choices = [],
+}: OptionSelectProps) {
   return (
     <box cssClasses={["option-row", "option-select"]}>
       <label
@@ -23,7 +33,7 @@ export function OptionSelect({ option, label, choices = [] }) {
           choices.forEach((choice) => {
             self.append_text(choice);
           });
-          const currentValue = options[option].get();
+          const currentValue = String(options[option].get());
           const initialIndex = choices.indexOf(currentValue);
 
           if (initialIndex !== -1) {

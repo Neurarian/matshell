@@ -70,13 +70,21 @@ function Bar({ gdkmonitor, ...props }: any) {
         <box
           $type={"overlay"}
           canTarget={false}
-          visible={options["bar.modules.cava.show"]}
+          visible={options["bar.modules.cava.show"]((value) => Boolean(value))}
         >
-          <CavaDraw vexpand hexpand style={options["bar.modules.cava.style"]} />
+          <CavaDraw
+            vexpand
+            hexpand
+            style={options["bar.modules.cava.style"]((value) => String(value))}
+          />
         </box>
         <centerbox cssClasses={["centerbox"]}>
           <box hexpand halign={Gtk.Align.START} $type="start">
-            <box visible={options["bar.modules.showOsIcon"]}>
+            <box
+              visible={options["bar.modules.showOsIcon"]((value) =>
+                Boolean(value),
+              )}
+            >
               <OsIcon />
             </box>
             <Workspaces />

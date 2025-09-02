@@ -8,6 +8,7 @@ export function NotificationWidget({
 }: {
   notification: Notifd.Notification;
 }) {
+  const notifd = Notifd.get_default();
   const TIMEOUT_DELAY = 3000;
 
   const timeoutManager = createTimeoutManager(
@@ -28,7 +29,9 @@ export function NotificationWidget({
       switch (button) {
         case 1: // PRIMARY/LEFT
           if (notification.actions && notification.actions.length > 0) {
-            notification.invoke(notification.actions[0]);
+            const actionId =
+              notification.actions[0].id || notification.actions[0].action;
+            notification.invoke(actionId);
           }
           break;
         case 2: // MIDDLE

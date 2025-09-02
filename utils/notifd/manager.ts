@@ -12,11 +12,9 @@ import type { StoredNotification } from "./types.ts";
 export class NotificationManager {
   private notifications = new Map<number, StoredNotification>();
   private notificationState: Accessor<StoredNotification[]>;
-  private setNotificationState: (
-    value:
-      | StoredNotification[]
-      | ((prev: StoredNotification[]) => StoredNotification[]),
-  ) => void;
+  private setNotificationState: ReturnType<
+    typeof createState<StoredNotification[]>
+  >[1];
   private notifd = Notifd.get_default();
   private maxVisibleNotifications = 5;
 
@@ -186,6 +184,11 @@ export class NotificationManager {
   }
 
   private storeNotification(notification: Notifd.Notification): void {
+    const convertedActions = (notification.actions || []).map((action) => ({
+      label: action.label || action.name || action.text || String(action),
+      action: action.id || action.key || action.action || String(action),
+    }));
+
     const stored: StoredNotification = {
       id: notification.id,
       appName: notification.appName || "Unknown",
@@ -195,7 +198,7 @@ export class NotificationManager {
       image: notification.image,
       desktopEntry: notification.desktopEntry,
       time: notification.time * 1000,
-      actions: notification.actions || [],
+      actions: convertedActions,
       urgency: notification.urgency || Notifd.Urgency.NORMAL,
       seen: false,
     };

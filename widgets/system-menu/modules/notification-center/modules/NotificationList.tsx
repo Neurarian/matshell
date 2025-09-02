@@ -38,13 +38,9 @@ export const NotificationList = () => {
           <For each={newNotifications}>
             {(notification) => (
               <BaseNotification
-                key={notification.id}
                 notification={storedToUnified(notification)}
                 variant="stored"
                 onAction={(id, action) => {
-                  console.log(
-                    `Action ${action} triggered for stored notification ${id}`,
-                  );
                   notificationManager.dismissNotification(id);
                 }}
                 onDismiss={(id) => {
@@ -72,13 +68,9 @@ export const NotificationList = () => {
           <For each={readNotifications}>
             {(notification) => (
               <BaseNotification
-                key={notification.id}
                 notification={storedToUnified(notification)}
                 variant="stored"
                 onAction={(id, action) => {
-                  console.log(
-                    `Action ${action} triggered for stored notification ${id}`,
-                  );
                   notificationManager.dismissNotification(id);
                 }}
                 onDismiss={(id) => {

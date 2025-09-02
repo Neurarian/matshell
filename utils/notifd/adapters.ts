@@ -4,6 +4,13 @@ import type { UnifiedNotification, StoredNotification } from "./types.ts";
 export function liveToUnified(
   notification: Notifd.Notification,
 ): UnifiedNotification {
+  // Convert GJS actions to the expected format
+  const convertedActions = (notification.actions || []).map((action) => {
+    return {
+      label: action.label || action.name || action.text || String(action),
+      action: action.id || action.key || action.action || String(action),
+    };
+  });
   return {
     id: notification.id,
     appName: notification.appName || "Unknown",
@@ -14,7 +21,7 @@ export function liveToUnified(
     desktopEntry: notification.desktopEntry,
     time: notification.time,
     urgency: notification.urgency || Notifd.Urgency.NORMAL,
-    actions: notification.actions || [],
+    actions: convertedActions,
   };
 }
 
@@ -32,7 +39,6 @@ export function storedToUnified(
     time: notification.time,
     actions: notification.actions,
     urgency: notification.urgency || Notifd.Urgency.NORMAL,
-    dismissed: notification.dismissed,
     seen: notification.seen,
   };
 }

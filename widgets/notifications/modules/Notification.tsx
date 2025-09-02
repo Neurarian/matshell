@@ -54,9 +54,6 @@ export function BaseNotification({
               onAction(notification.id, notification.actions[0].action);
             }
             break;
-          case 2: // MIDDLE
-            // Customized per variant
-            break;
           case 3: // SECONDARY/RIGHT
             if (onDismiss) {
               onDismiss(notification.id);
@@ -189,7 +186,6 @@ export function BaseNotification({
               hexpand
               cssClasses={["action-button"]}
               onClicked={() => onAction?.(notification.id, action)}
-              key={action}
             >
               <label label={label} halign={CENTER} hexpand />
             </button>

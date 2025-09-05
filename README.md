@@ -207,12 +207,12 @@ programs.matshell= {
 
 This project wouldn't be possible without:
 
+- [Aylur](https://github.com/Aylur) for the powerful widget toolkit
 - [fufexan's dotfiles](https://github.com/fufexan/dotfiles) for the initial inspiration and foundation
 - [matugen](https://github.com/InioX/matugen) for the amazing Material Color theming utility
-- [saimoomedits' eww-widgets](https://github.com/saimoomedits/eww-widgets) for design influence
 - [kotontrion](https://github.com/kotontrion/kompass) for the GTK4 CAVA Catmull-Rom spline widget
 - [ARKye03](https://github.com/ARKye03) for the GTK4 circular progress widget which is currently still on its way to be merged into Astal
-- [Aylur](https://github.com/Aylur) for the powerful widget toolkit
+- [saimoomedits' eww-widgets](https://github.com/saimoomedits/eww-widgets) for design influence
 - [end-4's dots-hyprland](https://github.com/end-4/dots-hyprland) for some inspiration on the color generation
 
 ______________________________________________________________________

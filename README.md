@@ -243,9 +243,7 @@ https://github.com/user-attachments/assets/7a7851e3-9ebc-4f52-8b0f-e9a062122d9e
 <b> Square bar with rounded screen corners</b>
 </p>
 
-
-<img width="3441" height="1441" alt="2025-09-05T23:17:33,965678211+02:00" src="https://github.com/user-attachments/assets/a519ae8b-02a8-478d-8da5-9792b956c278" />
-
+<img width="3442" height="1441" alt="2025-09-06T00:25:06,809833716+02:00" src="https://github.com/user-attachments/assets/1339ee40-cb49-4d35-b282-19026a95c7e1" />
 
 <details>
    <summary><h3></b>Detailed Widget List</h3></summary>

@@ -5,6 +5,8 @@
 .control-panel {
   @include window;
   -gtk-icon-size: $font;
+  margin-top: $spacing-md;
+  margin-right: $spacing-md;
   border: 1px solid rgba(0, 0, 0, 0.1);
   & > box {
     @include window-box;
@@ -43,7 +45,7 @@
 
 .option-switch {
   border-radius: 5rem;
-  padding: 0.4rem;
+  padding: $spacing-sm;
   @if $darkmode {
     background-color: $bg;
   } @else {

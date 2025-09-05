@@ -3,12 +3,12 @@
 @use "sass:color";
 
 .notification {
-  margin: 5px 5px 5px 10px;
+  margin: $spacing-md;
   min-width: 15px;
   border-radius: $round2;
   background-color: $bg;
   border: 1px solid transparent;
-  padding: 0.25rem 0.75rem;
+  padding: $spacing-sm $spacing-md;
 
   &.critical {
     border: 1px solid $red;
@@ -56,7 +56,7 @@
 
     .title {
       margin-right: 0.5rem;
-      font-size: 1.1rem;
+      font-size: $font;
       font-weight: 500;
       color: $fg;
     }
@@ -65,7 +65,7 @@
       margin-right: 0.5rem;
       font-size: 0.95rem;
       color: color.adjust($fg, $alpha: -0.2);
-      margin-top: 0.75rem;
+      margin-top: $spacing-md;
     }
   }
   .actions {

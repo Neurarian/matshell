@@ -6,107 +6,105 @@
 * Generated with Matugen
 */
 
+$background: rgba(30, 16, 12, 1);
 
-$background: rgba(30, 16, 12, 1.0);
+$error: rgba(255, 180, 171, 1);
 
-$error: rgba(255, 180, 171, 1.0);
+$error_container: rgba(147, 0, 10, 1);
 
-$error_container: rgba(147, 0, 10, 1.0);
+$inverse_on_surface: rgba(61, 44, 39, 1);
 
-$inverse_on_surface: rgba(61, 44, 39, 1.0);
+$inverse_primary: rgba(174, 50, 0, 1);
 
-$inverse_primary: rgba(174, 50, 0, 1.0);
+$inverse_surface: rgba(249, 220, 212, 1);
 
-$inverse_surface: rgba(249, 220, 212, 1.0);
+$on_background: rgba(249, 220, 212, 1);
 
-$on_background: rgba(249, 220, 212, 1.0);
+$on_error: rgba(105, 0, 5, 1);
 
-$on_error: rgba(105, 0, 5, 1.0);
+$on_error_container: rgba(255, 218, 214, 1);
 
-$on_error_container: rgba(255, 218, 214, 1.0);
+$on_primary: rgba(94, 23, 0, 1);
 
-$on_primary: rgba(94, 23, 0, 1.0);
+$on_primary_container: rgba(255, 219, 208, 1);
 
-$on_primary_container: rgba(255, 219, 208, 1.0);
+$on_primary_fixed: rgba(58, 11, 0, 1);
 
-$on_primary_fixed: rgba(58, 11, 0, 1.0);
+$on_primary_fixed_variant: rgba(133, 36, 0, 1);
 
-$on_primary_fixed_variant: rgba(133, 36, 0, 1.0);
+$on_secondary: rgba(73, 40, 15, 1);
 
-$on_secondary: rgba(73, 40, 15, 1.0);
+$on_secondary_container: rgba(255, 220, 198, 1);
 
-$on_secondary_container: rgba(255, 220, 198, 1.0);
+$on_secondary_fixed: rgba(48, 20, 1, 1);
 
-$on_secondary_fixed: rgba(48, 20, 1, 1.0);
+$on_secondary_fixed_variant: rgba(99, 62, 35, 1);
 
-$on_secondary_fixed_variant: rgba(99, 62, 35, 1.0);
+$on_surface: rgba(249, 220, 212, 1);
 
-$on_surface: rgba(249, 220, 212, 1.0);
+$on_surface_variant: rgba(220, 193, 185, 1);
 
-$on_surface_variant: rgba(220, 193, 185, 1.0);
+$on_tertiary: rgba(71, 42, 0, 1);
 
-$on_tertiary: rgba(71, 42, 0, 1.0);
+$on_tertiary_container: rgba(255, 221, 183, 1);
 
-$on_tertiary_container: rgba(255, 221, 183, 1.0);
+$on_tertiary_fixed: rgba(42, 23, 0, 1);
 
-$on_tertiary_fixed: rgba(42, 23, 0, 1.0);
+$on_tertiary_fixed_variant: rgba(100, 63, 7, 1);
 
-$on_tertiary_fixed_variant: rgba(100, 63, 7, 1.0);
+$outline: rgba(163, 139, 133, 1);
 
-$outline: rgba(163, 139, 133, 1.0);
+$outline_variant: rgba(85, 66, 61, 1);
 
-$outline_variant: rgba(85, 66, 61, 1.0);
+$primary: rgba(255, 181, 158, 1);
 
-$primary: rgba(255, 181, 158, 1.0);
+$primary_container: rgba(133, 36, 0, 1);
 
-$primary_container: rgba(133, 36, 0, 1.0);
+$primary_fixed: rgba(255, 219, 208, 1);
 
-$primary_fixed: rgba(255, 219, 208, 1.0);
+$primary_fixed_dim: rgba(255, 181, 158, 1);
 
-$primary_fixed_dim: rgba(255, 181, 158, 1.0);
+$scrim: rgba(0, 0, 0, 1);
 
-$scrim: rgba(0, 0, 0, 1.0);
+$secondary: rgba(241, 187, 152, 1);
 
-$secondary: rgba(241, 187, 152, 1.0);
+$secondary_container: rgba(99, 62, 35, 1);
 
-$secondary_container: rgba(99, 62, 35, 1.0);
+$secondary_fixed: rgba(255, 220, 198, 1);
 
-$secondary_fixed: rgba(255, 220, 198, 1.0);
+$secondary_fixed_dim: rgba(241, 187, 152, 1);
 
-$secondary_fixed_dim: rgba(241, 187, 152, 1.0);
+$shadow: rgba(0, 0, 0, 1);
 
-$shadow: rgba(0, 0, 0, 1.0);
+$source_color: rgba(204, 76, 32, 1);
 
-$source_color: rgba(204, 76, 32, 1.0);
+$surface: rgba(30, 16, 12, 1);
 
-$surface: rgba(30, 16, 12, 1.0);
+$surface_bright: rgba(71, 53, 48, 1);
 
-$surface_bright: rgba(71, 53, 48, 1.0);
+$surface_container: rgba(43, 28, 23, 1);
 
-$surface_container: rgba(43, 28, 23, 1.0);
+$surface_container_high: rgba(54, 38, 33, 1);
 
-$surface_container_high: rgba(54, 38, 33, 1.0);
+$surface_container_highest: rgba(66, 49, 44, 1);
 
-$surface_container_highest: rgba(66, 49, 44, 1.0);
+$surface_container_low: rgba(39, 24, 19, 1);
 
-$surface_container_low: rgba(39, 24, 19, 1.0);
+$surface_container_lowest: rgba(24, 11, 7, 1);
 
-$surface_container_lowest: rgba(24, 11, 7, 1.0);
+$surface_dim: rgba(30, 16, 12, 1);
 
-$surface_dim: rgba(30, 16, 12, 1.0);
+$surface_tint: rgba(255, 181, 158, 1);
 
-$surface_tint: rgba(255, 181, 158, 1.0);
+$surface_variant: rgba(85, 66, 61, 1);
 
-$surface_variant: rgba(85, 66, 61, 1.0);
+$tertiary: rgba(243, 189, 123, 1);
 
-$tertiary: rgba(243, 189, 123, 1.0);
+$tertiary_container: rgba(100, 63, 7, 1);
 
-$tertiary_container: rgba(100, 63, 7, 1.0);
+$tertiary_fixed: rgba(255, 221, 183, 1);
 
-$tertiary_fixed: rgba(255, 221, 183, 1.0);
-
-$tertiary_fixed_dim: rgba(243, 189, 123, 1.0);
-
+$tertiary_fixed_dim: rgba(243, 189, 123, 1);
 
 /* general color variables */
 $red: #d17678;
@@ -176,9 +174,7 @@ $procBg: $surface_dim;
 
 /* numeric variables */
 $round: 8px;
-$round2: 16px;
-$margin: 0.4rem;
-$padding: 0.4rem;
+$round2: 20px;
 $spacing-xs: 0.25rem;
 $spacing-sm: 0.4rem;
 $spacing-md: 0.75rem;

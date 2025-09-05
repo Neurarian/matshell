@@ -14,7 +14,7 @@
   }
 
   .module {
-    margin: 0 0.4rem;
+    margin: 0 $spacing-sm;
   }
 
   /* OS Icon */
@@ -91,7 +91,7 @@
     & > box {
       @include animate;
       border-radius: $round2;
-      margin: 0.4rem;
+      margin: $spacing-sm;
       font-size: $font;
       cava {
         opacity: 0.3;
@@ -108,7 +108,7 @@
       border-radius: 50%;
       min-width: 2.5rem;
       min-height: 2rem;
-      margin: 0.1rem 0.4rem;
+      margin: 0.1rem $spacing-sm;
     }
   }
 
@@ -183,7 +183,7 @@
   }
 
   .clock {
-    margin: 0 1.2rem 0 0.4rem;
+    margin: 0 1.2rem 0 $spacing-sm;
   }
 
   .power-button {

@@ -10,8 +10,8 @@
   }
 
   &.corner-top .corner-content {
-    border-top-left-radius: calc(#{$round} * 4);
-    border-top-right-radius: calc(#{$round} * 4);
+    border-top-left-radius: calc(#{$round2});
+    border-top-right-radius: calc(#{$round2});
     box-shadow: 
       0 0 0 99px $barBg,
       inset 0 10px 10px -10px rgba(0, 0, 0, 0.2);
@@ -19,8 +19,8 @@
   }
 
   &.corner-bottom .corner-content {
-    border-bottom-left-radius: calc(#{$round} * 4);
-    border-bottom-right-radius: calc(#{$round} * 4);
+    border-bottom-left-radius: calc(#{$round2});
+    border-bottom-right-radius: calc(#{$round2});
     box-shadow: 
       0 0 0 99px $barBg,
       inset 0 -10px 10px -10px rgba(0, 0, 0, 0.2);
@@ -28,8 +28,8 @@
   }
 
   &.corner-left .corner-content {
-    border-top-left-radius: calc(#{$round} * 4);
-    border-bottom-left-radius: calc(#{$round} * 4);
+    border-top-left-radius: calc(#{$round2});
+    border-bottom-left-radius: calc(#{$round2});
     box-shadow: 
       0 0 0 99px $barBg,
       inset 10px 0 10px -10px rgba(0, 0, 0, 0.2);
@@ -37,8 +37,8 @@
   }
 
   &.corner-right .corner-content {
-    border-top-right-radius: calc(#{$round} * 4);
-    border-bottom-right-radius: calc(#{$round} * 4);
+    border-top-right-radius: calc(#{$round2});
+    border-bottom-right-radius: calc(#{$round2});
     box-shadow: 
       0 0 0 99px $barBg,
       inset -10px 0 10px -10px rgba(0, 0, 0, 0.2);

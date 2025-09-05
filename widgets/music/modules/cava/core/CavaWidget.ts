@@ -3,7 +3,7 @@ import { Gtk, Gdk } from "ags/gtk4";
 import Cava from "gi://AstalCava";
 import GObject from "gi://GObject";
 
-import { CavaStyle, getStyleEnum, styleMap } from "./CavaStyle";
+import { CavaStyle, getStyleEnum } from "./CavaStyle";
 
 import {
   // Simple visualizers

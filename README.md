@@ -240,7 +240,7 @@ https://github.com/user-attachments/assets/7a7851e3-9ebc-4f52-8b0f-e9a062122d9e
 ### 🌞 Light Theme (Desktop)
 
 <p align="center">
-<b> Square bar with rounded screen corners</b>
+<b> Square bar with rounded screen corners & Hyprland blur</b>
 </p>
 
 <img width="3442" height="1441" alt="2025-09-06T00:25:06,809833716+02:00" src="https://github.com/user-attachments/assets/1339ee40-cb49-4d35-b282-19026a95c7e1" />

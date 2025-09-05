@@ -217,7 +217,7 @@ This project wouldn't be possible without:
 
 ______________________________________________________________________
 
-### 🌞 Light Theme (Video Demo Desktop)
+### Video Demo Desktop
 
 <p align="center">
 
@@ -228,14 +228,24 @@ https://github.com/user-attachments/assets/7a7851e3-9ebc-4f52-8b0f-e9a062122d9e
 ### 🌚 Dark Theme (Desktop)
 
 <p align="center">
-<b>Floating Mode</b>
+<b>Floating mode</b>
 
 ![2025-04-19T03:27:33,093645867+02:00](https://github.com/user-attachments/assets/603b7837-ebac-4ff8-90b8-32721ea5aeae)
 
 <p align="center">
-<b>Full Bar Mode & Cava in Bar</b>
+<b>Full bar mode & cava in bar</b>
 
 ![2025-04-19T03:22:32,664157108+02:00](https://github.com/user-attachments/assets/458f11ac-2de2-455c-847b-15bd515a8f48)
+
+### 🌞 Light Theme (Desktop)
+
+<p align="center">
+<b> Square bar with rounded screen corners</b>
+</p>
+
+
+<img width="3441" height="1441" alt="2025-09-05T23:17:33,965678211+02:00" src="https://github.com/user-attachments/assets/a519ae8b-02a8-478d-8da5-9792b956c278" />
+
 
 <details>
    <summary><h3></b>Detailed Widget List</h3></summary>

@@ -35,7 +35,6 @@ export default function OnScreenDisplay() {
       }}
       application={app}
       keymode={Astal.Keymode.NONE}
-      namespace="osd"
     >
       <OnScreenProgress visible={visible} setVisible={setVisible} />
     </window>

@@ -5,6 +5,7 @@
 .notification {
   margin: $spacing-md;
   min-width: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: $round2;
   background-color: $bg;
   border: 1px solid transparent;

@@ -113,6 +113,7 @@ ______________________________________________________________________
 
 > [!NOTE]
 > If you're using an old version of matshell and want to update or you're using your own setup, you will need to move your old config out of ~/.config/ags/ or delete the folder before running the script, as I am not overwriting existing configs.
+> If the Arch install below is broken please open an issue as I don't run Arch and only test this in a VM from time to time.
 
 Run the installation script (Currently supports Arch-based with [yay](https://github.com/Jguer/yay) only):
 

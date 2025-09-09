@@ -21,7 +21,6 @@ export interface BaseNotificationProps {
   showTimeAsRelative?: boolean;
   cssClasses?: string[];
   maxWidth?: number;
-  maxHeight?: number;
 }
 
 export function BaseNotification({

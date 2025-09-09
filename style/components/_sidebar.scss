@@ -97,3 +97,11 @@
   margin-bottom: $spacing-md;
 }
 // accent line at the very top inside the sidebar
+
+// Weather Icons
+.forecast-icon {
+        font-family: "Material Symbols Outlined";
+        font-size: 32px;
+        margin: 0.3rem 0;
+        color: $fg;
+      }

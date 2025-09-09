@@ -3,14 +3,23 @@ import { exec } from "ags/process";
 import { monitorFile } from "ags/file";
 import GLib from "gi://GLib?version=2.0";
 
-// ──────────────────────────────
-// 🔧 System Setup
-// ──────────────────────────────
+// Widgets
+import {
+  Bar,
+  SystemMenu,
+  OnScreenDisplay,
+  Notifications,
+  LogoutMenu,
+  Applauncher,
+  MusicPlayer,
+  ControlPanel,
+  Sidebar,
+} from "./widgets";
 
+// Style paths
 const scss = `${GLib.get_user_config_dir()}/ags/style/main.scss`;
 const css = `${GLib.get_user_config_dir()}/ags/style/main.css`;
 const icons = `${GLib.get_user_config_dir()}/ags/assets/icons`;
-
 const styleDirectories = ["abstracts", "components", "layouts", "base"];
 
 function reloadCss() {
@@ -19,30 +28,11 @@ function reloadCss() {
   app.apply_css(css);
 }
 
-// ──────────────────────────────
-// 🪟 Widgets
-// ──────────────────────────────
-
-import Bar from "./widgets/bar/main.tsx";
-import SystemMenu from "./widgets/system-menu/main.tsx";
-import OnScreenDisplay from "./widgets/osd/main.tsx";
-import Notifications from "./widgets/notifications/main.tsx";
-import LogoutMenu from "./widgets/logout-menu/main.tsx";
-import Applauncher from "./widgets/launcher/main.tsx";
-import MusicPlayer from "./widgets/music/main.tsx";
-import ControlPanel from "./widgets/control-panel/main.tsx";
-import Sidebar from "./widgets/sidebar/main.tsx";
-
-// ──────────────────────────────
-// 🚀 App Start
-// ──────────────────────────────
-
 app.start({
   icons,
   css,
   instanceName: "matshell",
 
-  // Handle external toggle requests
   requestHandler(argv: string[], res: (response: any) => void) {
     const request = argv[0];
     switch (request) {
@@ -70,7 +60,7 @@ app.start({
       monitorFile(`${GLib.get_user_config_dir()}/ags/style/${dir}`, reloadCss),
     );
 
-    // Register all widgets
+    // Initialize widgets
     Bar();
     Notifications();
     OnScreenDisplay();
@@ -79,6 +69,6 @@ app.start({
     Applauncher();
     LogoutMenu();
     ControlPanel();
-    Sidebar(); // ← our new sidebar
+    Sidebar();
   },
 });

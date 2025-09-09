@@ -1,8 +1,13 @@
-// ~/.config/ags/widgets/sidebar/BaseTemplateWidget.js
+// ~/.config/ags/widgets/sidebar/BaseTemplateWidget.tsx
 import Gtk from "gi://Gtk?version=4.0";
 
-/** ---------- Base Item ---------- **/
-function BaseItem(title, value, icon) {
+interface BaseItemProps {
+    title: string;
+    value: string;
+    icon: string;
+}
+
+function BaseItem({ title, value, icon }: BaseItemProps) {
     return (
         <box class="item" orientation={Gtk.Orientation.VERTICAL} spacing={2}>
             <label label={title} class="item-title" />
@@ -12,9 +17,25 @@ function BaseItem(title, value, icon) {
     );
 }
 
-/** ---------- Base Widget ---------- **/
+interface HeaderData {
+    title: string;
+    subtitle: string;
+    extra: string;
+}
+
+interface ItemData {
+    title: string;
+    value: string;
+    icon: string;
+}
+
+interface WidgetData {
+    header: HeaderData;
+    items: ItemData[];
+}
+
 export default function BaseTemplateWidget() {
-    const data = {
+    const data: WidgetData = {
         header: {
             title: "Hello World",
             subtitle: "Base Widget",
@@ -29,7 +50,6 @@ export default function BaseTemplateWidget() {
 
     return (
         <box class="base-widget" orientation={Gtk.Orientation.VERTICAL} spacing={6}>
-            {/* Header row */}
             <box class="header-row" orientation={Gtk.Orientation.HORIZONTAL} spacing={16}>
                 <box orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.START} spacing={2}>
                     <image iconName="applications-system-symbolic" pixelSize={64} class="header-icon" />
@@ -48,18 +68,16 @@ export default function BaseTemplateWidget() {
                 </box>
             </box>
 
-            {/* Divider */}
             {new Gtk.Separator({
                 orientation: Gtk.Orientation.HORIZONTAL,
                 halign: Gtk.Align.FILL,
                 valign: Gtk.Align.CENTER,
             })}
 
-            {/* Items Row */}
             <box class="items-row" spacing={16} halign={Gtk.Align.CENTER}>
-                {data.items.map((it) =>
-                    BaseItem(it.title, it.value, it.icon)
-                )}
+                {data.items.map((it) => (
+                    <BaseItem key={it.title} {...it} />
+                ))}
             </box>
         </box>
     );

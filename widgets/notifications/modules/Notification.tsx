@@ -1,4 +1,6 @@
 import { Gtk } from "ags/gtk4";
+import Adw from "gi://Adw?version=1";
+import Pango from "gi://Pango";
 import { createState, Accessor } from "ags";
 import { NotificationIcon } from "./Icon.tsx";
 import {
@@ -14,14 +16,12 @@ export interface BaseNotificationProps {
   onClick?: (button: number, notification: UnifiedNotification) => void;
   onHover?: () => void;
   onHoverLost?: () => void;
-
-  // Configuration options for different use cases
   variant?: "live" | "stored";
   showDismissButton?: boolean | Accessor<boolean>;
   showTimeAsRelative?: boolean;
-  maxBodyChars?: number;
-  maxSummaryChars?: number;
   cssClasses?: string[];
+  maxWidth?: number;
+  maxHeight?: number;
 }
 
 export function BaseNotification({
@@ -33,14 +33,17 @@ export function BaseNotification({
   onHoverLost,
   variant = "live",
   showDismissButton = false,
-  maxBodyChars = 50,
-  maxSummaryChars = 40,
   cssClasses = [],
+  maxWidth = 300,
 }: BaseNotificationProps) {
   const { START, CENTER, END } = Gtk.Align;
   const [isHovered, setIsHovered] = createState(false);
-
   const timeLabel = createNotificationTimeLabel(notification.time, { variant });
+
+  // Calculate character limits based on pixel constraints
+  const maxWidthChars = Math.floor(maxWidth / 8);
+  const titleMaxChars = Math.floor(maxWidthChars * 0.5);
+  const bodyMaxChars = Math.floor(maxWidthChars);
 
   // Default click handling
   const handleClick = (button: number) => {
@@ -95,103 +98,117 @@ export function BaseNotification({
   };
 
   return (
-    <box
-      orientation={Gtk.Orientation.VERTICAL}
-      vexpand={false}
-      cssClasses={buildCssClasses()}
-      name={notification.id.toString()}
-    >
-      <Gtk.GestureClick
-        button={0}
-        onPressed={(gesture) => {
-          const button = gesture.get_current_button();
-          handleClick(button);
-        }}
-      />
-
-      <Gtk.EventControllerMotion
-        onEnter={handleHover}
-        onLeave={handleHoverLost}
-      />
-
-      {/* Header */}
-      <box cssClasses={["header"]}>
-        <label
-          cssClasses={["app-name"]}
-          halign={variant === "stored" ? START : CENTER}
-          label={notification.appName}
+    <Adw.Clamp maximumSize={maxWidth}>
+      <box
+        orientation={Gtk.Orientation.VERTICAL}
+        vexpand={false}
+        cssClasses={[...buildCssClasses(), "notification-container"]}
+        name={notification.id.toString()}
+        overflow={Gtk.Overflow.HIDDEN}
+      >
+        <Gtk.GestureClick
+          button={0}
+          onPressed={(gesture) => {
+            const button = gesture.get_current_button();
+            handleClick(button);
+          }}
         />
-        <label cssClasses={["time"]} hexpand halign={END} label={timeLabel} />
+        <Gtk.EventControllerMotion
+          onEnter={handleHover}
+          onLeave={handleHoverLost}
+        />
 
-        {/* Conditional dismiss button */}
-        {(typeof showDismissButton === "boolean"
-          ? showDismissButton
-          : showDismissButton.get()) && (
-          <button
-            cssClasses={["dismiss-button"]}
-            visible={variant === "stored" ? isHovered : true}
-            onClicked={() => onDismiss?.(notification.id)}
-            tooltipText="Dismiss notification"
-          >
-            <image iconName="window-close-symbolic" pixelSize={12} />
-          </button>
-        )}
-      </box>
-
-      <Gtk.Separator cssClasses={["notification-separator"]} />
-
-      {/* Content */}
-      <box cssClasses={["content"]}>
-        <box
-          cssClasses={["thumb"]}
-          visible={Boolean(NotificationIcon(notification))}
-          halign={CENTER}
-          valign={CENTER}
-          vexpand={true}
-        >
-          {NotificationIcon(notification)}
-        </box>
-
-        <box
-          orientation={Gtk.Orientation.VERTICAL}
-          cssClasses={["text-content"]}
-          hexpand={true}
-          halign={CENTER}
-          valign={CENTER}
-        >
+        {/* Header */}
+        <box cssClasses={["header"]}>
           <label
-            cssClasses={["title"]}
-            valign={CENTER}
-            wrap={true}
-            label={notification.summary}
-            maxWidthChars={maxSummaryChars}
+            cssClasses={["app-name"]}
+            halign={variant === "stored" ? START : CENTER}
+            label={notification.appName}
+            ellipsize={Pango.EllipsizeMode.END}
+            singleLineMode={true}
+            maxWidthChars={Math.floor(maxWidthChars * 0.5)}
           />
-          {notification.body && (
-            <label
-              cssClasses={["body"]}
-              valign={CENTER}
-              wrap={true}
-              maxWidthChars={maxBodyChars}
-              label={notification.body}
-            />
+          <label cssClasses={["time"]} hexpand halign={END} label={timeLabel} />
+          {(typeof showDismissButton === "boolean"
+            ? showDismissButton
+            : showDismissButton.get()) && (
+            <button
+              cssClasses={["dismiss-button"]}
+              visible={variant === "stored" ? isHovered : true}
+              onClicked={() => onDismiss?.(notification.id)}
+              tooltipText="Dismiss notification"
+            >
+              <image iconName="window-close-symbolic" pixelSize={12} />
+            </button>
           )}
         </box>
-      </box>
 
-      {/* Actions */}
-      {notification.actions.length > 0 && (
-        <box cssClasses={["actions"]}>
-          {notification.actions.map(({ label, action }) => (
-            <button
-              hexpand
-              cssClasses={["action-button"]}
-              onClicked={() => onAction?.(notification.id, action)}
-            >
-              <label label={label} halign={CENTER} hexpand />
-            </button>
-          ))}
+        <Gtk.Separator cssClasses={["notification-separator"]} />
+
+        {/* Content */}
+        <box cssClasses={["content"]} overflow={Gtk.Overflow.HIDDEN}>
+          <box
+            cssClasses={["thumb"]}
+            visible={Boolean(NotificationIcon(notification))}
+            halign={CENTER}
+            valign={CENTER}
+          >
+            {NotificationIcon(notification)}
+          </box>
+
+          <box
+            orientation={Gtk.Orientation.VERTICAL}
+            cssClasses={["text-content"]}
+            hexpand={true}
+            halign={START}
+            valign={START}
+            overflow={Gtk.Overflow.HIDDEN}
+          >
+            <label
+              cssClasses={["title"]}
+              valign={START}
+              wrap={true}
+              wrapMode={Pango.WrapMode.WORD_CHAR}
+              label={notification.summary}
+              ellipsize={Pango.EllipsizeMode.END}
+              widthChars={titleMaxChars}
+              lines={2}
+            />
+            {notification.body && (
+              <label
+                cssClasses={["body"]}
+                valign={START}
+                wrap={true}
+                wrapMode={Pango.WrapMode.WORD_CHAR}
+                label={notification.body}
+                ellipsize={Pango.EllipsizeMode.END}
+                widthChars={bodyMaxChars}
+                lines={5}
+              />
+            )}
+          </box>
         </box>
-      )}
-    </box>
+
+        {/* Actions */}
+        {notification.actions.length > 0 && (
+          <box cssClasses={["actions"]}>
+            {notification.actions.map(({ label, action }) => (
+              <button
+                hexpand
+                cssClasses={["action-button"]}
+                onClicked={() => onAction?.(notification.id, action)}
+              >
+                <label
+                  label={label}
+                  halign={CENTER}
+                  hexpand
+                  ellipsize={Pango.EllipsizeMode.END}
+                />
+              </button>
+            ))}
+          </box>
+        )}
+      </box>
+    </Adw.Clamp>
   );
 }

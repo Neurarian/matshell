@@ -84,6 +84,7 @@ ______________________________________________________________________
 - libastal-battery-git
 - libastal-powerprofiles-git
 - libgtop
+- libadwaita
 - hyprland
 - coreutils
 - dart-sass

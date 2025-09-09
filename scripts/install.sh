@@ -110,6 +110,7 @@ install_dependencies() {
         ["astal-powerprofiles"]="libastal-powerprofiles-git"
         ["matugen"]="matugen-bin"
         ["libgtop"]="libgtop"
+        ["libadwaita"]="libadwaita"
         ["hyprland"]="hyprland"
         ["coreutils"]="coreutils"
         ["dart-sass"]="dart-sass"

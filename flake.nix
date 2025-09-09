@@ -66,6 +66,7 @@
         gjs
         typescript
         libgtop
+        libadwaita
       ])
       ++ (with astalPkgs; [
         astal4

@@ -4,8 +4,8 @@ import { createBinding, onCleanup } from "ags";
 import Bluetooth from "gi://AstalBluetooth";
 import { BluetoothDevices } from "./modules/BluetoothDevices.tsx";
 import {
-  getBluetoothIcon,
-  getBluetoothText,
+  bluetoothIcon,
+  bluetoothTooltip,
   isExpanded,
   setIsExpanded,
 } from "utils/bluetooth";
@@ -27,10 +27,7 @@ export const BluetoothBox = () => {
           )((powered) => (powered ? ["button"] : ["button-disabled"]))}
         >
           <image
-            iconName={createBinding(
-              bluetooth,
-              "devices",
-            )(() => getBluetoothIcon(bluetooth))}
+            iconName={bluetoothIcon}
           />
         </button>
         <button
@@ -45,7 +42,7 @@ export const BluetoothBox = () => {
             <label
               xalign={0}
               hexpand={true}
-              label={getBluetoothText(bluetooth) || "Bluetooth"}
+              label={bluetoothTooltip || "Bluetooth"}
             />
             <image
               iconName="pan-end-symbolic"

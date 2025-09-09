@@ -17,8 +17,8 @@ export {
 
 // Formatting utilities
 export {
-  getBluetoothIcon,
-  getBluetoothText,
+  bluetoothIcon,
+  bluetoothTooltip,
   getBluetoothDeviceText,
   getDeviceStatusText,
 } from "./formatting.ts";

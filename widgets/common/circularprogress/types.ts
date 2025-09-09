@@ -29,6 +29,5 @@ export interface CircularProgressProps {
   fillRule?: Gsk.FillRule;
   startAt?: number;
   endAt?: number;
-  child?: Gtk.Widget | JSX.Element | JSX.Element[];
-  children?: Gtk.Widget | JSX.Element | JSX.Element[];
+  children?: JSX.Element | JSX.Element[];
 }

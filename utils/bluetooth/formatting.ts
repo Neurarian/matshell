@@ -1,16 +1,22 @@
 import Bluetooth from "gi://AstalBluetooth";
-import type { BluetoothIconType } from "./types.ts";
+import { createBinding, createComputed } from "ags";
 
-export const getBluetoothIcon = (bt: Bluetooth.Bluetooth): BluetoothIconType => {
-  if (!bt.is_powered) return "bluetooth-disabled-symbolic";
-  if (bt.is_connected) return "bluetooth-active-symbolic";
-  return "bluetooth-disconnected-symbolic";
-};
+const bluetooth = Bluetooth.get_default();
+const isPowered = createBinding(bluetooth, "is_powered");
+const isConnected = createBinding(bluetooth, "is_connected");
 
-export const getBluetoothText = (bt: Bluetooth.Bluetooth): string => {
-  if (!bt.is_powered) return "Bluetooth off";
-  return "Bluetooth on";
-};
+export const bluetoothIcon = createComputed(
+  [isPowered, isConnected],
+  (powered, connected) => {
+    if (!powered) return "bluetooth-disabled-symbolic";
+    if (connected) return "bluetooth-active-symbolic";
+    return "bluetooth-disconnected-symbolic";
+  },
+);
+
+export const bluetoothTooltip = isPowered((powered) =>
+  powered ? "Bluetooth on" : "Bluetooth off",
+);
 
 export const getBluetoothDeviceText = (device: Bluetooth.Device): string => {
   let batteryText = "";

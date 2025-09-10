@@ -1,7 +1,6 @@
-// widgets/sidebar/ClockWidget.tsx
-import Gtk from "gi://Gtk?version=4.0";
-import { With } from "gnim";
-import { createState } from "ags";
+// widgets/sidebar/modules/ClockWidget.tsx
+import { Gtk } from "ags/gtk4";
+import { createState, With } from "ags";
 
 /** ---------- State ---------- **/
 

@@ -2,15 +2,21 @@ import app from "ags/gtk4/app";
 import { exec } from "ags/process";
 import { monitorFile } from "ags/file";
 import GLib from "gi://GLib?version=2.0";
-import Bar from "./widgets/bar/main.tsx";
-import SystemMenu from "./widgets/system-menu/main.tsx";
-import OnScreenDisplay from "./widgets/osd/main.tsx";
-import Notifications from "./widgets/notifications/main.tsx";
-import LogoutMenu from "widgets/logout-menu/main.tsx";
-import Applauncher from "./widgets/launcher/main.tsx";
-import MusicPlayer from "./widgets/music/main.tsx";
-import ControlPanel from "./widgets/control-panel/main.tsx";
 
+// Widgets
+import {
+  Bar,
+  SystemMenu,
+  OnScreenDisplay,
+  Notifications,
+  LogoutMenu,
+  Applauncher,
+  MusicPlayer,
+  ControlPanel,
+  Sidebar,
+} from "./widgets";
+
+// Style paths
 const scss = `${GLib.get_user_config_dir()}/ags/style/main.scss`;
 const css = `${GLib.get_user_config_dir()}/ags/style/main.css`;
 const icons = `${GLib.get_user_config_dir()}/ags/assets/icons`;
@@ -23,27 +29,38 @@ function reloadCss() {
 }
 
 app.start({
-  icons: icons,
-  css: css,
+  icons,
+  css,
   instanceName: "matshell",
+
   requestHandler(argv: string[], res: (response: any) => void) {
     const request = argv[0];
-    if (request === "launcher") {
-      app.toggle_window("launcher");
-      res("app launcher toggled");
-    } else if (request === "logout") {
-      app.toggle_window("logout-menu");
-      res("logout menu toggled");
-    } else {
-      res("not found");
+    switch (request) {
+      case "launcher":
+        app.toggle_window("launcher");
+        res("app launcher toggled");
+        break;
+      case "logout":
+        app.toggle_window("logout-menu");
+        res("logout menu toggled");
+        break;
+      case "sidebar":
+        app.toggle_window("sidebar");
+        res("sidebar toggled");
+        break;
+      default:
+        res("not found");
     }
   },
+
   main() {
+    // Compile & watch SCSS
     exec(`sass ${scss} ${css}`);
     styleDirectories.forEach((dir) =>
       monitorFile(`${GLib.get_user_config_dir()}/ags/style/${dir}`, reloadCss),
     );
 
+    // Initialize widgets
     Bar();
     Notifications();
     OnScreenDisplay();
@@ -52,5 +69,6 @@ app.start({
     Applauncher();
     LogoutMenu();
     ControlPanel();
+    Sidebar();
   },
 });

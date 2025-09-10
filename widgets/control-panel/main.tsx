@@ -1,17 +1,17 @@
 import app from "ags/gtk4/app";
 import { Astal, Gtk } from "ags/gtk4";
-import { createState, createBinding } from "ags";
+import { createState } from "ags";
 import { OptionToggle } from "./modules/OptionToggle.tsx";
 import { OptionSelect } from "./modules/OptionSelect.tsx";
 import { Section } from "./modules/Section.tsx";
 import { CategoryButton } from "./modules/CategoryButton.tsx";
-
 import options from "options.ts";
 
 export default function ControlPanel() {
   const { TOP, BOTTOM, LEFT } = Astal.WindowAnchor;
 
-  const [visible, _setVisible] = createState(false);
+  // Panel States
+  const [visible] = createState(false);
   const [matshellSettingsExpanded, setMatshellSettingsExpanded] =
     createState(false);
   const [barExpanded, setBarExpanded] = createState(false);
@@ -52,30 +52,50 @@ export default function ControlPanel() {
       widthRequest={285}
     >
       <box orientation={Gtk.Orientation.VERTICAL}>
+        {/* App Launcher Button */}
         <button
           onClicked={() => app.toggle_window("launcher")}
           cssClasses={["category-button"]}
         >
           <box hexpand={true}>
-            <image iconName={"view-grid-symbolic"} />
+            <image iconName="view-grid-symbolic" />
             <label
-              label={"App Launcher"}
+              label="App Launcher"
               halign={Gtk.Align.START}
               hexpand={true}
             />
           </box>
         </button>
+
         <Gtk.Separator />
+
+        {/* Toggle Sidebar Button */}
+        <button
+          onClicked={() => app.toggle_window("sidebar")}
+          cssClasses={["category-button"]}
+        >
+          <box hexpand={true}>
+            <image iconName="open-menu-symbolic" />
+            <label
+              label="Toggle Sidebar"
+              halign={Gtk.Align.START}
+              hexpand={true}
+            />
+          </box>
+        </button>
+
+        <Gtk.Separator />
+
+        {/* Matshell Settings */}
         <CategoryButton
           title="Matshell Settings"
           icon="preferences-system-symbolic"
           expanded={matshellSettingsExpanded}
           onToggle={() => setMatshellSettingsExpanded((prev) => !prev)}
         >
-          {/* Idk why, but children wont render if first child is a box */}
           <></>
           <box orientation={Gtk.Orientation.VERTICAL}>
-            {/* Bar Settings Category */}
+            {/* Bar Settings */}
             <CategoryButton
               title="Bar"
               icon="topbar-show-symbolic"
@@ -103,7 +123,7 @@ export default function ControlPanel() {
               </box>
             </CategoryButton>
 
-            {/* Cava Settings Category */}
+            {/* Cava Settings */}
             <CategoryButton
               title="Cava"
               icon="audio-x-generic-symbolic"
@@ -138,7 +158,7 @@ export default function ControlPanel() {
               </box>
             </CategoryButton>
 
-            {/* System Menu Settings Category */}
+            {/* System Menu Settings */}
             <CategoryButton
               title="System Menu"
               icon="emblem-system-symbolic"

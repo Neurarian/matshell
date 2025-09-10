@@ -67,6 +67,8 @@
         typescript
         libgtop
         libadwaita
+        libsoup_3
+        glib-networking
       ])
       ++ (with astalPkgs; [
         astal4

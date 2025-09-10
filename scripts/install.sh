@@ -111,6 +111,8 @@ install_dependencies() {
         ["matugen"]="matugen-bin"
         ["libgtop"]="libgtop"
         ["libadwaita"]="libadwaita"
+        ["libsoup"]="libsoup3"
+        ["glib-networking"]="glib-networking"
         ["hyprland"]="hyprland"
         ["coreutils"]="coreutils"
         ["dart-sass"]="dart-sass"

@@ -49,7 +49,9 @@ export default function Sidebar(
         <ClockWidget />
         <Gtk.Separator />
         <WeatherWidget />
+        {/*
         <TemplateWidget />
+        */}
         {/* Extra widgets */}
         {children}
       </box>

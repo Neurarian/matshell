@@ -5,6 +5,7 @@ import { createState } from "ags";
 import ClockWidget from "./modules/ClockWidget";
 import WeatherWidget from "./modules/WeatherWidget";
 import TemplateWidget from "./modules/BaseTemplateWidget";
+import options from "options";
 
 /** ---------- Header (spacer only) ---------- **/
 function Header() {
@@ -12,8 +13,13 @@ function Header() {
 }
 
 /** ---------- Sidebar Window ---------- **/
-export default function Sidebar(props: { children?: (Gtk.Widget | JSX.Element)[] } = {}) {
+export default function Sidebar(
+  props: {
+    children?: Gtk.Widget | JSX.Element | (Gtk.Widget | JSX.Element)[];
+  } = {},
+) {
   const { TOP, LEFT, BOTTOM } = Astal.WindowAnchor;
+  const { NORMAL, EXCLUSIVE } = Astal.Exclusivity;
   const [visible] = createState(false);
   const { children = [] } = props;
 
@@ -22,7 +28,10 @@ export default function Sidebar(props: { children?: (Gtk.Widget | JSX.Element)[]
       name="sidebar"
       cssClasses={["sidebar"]}
       anchor={TOP | LEFT | BOTTOM}
-      exclusivity={Astal.Exclusivity.EXCLUSIVE}
+      exclusivity={options["bar.style"]((style) => {
+        if (style === "corners") return NORMAL;
+        else return EXCLUSIVE;
+      })}
       layer={Astal.Layer.TOP}
       application={app}
       visible={visible}
@@ -40,6 +49,7 @@ export default function Sidebar(props: { children?: (Gtk.Widget | JSX.Element)[]
         <ClockWidget />
         <Gtk.Separator />
         <WeatherWidget />
+        <TemplateWidget />
         {/* Extra widgets */}
         {children}
       </box>

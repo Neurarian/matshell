@@ -66,6 +66,8 @@
         gjs
         typescript
         libgtop
+        libsoup_3
+        glib-networking
       ])
       ++ (with astalPkgs; [
         astal4

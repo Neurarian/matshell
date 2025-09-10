@@ -1,0 +1,69 @@
+@use "../../../layouts" as *;
+@use "../../../abstracts" as *;
+@use "sass:color";
+
+.weather-widget {
+  background: $barBg;
+  border-radius: calc(#{$round} * 3);
+  padding: $spacing-md;
+  margin: $spacing-md;
+  color: $fg;
+
+  .current-weather {
+    .current-icon {
+      font-family: "Material Symbols Outlined";
+      font-size: 100px;
+      min-width: 72px;
+      min-height: 72px;
+      color: $fg;
+      margin-bottom: 0.5rem;
+    }
+
+    .weather-temp {
+      font-size: $font; /* avoid calc() */
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .weather-desc {
+      font-size: $font; /* avoid calc() */
+      color: $outline;
+      margin-bottom: 0.2rem;
+    }
+
+    .weather-extra {
+      font-size: $font; /* avoid calc() */
+      color: $outline;
+    }
+    .weather-extra-icon {
+      font-family: "Material Symbols Outlined";
+      font-size: 25px;
+    }
+  }
+
+  .forecast-row {
+    margin-top: $spacing-sm;
+
+    .forecast-item {
+      min-width: 3rem;
+
+      .forecast-hour {
+        font-size: $font; /* avoid calc() */
+        color: $outline;
+      }
+
+      .forecast-icon {
+        font-family: "Material Symbols Outlined";
+        font-size: 32px;
+        margin: 0.3rem 0;
+        color: $fg;
+      }
+
+      .forecast-temp {
+        font-size: $font; /* avoid calc() */
+        font-weight: 500;
+        color: $fg;
+      }
+    }
+  }
+}

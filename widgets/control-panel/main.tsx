@@ -12,14 +12,23 @@ export default function ControlPanel() {
 
   // Panel States
   const [visible] = createState(false);
-  const [matshellSettingsExpanded, setMatshellSettingsExpanded] = createState(false);
+  const [matshellSettingsExpanded, setMatshellSettingsExpanded] =
+    createState(false);
   const [barExpanded, setBarExpanded] = createState(false);
   const [cavaExpanded, setCavaExpanded] = createState(false);
   const [systemMenuExpanded, setSystemMenuExpanded] = createState(false);
 
   const cavaStyleOptions = [
-    "catmull_rom", "smooth", "bars", "jumping_bars", "dots",
-    "circular", "particles", "wave_particles", "waterfall", "mesh",
+    "catmull_rom",
+    "smooth",
+    "bars",
+    "jumping_bars",
+    "dots",
+    "circular",
+    "particles",
+    "wave_particles",
+    "waterfall",
+    "mesh",
   ];
 
   return (
@@ -28,9 +37,12 @@ export default function ControlPanel() {
       cssClasses={["control-panel"]}
       anchor={options["bar.position"]((pos) => {
         switch (pos) {
-          case "top": return TOP | LEFT;
-          case "bottom": return BOTTOM | LEFT;
-          default: return TOP | LEFT;
+          case "top":
+            return TOP | LEFT;
+          case "bottom":
+            return BOTTOM | LEFT;
+          default:
+            return TOP | LEFT;
         }
       })}
       exclusivity={Astal.Exclusivity.NORMAL}
@@ -47,7 +59,11 @@ export default function ControlPanel() {
         >
           <box hexpand={true}>
             <image iconName="view-grid-symbolic" />
-            <label label="App Launcher" halign={Gtk.Align.START} hexpand={true} />
+            <label
+              label="App Launcher"
+              halign={Gtk.Align.START}
+              hexpand={true}
+            />
           </box>
         </button>
 
@@ -60,7 +76,11 @@ export default function ControlPanel() {
         >
           <box hexpand={true}>
             <image iconName="open-menu-symbolic" />
-            <label label="Toggle Sidebar" halign={Gtk.Align.START} hexpand={true} />
+            <label
+              label="Toggle Sidebar"
+              halign={Gtk.Align.START}
+              hexpand={true}
+            />
           </box>
         </button>
 
@@ -75,7 +95,6 @@ export default function ControlPanel() {
         >
           <></>
           <box orientation={Gtk.Orientation.VERTICAL}>
-
             {/* Bar Settings */}
             <CategoryButton
               title="Bar"
@@ -86,9 +105,20 @@ export default function ControlPanel() {
               <></>
               <box orientation={Gtk.Orientation.VERTICAL}>
                 <Section title="Bar Settings">
-                  <OptionSelect option="bar.position" label="Position" choices={["top", "bottom"]} />
-                  <OptionSelect option="bar.style" label="Style" choices={["expanded", "floating", "corners"]} />
-                  <OptionToggle option="bar.modules.showOsIcon" label="Show OS Icon" />
+                  <OptionSelect
+                    option="bar.position"
+                    label="Position"
+                    choices={["top", "bottom"]}
+                  />
+                  <OptionSelect
+                    option="bar.style"
+                    label="Style"
+                    choices={["expanded", "floating", "corners"]}
+                  />
+                  <OptionToggle
+                    option="bar.modules.showOsIcon"
+                    label="Show OS Icon"
+                  />
                 </Section>
               </box>
             </CategoryButton>
@@ -104,12 +134,26 @@ export default function ControlPanel() {
               <box orientation={Gtk.Orientation.VERTICAL}>
                 <Section title="Cava Settings Bar">
                   <OptionToggle option="bar.modules.cava.show" label="Enable" />
-                  <OptionSelect option="bar.modules.cava.style" label="Cava Style" choices={cavaStyleOptions} />
-                  <OptionToggle option="bar.modules.media.cava.show" label="Enable Cover Cava" />
+                  <OptionSelect
+                    option="bar.modules.cava.style"
+                    label="Cava Style"
+                    choices={cavaStyleOptions}
+                  />
+                  <OptionToggle
+                    option="bar.modules.media.cava.show"
+                    label="Enable Cover Cava"
+                  />
                 </Section>
                 <Section title="Cava Settings Music Player">
-                  <OptionToggle option="musicPlayer.modules.cava.show" label="Enable" />
-                  <OptionSelect option="musicPlayer.modules.cava.style" label="Cava Style" choices={cavaStyleOptions} />
+                  <OptionToggle
+                    option="musicPlayer.modules.cava.show"
+                    label="Enable"
+                  />
+                  <OptionSelect
+                    option="musicPlayer.modules.cava.style"
+                    label="Cava Style"
+                    choices={cavaStyleOptions}
+                  />
                 </Section>
               </box>
             </CategoryButton>
@@ -124,12 +168,17 @@ export default function ControlPanel() {
               <></>
               <box orientation={Gtk.Orientation.VERTICAL}>
                 <Section title="System Menu Settings">
-                  <OptionToggle option="system-menu.modules.wifi.enableGnomeControlCenter" label="WiFi Advanced Settings" />
-                  <OptionToggle option="system-menu.modules.bluetooth.enableOverskride" label="BT Advanced Settings" />
+                  <OptionToggle
+                    option="system-menu.modules.wifi.enableGnomeControlCenter"
+                    label="WiFi Advanced Settings"
+                  />
+                  <OptionToggle
+                    option="system-menu.modules.bluetooth.enableOverskride"
+                    label="BT Advanced Settings"
+                  />
                 </Section>
               </box>
             </CategoryButton>
-
           </box>
         </CategoryButton>
       </box>

@@ -22,10 +22,8 @@ export const Toggles = () => {
       <box visible={networkPrimary((p) => p !== Network.Primary.WIRED)}>
         <WiFiBox />
       </box>
-
       {/* Bluetooth Box */}
-      <box visible={bluetoothAdapter}></box>
-      <BluetoothBox />
+      {bluetooth?.adapter ? <BluetoothBox /> : <></>}
     </box>
   );
 };

@@ -85,6 +85,13 @@ export class ConfigManager {
     }
   }
 
+  initialize(): void {
+    if (!FileOperations.fileExists(this.configPath)) {
+      this.save();
+    }
+    this.load();
+  }
+
   save(): void {
     // Prepare config with all non-cached options
     const config: Record<string, ConfigValue> = {};
@@ -94,7 +101,10 @@ export class ConfigManager {
       }
     }
 
-    const saved = FileOperations.saveConfigToFileIfChanged(this.configPath, config);
+    const saved = FileOperations.saveConfigToFileIfChanged(
+      this.configPath,
+      config,
+    );
     if (saved) {
       // Update cached config with new values
       this.loadedConfig = { ...config };

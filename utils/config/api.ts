@@ -31,8 +31,8 @@ export function initializeConfig(
     });
   }
 
+  configManager.initialize();
   configManager.watchChanges();
 
   return options;
 }
-

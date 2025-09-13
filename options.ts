@@ -10,12 +10,14 @@ const options = await (async () => {
   const config = initializeConfig(
     `${GLib.get_user_config_dir()}/ags/config.json`,
     {
-      "wallpaper.folder": defineOption(
-        `${GLib.get_home_dir()}/Pictures/wallpapers`,
+      "app.browser": defineOption("zen"),
+      "app.file-manager": defineOption("nautilus"),
+      "app.resource-monitor": defineOption("resources"),
+      "app.terminal": defineOption("wezterm"),
+      "app.wifi": defineOption(
+        "XDG_CURRENT_DESKTOP=GNOME gnome-control-center wifi",
       ),
-      "wallpaper.current": defineOption(currentWallpaper, {
-        useCache: true,
-      }),
+      "app.audio": defineOption("pwvucontrol"),
       "bar.position": defineOption("top"), // "top", "bottom"
       "bar.style": defineOption("expanded"), // "floating" or "expanded"
       "bar.modules.cava.show": defineOption(false),
@@ -26,8 +28,14 @@ const options = await (async () => {
       "bar.modules.showOsIcon": defineOption(true),
       "musicPlayer.modules.cava.show": defineOption(true),
       "musicPlayer.modules.cava.style": defineOption("catmull_rom"),
-      "system-menu.modules.bluetooth.enableOverskride": defineOption(true),
-      "system-menu.modules.wifi.enableGnomeControlCenter": defineOption(true),
+      "system-menu.modules.bluetooth-advanced.enable": defineOption(true),
+      "system-menu.modules.wifi-advanced.enable": defineOption(true),
+      "wallpaper.folder": defineOption(
+        `${GLib.get_home_dir()}/Pictures/wallpapers`,
+      ),
+      "wallpaper.current": defineOption(currentWallpaper, {
+        useCache: true,
+      }),
     },
   );
   return config;

@@ -3,6 +3,7 @@ import Gsk from "gi://Gsk";
 import { execAsync } from "ags/process";
 import SystemMonitor from "utils/hwmonitor";
 import { CircularProgressBar } from "widgets/common/circularprogress";
+import options from "options";
 
 export default function Mem() {
   const sysmon = SystemMonitor.get_default();
@@ -22,7 +23,7 @@ export default function Mem() {
           cssClasses={["ram-inner"]}
           onClicked={async () => {
             try {
-              await execAsync("missioncenter");
+              await execAsync(String(options["app.resource-monitor"].get()));
             } catch (error) {
               console.error("Error:", error);
             }

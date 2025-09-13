@@ -128,7 +128,7 @@ install_dependencies() {
         ["bluez"]="bluez"
         ["bluez-utils"]="bluez-utils"
         ["gnome-control-center"]="gnome-control-center"
-        ["mission-center"]="mission-center"
+        ["resources"]="resources"
         ["overskride"]="overskride"
         ["pwvucontrol"]="pwvucontrol"
         ["upower"]="upower"
@@ -144,7 +144,7 @@ install_dependencies() {
     echo "Optional dependencies provide additional functionality:"
     echo "  • bluez/bluez-utils: Bluetooth support"
     echo "  • gnome-control-center: System settings panel"
-    echo "  • mission-center: System monitor"
+    echo "  • resources: System monitor"
     echo "  • overskride: More advanced Bluetooth manager"
     echo "  • pwvucontrol: PipeWire volume control"
     echo "  • upower: Battery management"
@@ -158,7 +158,7 @@ install_dependencies() {
         done
     else
         echo "Skipping optional dependencies. You can install the ones you need later:"
-        echo "  yay -S bluez bluez-utils gnome-control-center mission-center overskride pwvucontrol upower brightnessctl"
+        echo "  yay -S bluez bluez-utils gnome-control-center resources overskride pwvucontrol upower brightnessctl"
     fi
 
     echo "Dependency installation complete!"

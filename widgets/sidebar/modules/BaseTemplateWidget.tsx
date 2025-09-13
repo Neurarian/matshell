@@ -1,4 +1,4 @@
-// ~/.config/ags/widgets/sidebar/modules/BaseTemplateWidget.tsx
+// widgets/sidebar/modules/BaseTemplateWidget.tsx
 import { Gtk } from "ags/gtk4";
 
 interface BaseItemProps {

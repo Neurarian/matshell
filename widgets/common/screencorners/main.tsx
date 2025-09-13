@@ -41,8 +41,6 @@ export default function ScreenCorners({ monitor }: { monitor: Gdk.Monitor }) {
         const surface = self.get_native()?.get_surface();
         if (surface) {
           surface.set_input_region(new Cairo.Region());
-        } else {
-          console.warn("Failed to set corner input region");
         }
         onCleanup(() => self.destroy());
       }}

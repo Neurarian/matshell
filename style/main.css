@@ -1,5 +1,5 @@
 /* prelude */
-/* comment if using end4 backend*/
+/* Theme mode and scheme variables */
 /*
 * Css Colors
 * Generated with Matugen
@@ -10,16 +10,8 @@
 /* button colors */
 /* hw circular proc colors */
 /* numeric variables */
-/* Theme mode and scheme variables */
-/* uncomment if using end4 backend*/
-/* @use "variables_end4" as *;
-@use "_material-colors_end4" as *; */
 /* mixins */
 /* buttons */
-/* comment this when using end4 backend */
-/* uncomment when using end4 backend */
-/* @forward "variables_end4";
-@forward "_material-colors_end4"; */
 * {
   all: unset;
   font-family: FiraCode Nerd Font;
@@ -64,15 +56,16 @@ popover {
 popover modelbutton {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border-radius: 5rem;
+  border: 1px solid rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border-radius: 0;
-  padding: 0.4rem 0.7rem;
 }
 popover modelbutton:hover {
-  /* would prefer to handle this with transparency, 
-  but that currently glitches on Hyprland */
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
+  background: rgba(71, 53, 48, 0.99);
+}
+popover modelbutton {
+  border-radius: 0;
+  padding: 0.4rem 0.7rem;
 }
 popover modelbutton:first-child {
   border-radius: 8px 8px 0 0;
@@ -87,24 +80,24 @@ popover modelbutton:only-child {
 /* buttons */
 .button {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  background: rgba(169.6, 90.9, 62.4, 0.5);
-  border-radius: 5rem;
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+  border-radius: calc(8px * 1.97);
   padding: 0.4rem;
 }
 .button:hover {
-  background: rgba(113.675862069, 60.9265086207, 41.824137931, 0.5);
+  background: rgba(255, 181, 158, 0.3);
 }
 
 .button-disabled {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border-radius: 5rem;
+  border: 1px solid rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 1.97);
   padding: 0.4rem;
 }
 .button-disabled:hover {
-  /* would prefer to handle this with transparency, 
-  but that currently glitches on Hyprland */
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
+  background: rgba(71, 53, 48, 0.99);
 }
 
 /* modules & windows */
@@ -116,12 +109,6 @@ popover modelbutton:only-child {
   border-radius: calc(8px * 4);
   font-size: 1.1rem;
   /* Common styles for both modes */
-  /* OS Icon */
-  /* Hyperland */
-  /* music */
-  /* tray */
-  /* hw-monitor */
-  /* System menu */
 }
 .Bar cava {
   opacity: 0.1;
@@ -129,11 +116,17 @@ popover modelbutton:only-child {
 .Bar .module {
   margin: 0 0.4rem;
 }
+.Bar {
+  /* OS Icon */
+}
 .Bar .OsIcon {
   -gtk-icon-size: 2rem;
   margin-left: 0.8rem;
   margin-right: -0.5rem;
   color: rgb(220, 193, 185);
+}
+.Bar {
+  /* Hyperland */
 }
 .Bar .Workspaces {
   margin: 0.4rem 0.8rem;
@@ -182,6 +175,9 @@ popover modelbutton:only-child {
   background: rgb(148.6, 106.15, 76.65);
   box-shadow: inset -2px -2px 2px rgb(111.45, 79.6125, 57.4875);
 }
+.Bar {
+  /* music */
+}
 .Bar .Media > box {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   border-radius: 16px;
@@ -202,6 +198,9 @@ popover modelbutton:only-child {
   min-height: 2rem;
   margin: 0.1rem 0.4rem;
 }
+.Bar {
+  /* tray */
+}
 .Bar .SysTray {
   background: none;
 }
@@ -216,6 +215,9 @@ popover modelbutton:only-child {
 }
 .Bar .SysTray.active {
   background: rgba(71, 53, 48, 0.6);
+}
+.Bar {
+  /* hw-monitor */
 }
 .Bar .bar-hw-ram-box {
   margin-right: 0.4rem;
@@ -259,6 +261,9 @@ popover modelbutton:only-child {
   margin: 1px 0px 0px 1px;
   font-size: 1.3rem;
 }
+.Bar {
+  /* System menu */
+}
 .Bar .system-menu-toggler box {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   margin: 0.4rem 0;
@@ -297,6 +302,12 @@ popover modelbutton:only-child {
   margin: 0 0.3rem;
 }
 
+/* Corner-integrated style */
+.bar-style-corners {
+  background: rgba(30, 16, 12, 0.5);
+  border-radius: 0;
+}
+
 /* variables & mixins */
 /* general styles */
 box.applauncher {
@@ -313,7 +324,7 @@ box.applauncher box.search {
   margin: 0.4rem;
   padding: 0.4rem;
   margin: 1rem 0.5rem 1rem 0.5rem;
-  background-color: rgba(169.6, 90.9, 62.4, 0.4);
+  background-color: rgba(255, 181, 158, 0.15);
 }
 box.applauncher box.search image {
   -gtk-icon-size: 2rem;
@@ -334,15 +345,16 @@ box.applauncher box.search entry menu separator {
 box.applauncher box.search entry menu menuitem {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border-radius: 5rem;
+  border: 1px solid rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border-radius: 0;
-  padding: 0.4rem 0.7rem;
 }
 box.applauncher box.search entry menu menuitem:hover {
-  /* would prefer to handle this with transparency, 
-  but that currently glitches on Hyprland */
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
+  background: rgba(71, 53, 48, 0.99);
+}
+box.applauncher box.search entry menu menuitem {
+  border-radius: 0;
+  padding: 0.4rem 0.7rem;
 }
 box.applauncher box.search entry menu menuitem:first-child {
   border-radius: 8px 8px 0 0;
@@ -375,28 +387,19 @@ box.applauncher box.apps button label.name {
 box.applauncher box.apps button label.description {
   color: rgba(249, 220, 212, 0.8);
 }
-box.applauncher box.apps button:hover {
+box.applauncher box.apps button:focus, box.applauncher box.apps button:hover {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  background: rgba(71, 53, 48, 0.6);
-  border-radius: 5rem;
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+  border-radius: calc(8px * 1.97);
   padding: 0.4rem;
 }
-box.applauncher box.apps button:hover:hover {
-  /* would prefer to handle this with transparency, 
-  but that currently glitches on Hyprland */
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
+box.applauncher box.apps button:focus:hover, box.applauncher box.apps button:hover:hover {
+  background: rgba(255, 181, 158, 0.3);
 }
-box.applauncher box.apps button:focus {
-  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  background: rgba(71, 53, 48, 0.6);
-  border-radius: 5rem;
-  padding: 0.4rem;
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
-}
-box.applauncher box.apps button:focus:hover {
-  /* would prefer to handle this with transparency, 
-  but that currently glitches on Hyprland */
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
+box.applauncher box.apps button:focus, box.applauncher box.apps button:hover {
+  background-color: rgba(255, 181, 158, 0.3);
+  border: transparent;
 }
 box.applauncher box.not-found {
   padding: 1rem;
@@ -431,18 +434,19 @@ box.logout-background .logout-menu button {
   padding: 0.4rem;
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border-radius: 5rem;
+  border: 1px solid rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 1.97);
   padding: 0.4rem;
+}
+box.logout-background .logout-menu button:hover {
+  background: rgba(71, 53, 48, 0.99);
+}
+box.logout-background .logout-menu button {
   margin: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
-box.logout-background .logout-menu button:hover {
-  /* would prefer to handle this with transparency, 
-  but that currently glitches on Hyprland */
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
-}
 box.logout-background .logout-menu button:focus {
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
+  background: rgba(255, 181, 158, 0.3);
 }
 box.logout-background .logout-menu button label {
   font-family: "Material Symbols Outlined";
@@ -460,12 +464,12 @@ box.logout-background .logout-menu button label {
   padding: 0.4rem;
   background: none;
   padding: 0rem;
-  margin-top: 0.7rem;
+  margin-top: 0.75rem;
 }
 .music.window .cover {
   background-position: center;
   background-size: cover;
-  border-radius: 8px;
+  border-radius: 16px;
   box-shadow: 0 1px 2px -1px rgba(30, 16, 12, 0.5);
   margin: 0.4rem;
   min-height: 13rem;
@@ -474,14 +478,14 @@ box.logout-background .logout-menu button label {
 }
 .music.window .blurred-cover {
   border-radius: 8px;
-  opacity: 0.9;
+  opacity: 0.8;
 }
 .music.window .cava-container cava {
   opacity: 0.2;
 }
 
 .music.window .info {
-  margin: 0.5rem;
+  margin: 0.75rem;
 }
 .music.window .info label,
 .music.window .info scale {
@@ -517,12 +521,13 @@ box.logout-background .logout-menu button label {
 /* variables & mixins */
 /* general styles */
 .notification {
-  margin: 5px 5px 5px 10px;
-  min-width: 20rem;
+  margin: 0.75rem;
+  min-width: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   background-color: rgba(30, 16, 12, 0.5);
   border: 1px solid transparent;
-  padding: 0.25rem 0.75rem;
+  padding: 0.4rem 0.75rem;
 }
 .notification.critical {
   border: 1px solid #d17678;
@@ -536,6 +541,9 @@ box.logout-background .logout-menu button label {
   font-size: 0.9rem;
   font-weight: bold;
   color: rgba(249, 220, 212, 0.7);
+}
+.notification .header .dismiss-button {
+  margin: -0.5rem 0rem;
 }
 .notification separator {
   background-color: rgba(249, 220, 212, 0.5);
@@ -584,7 +592,7 @@ box.logout-background .logout-menu button label {
   font-size: 0.9rem;
 }
 .notification .actions .action-button:hover {
-  background: #473530;
+  background: rgba(71, 53, 48, 0.99);
 }
 
 /* variables & mixins */
@@ -633,6 +641,7 @@ box.logout-background .logout-menu button label {
   padding: 0.4rem;
   margin-top: 0.75rem;
   margin-right: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 .system-menu > box {
   border-radius: calc(16px - 0.4rem - 2px);
@@ -696,29 +705,30 @@ box.logout-background .logout-menu button label {
   transform: rotate(90deg);
 }
 
-.system-menu-list { 
+.system-menu-list {
   box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
   margin: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .network-item {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border-radius: 5rem;
+  border: 1px solid rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 1.97);
   padding: 0.4rem;
+}
+.network-item:hover {
+  background: rgba(71, 53, 48, 0.99);
+}
+.network-item {
   border-radius: calc(16px - 0.4rem - 2px);
   margin: 0.25rem 0.4rem 0.4rem 0.75rem;
   padding: 0.75rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-.network-item:hover {
-  /* would prefer to handle this with transparency, 
-  but that currently glitches on Hyprland */
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
 }
 .network-item image:first-child {
   margin-right: 0.4rem;
@@ -727,17 +737,20 @@ box.logout-background .logout-menu button label {
   margin: 0 0.4rem;
 }
 
-.network-item-connected {
+.network-item-active {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  background: rgba(169.6, 90.9, 62.4, 0.5);
-  border-radius: 5rem;
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+  border-radius: calc(8px * 1.97);
   padding: 0.4rem;
+}
+.network-item-active:hover {
+  background: rgba(255, 181, 158, 0.3);
+}
+.network-item-active {
   border-radius: calc(16px - 0.4rem - 2px);
   margin: 0.25rem 0.4rem 0.4rem 0.75rem;
   padding: 0.75rem;
-}
-.network-item-connected:hover {
-  background: rgba(113.675862069, 60.9265086207, 41.824137931, 0.5);
 }
 
 .password-dialog {
@@ -762,18 +775,22 @@ box.logout-background .logout-menu button label {
 .refresh-button,
 .disconnect-button,
 .settings-button {
+  border: 1px solid rgba(0, 0, 0, 0.1);
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border-radius: 5rem;
+  border: 1px solid rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  margin: 0.4rem;
 }
 .refresh-button:hover,
 .disconnect-button:hover,
 .settings-button:hover {
-  /* would prefer to handle this with transparency, 
-  but that currently glitches on Hyprland */
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
+  background: rgba(71, 53, 48, 0.99);
+}
+.refresh-button,
+.disconnect-button,
+.settings-button {
+  margin: 0.4rem;
 }
 
 .disconnect-button {
@@ -790,6 +807,13 @@ box.logout-background .logout-menu button label {
   margin-bottom: 0.4rem;
 }
 
+.disconnect-button,
+.connect-button,
+.forget-button,
+.cancel-button {
+  border-radius: calc(8px * 1.6);
+}
+
 image {
   margin: 0.4rem;
 }
@@ -801,6 +825,7 @@ image {
   margin: 0.4rem;
   padding: 0.4rem;
   background: rgba(30, 16, 12, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 .password-search entry menu {
   background: rgb(30, 16, 12);
@@ -813,15 +838,16 @@ image {
 .password-search entry menu menuitem {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border-radius: 5rem;
+  border: 1px solid rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border-radius: 0;
-  padding: 0.4rem 0.7rem;
 }
 .password-search entry menu menuitem:hover {
-  /* would prefer to handle this with transparency, 
-  but that currently glitches on Hyprland */
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
+  background: rgba(71, 53, 48, 0.99);
+}
+.password-search entry menu menuitem {
+  border-radius: 0;
+  padding: 0.4rem 0.7rem;
 }
 .password-search entry menu menuitem:first-child {
   border-radius: 8px 8px 0 0;
@@ -839,13 +865,18 @@ image {
 }
 
 .saved-network {
-  border-radius: calc(16px - 0.4rem - 2px);
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
-  margin: 0.4rem;
+  border: 1px solid rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  margin: 0.4rem 0.75rem 0.4rem 0.75rem;
+}
+.saved-network:hover {
+  background: rgba(71, 53, 48, 0.99);
+}
+.saved-network {
+  border-radius: calc(16px - 0.4rem - 2px);
+  margin: 0.4rem 0.4rem 0.4rem 0.75rem;
   padding: 0.25rem;
 }
 .saved-network > label {
@@ -856,17 +887,376 @@ image {
   margin: 0 0.25rem 0.4rem 0.4rem;
 }
 
-/* General */
-.control-panel {
+/* variables & mixins */
+/* general styles */
+.ScreenCorners {
+  background-color: transparent;
+}
+.ScreenCorners .corner-content {
+  background-color: transparent;
+}
+.ScreenCorners.corner-top .corner-content {
+  border-top-left-radius: calc(16px);
+  border-top-right-radius: calc(16px);
+  box-shadow: 0 0 0 99px rgba(30, 16, 12, 0.5), inset 0 10px 10px -10px rgba(0, 0, 0, 0.2);
+  min-height: max(12px, 8px * 8);
+}
+.ScreenCorners.corner-bottom .corner-content {
+  border-bottom-left-radius: calc(16px);
+  border-bottom-right-radius: calc(16px);
+  box-shadow: 0 0 0 99px rgba(30, 16, 12, 0.5), inset 0 -10px 10px -10px rgba(0, 0, 0, 0.2);
+  min-height: max(12px, 8px * 8);
+}
+.ScreenCorners.corner-left .corner-content {
+  border-top-left-radius: calc(16px);
+  border-bottom-left-radius: calc(16px);
+  box-shadow: 0 0 0 99px rgba(30, 16, 12, 0.5), inset 10px 0 10px -10px rgba(0, 0, 0, 0.2);
+  min-width: calc(8px * 8);
+}
+.ScreenCorners.corner-right .corner-content {
+  border-top-right-radius: calc(16px);
+  border-bottom-right-radius: calc(16px);
+  box-shadow: 0 0 0 99px rgba(30, 16, 12, 0.5), inset -10px 0 10px -10px rgba(0, 0, 0, 0.2);
+  min-width: calc(8px * 8);
+}
+
+/* variables & mixins */
+/* general styles */
+.quick-actions-widget {
+  border-radius: calc(8px * 3);
+  padding: 0.75rem;
+  margin: 0.75rem;
+}
+.quick-actions-widget .actions-grid {
+  margin: 0.4rem 0;
+}
+.quick-actions-widget .actions-grid .action-button {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  background: rgba(71, 53, 48, 0.6);
+  border: 1px solid rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 1.97);
+  padding: 0.4rem;
+}
+.quick-actions-widget .actions-grid .action-button:hover {
+  background: rgba(71, 53, 48, 0.99);
+}
+.quick-actions-widget .actions-grid .action-button {
+  background: transparent;
+  border-radius: 1.65rem;
+  margin: 0 0.4rem;
+}
+.quick-actions-widget .actions-grid .action-button:hover {
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+  transform: translateY(-2px);
+}
+.quick-actions-widget .actions-grid .action-button .action-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 24px;
+}
+
+.clock-widget {
+  /* layout adjustments must be done via margins/padding in AGS */
+  margin-top: 12px;
+}
+.clock-widget .digit-stack {
+  min-width: 1.2em;
+}
+.clock-widget .digit-stack label {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 2.2rem;
+  font-weight: bold;
+}
+.clock-widget .colon {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin: 0 2px;
+  opacity: 0.8;
+}
+
+.clock-divider {
+  min-height: 2px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 8px 0;
+  border-radius: 1px;
+}
+
+/* variables & mixins */
+/* general styles */
+.stacked-settings-widget {
   box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
-  -gtk-icon-size: 1.1rem;
+  border-radius: calc(8px * 3);
+  padding: 0.75rem;
+  margin: 0.75rem;
+}
+.stacked-settings-widget .settings-header {
+  margin: 0 0.4rem;
+}
+.stacked-settings-widget .settings-header image {
+  color: rgb(249, 220, 212);
+  margin-right: 0.4rem;
+}
+.stacked-settings-widget .settings-header .settings-title {
+  margin-top: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: rgb(249, 220, 212);
+}
+.stacked-settings-widget separator {
+  background-color: rgba(249, 220, 212, 0.2);
+  margin: 0.4rem 0;
+  min-height: 1px;
+}
+.stacked-settings-widget .settings-nav {
+  margin: 0.4rem 0;
+}
+.stacked-settings-widget .settings-nav .nav-button {
+  border-radius: 16px;
+  padding: 0.4rem;
+  margin: 0 0.25rem;
+}
+.stacked-settings-widget .settings-nav .nav-button .nav-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 24px;
+}
+.stacked-settings-widget .settings-nav .nav-button .nav-label {
+  font-size: calc(1.1rem * 0.9);
+  font-weight: 500;
+}
+.stacked-settings-widget .settings-nav .button-disabled {
+  background-color: transparent;
+}
+.stacked-settings-widget .settings-nav .button-disabled:hover {
+  background-color: rgba(71, 53, 48, 0.99);
+}
+.stacked-settings-widget .settings-stack {
+  margin-top: 0.4rem;
+}
+.stacked-settings-widget .settings-stack .subsection-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgb(249, 220, 212);
+  margin: 0.4rem 0 0.25rem 0;
+}
+.stacked-settings-widget .settings-scroll scrollbar {
+  background: rgba(22.7142857143, 12.1142857143, 9.0857142857, 0.5);
+  border-radius: calc(8px * 1);
+}
+.stacked-settings-widget .settings-scroll scrollbar.vertical {
+  margin-left: 4px;
+}
+.stacked-settings-widget .settings-scroll scrollbar trough {
+  background: rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 1);
+  min-width: 8px;
+}
+.stacked-settings-widget .settings-scroll scrollbar slider {
+  background: rgba(249, 220, 212, 0.4);
+  border-radius: calc(8px * 1);
+  min-width: 8px;
+  transition: all 100ms ease;
+}
+.stacked-settings-widget .settings-scroll scrollbar slider:hover {
+  background: rgba(255, 181, 158, 0.7);
+}
+.stacked-settings-widget .settings-scroll scrollbar slider:active {
+  background: rgb(255, 181, 158);
+}
+.stacked-settings-widget .option-row {
+  background: rgba(37.2857142857, 19.8857142857, 14.9142857143, 0.5);
+  border: 1px solid rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 2);
+  padding: 0.4rem 0.75rem;
+  margin: 0.25rem 0;
+}
+.stacked-settings-widget .option-row .option-label {
+  font-size: 1.1rem;
+  color: rgb(249, 220, 212);
+  margin-right: 0.4rem;
+}
+.stacked-settings-widget .option-row .option-switch {
+  border-radius: 5rem;
+  padding: 0.1rem;
+  background-color: rgba(249, 220, 212, 0.1);
+}
+.stacked-settings-widget .option-row .option-switch slider {
+  border-radius: 1.5rem;
+  transition: all 200ms ease;
+  margin: 0.2rem;
+  background-color: rgba(249, 220, 212, 0.3);
+}
+.stacked-settings-widget .option-row .option-switch:checked {
+  background-color: rgba(255, 181, 158, 0.2);
+}
+.stacked-settings-widget .option-row .option-switch:checked slider {
+  background-color: rgba(255, 181, 158, 0.7);
+}
+.stacked-settings-widget .option-row .option-dropdown {
+  min-width: 140px;
+  padding: 0.1rem;
+  margin: 0;
+}
+.stacked-settings-widget .option-row .option-dropdown button {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+  border-radius: calc(8px * 1.97);
+  padding: 0.4rem;
+}
+.stacked-settings-widget .option-row .option-dropdown button:hover {
+  background: rgba(255, 181, 158, 0.3);
+}
+.stacked-settings-widget .option-row .option-dropdown button {
+  border-radius: calc(8px * 1.5);
+  padding: 0.25rem 0.4rem;
+  border-color: rgba(249, 220, 212, 0.1);
+}
+.stacked-settings-widget .option-row .option-dropdown button:hover {
+  border-color: rgba(249, 220, 212, 0.3);
+}
+.stacked-settings-widget separator {
+  background-color: rgba(249, 220, 212, 0.15);
+  margin: 0.75rem 0;
+  min-height: 1px;
+}
+
+/* variables & mixins */
+/* general styles */
+.weather-widget {
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
+  border-radius: 16px;
+  background: rgba(30, 16, 12, 0.5);
+  margin: 5px 10px 15px;
+  padding: 0.4rem;
+  border-radius: calc(8px * 3);
+  padding: 0.75rem;
+  margin: 0.75rem;
+  color: rgb(249, 220, 212);
+}
+.weather-widget .current-weather .current-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 100px;
+  min-width: 72px;
+  min-height: 72px;
+  color: rgb(249, 220, 212);
+  margin-bottom: 0.5rem;
+}
+.weather-widget .current-weather .weather-temp {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+.weather-widget .current-weather .weather-desc {
+  font-size: 1.1rem;
+  color: rgb(163, 139, 133);
+  margin-bottom: 0.2rem;
+}
+.weather-widget .current-weather .weather-extra {
+  font-size: 1.1rem;
+  color: rgb(163, 139, 133);
+}
+.weather-widget .current-weather .weather-extra-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 25px;
+}
+.weather-widget .forecast-row {
+  margin-top: 0.4rem;
+}
+.weather-widget .forecast-row .forecast-item {
+  min-width: 3rem;
+}
+.weather-widget .forecast-row .forecast-item .forecast-hour {
+  font-size: 1.1rem;
+  color: rgb(163, 139, 133);
+}
+.weather-widget .forecast-row .forecast-item .forecast-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 32px;
+  margin: 0.3rem 0;
+  color: rgb(249, 220, 212);
+}
+.weather-widget .forecast-row .forecast-item .forecast-temp {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: rgb(249, 220, 212);
+}
+
+/* variables & mixins */
+/* general styles */
+.base-widget {
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
+  border-radius: 16px;
+  background: rgba(30, 16, 12, 0.5);
+  margin: 5px 10px 15px;
+  padding: 0.4rem;
+  border-radius: calc(8px * 3);
+  padding: 0.75rem;
+  margin: 0.75rem;
+  color: rgb(249, 220, 212);
+  /* Generic "header/content" row */
+}
+.base-widget .header-row {
+  margin-bottom: 0.4rem;
+}
+.base-widget .header-row .header-icon {
+  min-width: 72px;
+  min-height: 72px;
+  color: rgb(249, 220, 212);
+  margin-bottom: 0.5rem;
+}
+.base-widget .header-row .header-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+.base-widget .header-row .header-subtitle {
+  font-size: 1.1rem;
+  color: rgb(163, 139, 133);
+  margin-bottom: 0.2rem;
+}
+.base-widget .header-row .header-extra {
+  font-size: 1.1rem;
+  color: rgb(163, 139, 133);
+}
+.base-widget {
+  /* Generic "items row" for children */
+}
+.base-widget .items-row {
+  margin-top: 0.4rem;
+}
+.base-widget .items-row .item {
+  min-width: 3rem;
+}
+.base-widget .items-row .item .item-title {
+  font-size: 1.1rem;
+  color: rgb(163, 139, 133);
+}
+.base-widget .items-row .item .item-icon {
+  margin: 0.3rem 0;
+  color: rgb(249, 220, 212);
+}
+.base-widget .items-row .item .item-value {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: rgb(249, 220, 212);
+}
+
+.sidebar {
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
+  border-radius: 16px;
+  background: rgba(30, 16, 12, 0.5);
+  margin: 5px 10px 15px;
+  padding: 0.4rem;
+  min-width: 300px;
+  margin: 0.75rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
-.control-panel > box {
+.sidebar > box {
   border-radius: calc(16px - 0.4rem - 2px);
   background: rgba(71, 53, 48, 0.6);
   box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
@@ -874,101 +1264,70 @@ image {
   padding: 0.4rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
-.control-panel separator {
+.sidebar separator {
   background-color: rgba(249, 220, 212, 0.2);
-  margin: 0.5rem 0 0.5rem 0;
+  margin: 0.5rem 0;
   min-height: 1px;
 }
-.control-panel image {
+.sidebar image {
   margin-right: 0.75rem;
 }
 
-/* Option rows */
-.option-row .option-label {
-  margin: 0 0.4rem;
+/* Section inside sidebar */
+.sidebar-section {
+  margin-bottom: 0.75rem;
 }
-
-/* Option elements */
-.option-icon {
-  margin-right: 0.4rem;
-}
-
-.option-switch {
-  border-radius: 5rem;
-  padding: 0.4rem;
-  background-color: rgba(30, 16, 12, 0.5);
-}
-.option-switch slider {
-  min-width: 0.75rem;
-  min-height: 0.75rem;
-  border-radius: 1.5rem;
-  background-color: rgba(71, 53, 48, 0.6);
-}
-.option-switch:checked slider {
-  background-color: rgba(169.6, 90.9, 62.4, 0.5);
-}
-
-.option-dropdown {
-  min-width: 132px;
-  margin: 0.25rem 0;
-}
-
-.option-dropdown button {
-  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  background: rgba(169.6, 90.9, 62.4, 0.5);
-  border-radius: 5rem;
-  padding: 0.4rem;
-}
-.option-dropdown button:hover {
-  background: rgba(113.675862069, 60.9265086207, 41.824137931, 0.5);
-}
-
-.option-row {
-  border-radius: calc(16px - 0.4rem - 2px);
-  background: rgba(71, 53, 48, 0.6);
-  box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
-  margin: 0.4rem;
-  padding: 0.4rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.category-content > box {
-  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
-  border-radius: 16px;
-  background: rgba(30, 16, 12, 0.5);
-  margin: 5px 10px 15px;
-  padding: 0.4rem;
-  margin: 0.4rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-.category-content .category-button {
-  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  background: rgba(71, 53, 48, 0.6);
-  border-radius: 5rem;
-  padding: 0.4rem;
-  border-radius: calc(16px - 0.4rem - 2px);
-  background: rgba(71, 53, 48, 0.6);
-  box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
-  margin: 0.4rem;
-  padding: 0.4rem;
-  border-radius: calc(16px - 0.4rem - 2px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-.category-content .category-button:hover {
-  /* would prefer to handle this with transparency, 
-  but that currently glitches on Hyprland */
-  background: rgba(131.8571428571, 98.4285714286, 89.1428571429, 0.6);
-}
-.category-content .category-button image:first-child {
-  margin-right: 0.4rem;
-}
-.category-content .category-button label {
-  margin: 0 0.4rem;
-}
-
-.section-label {
+.sidebar-section .section-title {
   font-weight: bold;
+  font-size: 1rem;
   margin: 0.4rem 0 0.25rem 0;
+  color: rgba(249, 220, 212, 0.8);
+}
+.sidebar-section .sidebar-button {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  background: rgba(71, 53, 48, 0.6);
+  border: 1px solid rgba(249, 220, 212, 0.1);
+  border-radius: calc(8px * 1.97);
+  padding: 0.4rem;
+}
+.sidebar-section .sidebar-button:hover {
+  background: rgba(71, 53, 48, 0.99);
+}
+.sidebar-section .sidebar-button {
+  border-radius: calc(16px - 0.4rem - 2px);
+  background: rgba(71, 53, 48, 0.6);
+  box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  margin: 0.4rem;
+  padding: 0.4rem;
+  border-radius: calc(16px - 0.4rem - 2px);
+  margin: 0.25rem 0;
+  padding: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.sidebar-section .sidebar-button image {
+  -gtk-icon-size: 1.2rem;
+  margin-right: 0.4rem;
+}
+.sidebar-section .sidebar-button label {
+  font-size: 1.1rem;
+  margin: 0 0.4rem;
+}
+
+/* Header */
+.sidebar-header {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.sidebar-header .sidebar-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.sidebar-header-separator {
+  background-color: rgb(100, 63, 7);
+  min-height: 2px;
+  margin-bottom: 0.75rem;
 }
 
 /*# sourceMappingURL=main.css.map */

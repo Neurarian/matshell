@@ -12,7 +12,6 @@ import {
   LogoutMenu,
   Applauncher,
   MusicPlayer,
-  ControlPanel,
   Sidebar,
 } from "./widgets";
 
@@ -20,10 +19,11 @@ import {
 const scss = `${GLib.get_user_config_dir()}/ags/style/main.scss`;
 const css = `${GLib.get_user_config_dir()}/ags/style/main.css`;
 const icons = `${GLib.get_user_config_dir()}/ags/assets/icons`;
+
 const styleDirectories = ["abstracts", "components", "layouts", "base"];
 
 function reloadCss() {
-  console.log("scss change detected");
+  console.log("scss change detected - recompiling...");
   exec(`sass ${scss} ${css}`);
   app.apply_css(css);
 }
@@ -48,6 +48,10 @@ app.start({
         app.toggle_window("sidebar");
         res("sidebar toggled");
         break;
+      case "reload-css":
+        reloadCss();
+        res("css reloaded");
+        break;
       default:
         res("not found");
     }
@@ -57,7 +61,10 @@ app.start({
     // Compile & watch SCSS
     exec(`sass ${scss} ${css}`);
     styleDirectories.forEach((dir) =>
-      monitorFile(`${GLib.get_user_config_dir()}/ags/style/${dir}`, reloadCss),
+      monitorFile(
+        `${GLib.get_user_config_dir()}/ags/style/${dir}`,
+        reloadCss,
+      ),
     );
 
     // Initialize widgets
@@ -68,7 +75,6 @@ app.start({
     MusicPlayer();
     Applauncher();
     LogoutMenu();
-    ControlPanel();
     Sidebar();
   },
 });

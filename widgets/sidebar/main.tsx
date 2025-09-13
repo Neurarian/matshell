@@ -4,6 +4,8 @@ import { Astal, Gtk } from "ags/gtk4";
 import { createState } from "ags";
 import ClockWidget from "./modules/ClockWidget";
 import WeatherWidget from "./modules/WeatherWidget";
+import MatshellSettingsWidget from "./modules/MatshellSettingsWidget";
+import QuickActionsWidget from "./modules/QuickActionWidget";
 import TemplateWidget from "./modules/BaseTemplateWidget";
 import options from "options";
 
@@ -30,7 +32,7 @@ export default function Sidebar(
       anchor={TOP | LEFT | BOTTOM}
       exclusivity={options["bar.style"]((style) => {
         if (style === "corners") return NORMAL;
-        else return EXCLUSIVE;
+        return EXCLUSIVE;
       })}
       layer={Astal.Layer.TOP}
       application={app}
@@ -49,6 +51,9 @@ export default function Sidebar(
         <ClockWidget />
         <Gtk.Separator />
         <WeatherWidget />
+        <MatshellSettingsWidget />
+        <box vexpand/>
+        <QuickActionsWidget />
         {/*
         <TemplateWidget />
         */}

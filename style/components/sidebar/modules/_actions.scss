@@ -1,0 +1,39 @@
+@use "../../../layouts" as *;
+@use "../../../abstracts" as *;
+@use "sass:color";
+
+.quick-actions-widget {
+  border-radius: calc(#{$round} * 3);
+  padding: $spacing-md;
+  margin: $spacing-md;
+
+  .actions-grid {
+    margin: $spacing-sm 0;
+
+    .action-button {
+      @include button;
+      background: transparent;
+      border-radius: 1.65rem;
+      margin: 0 $spacing-sm;
+
+      @if not $darkmode {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      &:hover {
+        background: $buttonEnabled;
+        border: 1px solid color.adjust($buttonEnabled, $alpha: 0.1);
+        transform: translateY(-2px);
+
+        @if not $darkmode {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+      }
+
+      .action-icon {
+        font-family: "Material Symbols Outlined";
+        font-size: 24px;
+      }
+    }
+  }
+}

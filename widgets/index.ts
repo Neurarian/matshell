@@ -5,5 +5,4 @@ export { default as Notifications } from "./notifications/main.tsx";
 export { default as LogoutMenu } from "./logout-menu/main.tsx";
 export { default as Applauncher } from "./launcher/main.tsx";
 export { default as MusicPlayer } from "./music/main.tsx";
-export { default as ControlPanel } from "./control-panel/main.tsx";
 export { default as Sidebar } from "./sidebar/main.tsx";

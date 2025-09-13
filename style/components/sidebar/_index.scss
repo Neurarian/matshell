@@ -1,6 +1,8 @@
 @use "../../abstracts" as *;
 @use "sass:color";
+@use "./modules/actions.scss";
 @use "./modules/clock.scss";
+@use "./modules/settings.scss";
 @use "./modules/weather.scss";
 @use "./modules/widgets.scss";
 

@@ -161,11 +161,11 @@ $fourthMon: color.mix($secondary, $on_secondary, 70%, $method: rgb);
 $fourthMonHover: color.mix($secondary, $on_secondary, 45%, $method: rgb);
 
 /* button colors */
-$buttonEnabled: color.adjust($primaryMon, $alpha: -0.5);
-$buttonEnabledHover: color.adjust($buttonEnabled, $lightness: -15%);
+$buttonEnabled: color.adjust($primary, $alpha: -0.8);
+$buttonEnabledHover: color.adjust($buttonEnabled, $alpha: +0.1);
 
 $buttonDisabled: $surface;
-$buttonDisabledHover: color.adjust($buttonDisabled, $alpha: +0.8);
+$buttonDisabledHover: color.adjust($buttonDisabled, $alpha: +0.39);
 
 /* hw circular proc colors */
 $ramProc: color.mix($primary_fixed_dim, $on_primary_fixed_variant, 66%);
@@ -174,7 +174,7 @@ $procBg: $surface_dim;
 
 /* numeric variables */
 $round: 8px;
-$round2: 20px;
+$round2: 16px;
 $spacing-xs: 0.25rem;
 $spacing-sm: 0.4rem;
 $spacing-md: 0.75rem;

@@ -3,7 +3,7 @@
 @use "sass:color";
 
 .weather-widget {
-  background: $barBg;
+  @include window;
   border-radius: calc(#{$round} * 3);
   padding: $spacing-md;
   margin: $spacing-md;
@@ -20,19 +20,19 @@
     }
 
     .weather-temp {
-      font-size: $font; /* avoid calc() */
+      font-size: $font;
       font-weight: 700;
       margin-bottom: 0.2rem;
     }
 
     .weather-desc {
-      font-size: $font; /* avoid calc() */
+      font-size: $font;
       color: $outline;
       margin-bottom: 0.2rem;
     }
 
     .weather-extra {
-      font-size: $font; /* avoid calc() */
+      font-size: $font;
       color: $outline;
     }
     .weather-extra-icon {
@@ -48,7 +48,7 @@
       min-width: 3rem;
 
       .forecast-hour {
-        font-size: $font; /* avoid calc() */
+        font-size: $font;
         color: $outline;
       }
 
@@ -60,7 +60,7 @@
       }
 
       .forecast-temp {
-        font-size: $font; /* avoid calc() */
+        font-size: $font;
         font-weight: 500;
         color: $fg;
       }

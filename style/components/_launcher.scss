@@ -8,7 +8,7 @@ box.applauncher {
   box.search {
     @include window-box;
     margin: 1rem 0.5rem 1rem 0.5rem;
-    background-color: color.adjust($primaryMon, $alpha: -0.6);
+    background-color: color.adjust($primary, $alpha: -0.85);
 
     image {
       -gtk-icon-size: 2rem;
@@ -44,16 +44,11 @@ box.applauncher {
         color: color.adjust($fg, $alpha: -0.2);
       }
 
+      &:focus,
       &:hover {
-        @include button;
-      }
-      &:focus {
-        @include button;
-        @if $darkmode {
-          background: color.adjust($buttonDisabled, $lightness: +20%);
-        } @else {
-          background: color.adjust($primaryMon, $lightness: +22%);
-        }
+        @include button-active;
+        background-color: $buttonEnabledHover;
+        border: transparent;
       }
     }
   }

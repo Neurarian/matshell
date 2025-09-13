@@ -3,7 +3,7 @@
 @use "sass:color";
 
 .base-widget {
-  background: $barBg;
+  @include window;
   border-radius: calc(#{$round} * 3);
   padding: $spacing-md;
   margin: $spacing-md;

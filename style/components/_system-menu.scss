@@ -98,15 +98,6 @@
   @include rounding;
   margin: $spacing-xs $spacing-sm $spacing-sm $spacing-md;
   padding: $spacing-md;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  @if $darkmode {
-  } @else {
-    // Light mode enhancements
-    &:hover,
-    &:focus {
-      border: 1px solid rgba(0, 0, 0, 0.04);
-    }
-  }
   image {
     &:first-child {
       margin-right: $spacing-sm;
@@ -116,7 +107,7 @@
     margin: 0 $spacing-sm;
   }
 }
-.network-item-connected {
+.network-item-active {
   @include button-active;
   @include rounding;
   margin: $spacing-xs $spacing-sm $spacing-sm $spacing-md;
@@ -141,8 +132,7 @@
 .refresh-button,
 .disconnect-button,
 .settings-button {
-  // Would look better in light mode but intensifies ugly artifacts on edges
-  //border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   @include button;
   margin: $spacing-sm;
 }
@@ -165,6 +155,15 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
   }
 }
+
+//avoid artifacts
+.disconnect-button,
+.connect-button,
+.forget-button,
+.cancel-button {
+  border-radius: calc(#{$round} * 1.6);
+}
+
 image {
   margin: $spacing-sm;
 }
@@ -185,9 +184,9 @@ image {
 }
 
 .saved-network {
-  @include window-box;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  margin: $spacing-sm $spacing-md $spacing-sm $spacing-md;
+  @include button;
+  @include rounding;
+  margin: $spacing-sm $spacing-sm $spacing-sm $spacing-md;
   padding: $spacing-xs;
   > label {
     margin-left: $spacing-sm;

@@ -18,11 +18,7 @@ box.logout-background {
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
       }
       &:focus {
-        @if $darkmode {
-          background: color.adjust($buttonDisabled, $lightness: +20%);
-        } @else {
-          background: color.adjust($primaryMon, $lightness: +22%);
-        }
+        background: $buttonEnabledHover;
       }
       label {
         font-family: "Material Symbols Outlined";

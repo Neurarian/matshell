@@ -44,7 +44,8 @@
 @mixin button-active {
   @include animate;
   background: $buttonEnabled;
-  border-radius: 5rem;
+  border: 1px solid color.adjust($buttonEnabled, $alpha: 0.1);
+  border-radius: calc(#{$round} * 1.97);
   padding: 0.4rem;
   @if $darkmode {
   } @else {
@@ -59,23 +60,18 @@
 
 @mixin button {
   @include animate;
-  @if $darkmode {
-    background: $buttonDisabled;
-  } @else {
-    background: color.adjust($buttonDisabled, $alpha: +0.5);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-  }
-  border-radius: 5rem;
+  background: $buttonDisabled;
+  border: 1px solid color.adjust($fg, $alpha: -0.9);
+  border-radius: calc(#{$round} * 1.97);
   padding: 0.4rem;
+  @if $darkmode {
+  } @else {
+    // Light mode enhancements
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
 
   &:hover {
-    /* would prefer to handle this with transparency, 
-    but that currently glitches on Hyprland */
-    @if $darkmode {
-      background: color.adjust($buttonDisabled, $lightness: +20%);
-    } @else {
-      background: color.adjust($primaryMon, $lightness: +22%);
-    }
+    background: $buttonDisabledHover;
   }
 }
 

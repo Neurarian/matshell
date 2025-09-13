@@ -241,13 +241,13 @@ export const WiFiBox = () => {
               halign={Gtk.Align.END}
               hexpand={false}
               visible={options[
-                "system-menu.modules.wifi.enableGnomeControlCenter"
+                "system-menu.modules.wifi-advanced.enable"
               ]((value) => Boolean(value))}
               onClicked={() => {
                 execAsync([
                   "sh",
                   "-c",
-                  "XDG_CURRENT_DESKTOP=GNOME gnome-control-center wifi",
+                  String(options["app.wifi"].get()),
                 ]);
                 setIsExpanded(false);
               }}

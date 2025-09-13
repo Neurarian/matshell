@@ -117,8 +117,6 @@
                 pkgs.lib.makeBinPath (with pkgs; [
                   # runtime executables
                   dart-sass
-                  mission-center
-                  gnome-control-center
                   imagemagick
                 ])
               }

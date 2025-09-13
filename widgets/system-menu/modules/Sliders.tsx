@@ -3,6 +3,7 @@ import { execAsync } from "ags/process";
 import { createBinding } from "ags";
 import Wp from "gi://AstalWp";
 import Brightness from "utils/brightness.ts";
+import options from "options";
 
 export const Sliders = () => {
   const speaker = Wp.get_default()!.audio.defaultSpeaker;
@@ -12,7 +13,7 @@ export const Sliders = () => {
   return (
     <box cssClasses={["sliders"]} orientation={Gtk.Orientation.VERTICAL}>
       <box cssClasses={["volume"]}>
-        <button onClicked={() => execAsync("pwvucontrol")}>
+        <button onClicked={() => execAsync(String(options["app.audio"].get()))}>
           <image iconName={createBinding(speaker, "volumeIcon")} />
         </button>
         <slider
@@ -28,7 +29,9 @@ export const Sliders = () => {
         cssClasses={["volume"]}
         visible={createBinding(microphone, "path")((mic) => mic !== null)}
       >
-        <button onClicked={() => execAsync("pwvucontrol")}>
+        <button
+          onClicked={() => execAsync(String(options["app.audio"].get()))}
+        >
           <image iconName={createBinding(microphone, "volumeIcon")} />
         </button>
         <slider

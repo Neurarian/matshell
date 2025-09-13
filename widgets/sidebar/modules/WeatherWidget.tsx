@@ -1,4 +1,4 @@
-// ~/.config/ags/widgets/sidebar/modules/WeatherWidget.tsx
+// widgets/sidebar/modules/WeatherWidget.tsx
 import { Gtk } from "ags/gtk4";
 import { With } from "ags";
 import {
@@ -23,11 +23,11 @@ function ExtraWeatherInfoBox({ icon, value }: ExtraWeatherInfoProps) {
     <box
       orientation={Gtk.Orientation.HORIZONTAL}
       spacing={10}
-      halign={Gtk.Align.END}
+      halign={Gtk.Align.FILL}
       valign={Gtk.Align.CENTER}
     >
       <label label={icon} class={"weather-extra-icon"} />
-      <label label={value} />
+      <label label={value} hexpand halign={Gtk.Align.END} />
     </box>
   );
 }

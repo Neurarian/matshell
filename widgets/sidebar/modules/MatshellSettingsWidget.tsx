@@ -91,6 +91,8 @@ export default function MatshellSettingsWidget() {
     "mesh",
   ];
 
+  const osOptions = ["Arch", "NixOS"];
+
   const pages = [
     { id: "bar", label: "Bar", icon: "Bottom_Navigation" },
     { id: "audio", label: "Audio", icon: "Cadence" },
@@ -175,8 +177,13 @@ export default function MatshellSettingsWidget() {
               label="Style"
               choices={["expanded", "floating", "corners"]}
             />
+            <OptionSelect
+              option="bar.modules.os-icon.type"
+              label="OS Icon"
+              choices={osOptions}
+            />
             <OptionToggle
-              option="bar.modules.showOsIcon"
+              option="bar.modules.os-icon.show"
               label="Show OS Icon"
             />
           </box>

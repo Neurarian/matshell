@@ -25,7 +25,8 @@ const options = await (async () => {
       "dots", "circular", "particles", "wave_particles","waterfall", "mesh" */
       "bar.modules.cava.style": defineOption("catmull_rom"),
       "bar.modules.media.cava.show": defineOption(true),
-      "bar.modules.showOsIcon": defineOption(true),
+      "bar.modules.os-icon.type": defineOption("NixOS"), // "NixOS" or "Arch"
+      "bar.modules.os-icon.show": defineOption(true),
       "musicPlayer.modules.cava.show": defineOption(true),
       "musicPlayer.modules.cava.style": defineOption("catmull_rom"),
       "system-menu.modules.bluetooth-advanced.enable": defineOption(true),

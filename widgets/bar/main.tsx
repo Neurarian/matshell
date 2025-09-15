@@ -81,7 +81,7 @@ function Bar({ gdkmonitor, ...props }: any) {
         <centerbox cssClasses={["centerbox"]}>
           <box hexpand halign={Gtk.Align.START} $type="start">
             <box
-              visible={options["bar.modules.showOsIcon"]((value) =>
+              visible={options["bar.modules.os-icon.show"]((value) =>
                 Boolean(value),
               )}
             >

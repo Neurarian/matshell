@@ -39,11 +39,6 @@ export function BaseNotification({
   const [isHovered, setIsHovered] = createState(false);
   const timeLabel = createNotificationTimeLabel(notification.time, { variant });
 
-  // Calculate character limits based on pixel constraints
-  const maxWidthChars = Math.floor(maxWidth / 8);
-  const titleMaxChars = Math.floor(maxWidthChars * 0.5);
-  const bodyMaxChars = Math.floor(maxWidthChars);
-
   // Default click handling
   const handleClick = (button: number) => {
     if (onClick) {
@@ -100,10 +95,8 @@ export function BaseNotification({
     <Adw.Clamp maximumSize={maxWidth}>
       <box
         orientation={Gtk.Orientation.VERTICAL}
-        vexpand={false}
         cssClasses={[...buildCssClasses(), "notification-container"]}
         name={notification.id.toString()}
-        overflow={Gtk.Overflow.HIDDEN}
       >
         <Gtk.GestureClick
           button={0}
@@ -125,7 +118,6 @@ export function BaseNotification({
             label={notification.appName}
             ellipsize={Pango.EllipsizeMode.END}
             singleLineMode={true}
-            maxWidthChars={Math.floor(maxWidthChars * 0.5)}
           />
           <label cssClasses={["time"]} hexpand halign={END} label={timeLabel} />
           {(typeof showDismissButton === "boolean"
@@ -145,7 +137,7 @@ export function BaseNotification({
         <Gtk.Separator cssClasses={["notification-separator"]} />
 
         {/* Content */}
-        <box cssClasses={["content"]} overflow={Gtk.Overflow.HIDDEN}>
+        <box cssClasses={["content"]} >
           <box
             cssClasses={["thumb"]}
             visible={Boolean(NotificationIcon(notification))}
@@ -161,7 +153,6 @@ export function BaseNotification({
             hexpand={true}
             halign={START}
             valign={START}
-            overflow={Gtk.Overflow.HIDDEN}
           >
             <label
               cssClasses={["title"]}
@@ -170,7 +161,6 @@ export function BaseNotification({
               wrapMode={Pango.WrapMode.WORD_CHAR}
               label={notification.summary}
               ellipsize={Pango.EllipsizeMode.END}
-              widthChars={titleMaxChars}
               lines={2}
             />
             {notification.body && (
@@ -181,7 +171,6 @@ export function BaseNotification({
                 wrapMode={Pango.WrapMode.WORD_CHAR}
                 label={notification.body}
                 ellipsize={Pango.EllipsizeMode.END}
-                widthChars={bodyMaxChars}
                 lines={5}
               />
             )}

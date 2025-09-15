@@ -49,7 +49,7 @@ export const NotificationList = () => {
                 showDismissButton={true}
                 onHover={() => setHoveredId(notification.id)}
                 onHoverLost={() => setHoveredId(null)}
-                maxWidth={200}
+                maxWidth={220}
                 cssClasses={["notification"]}
               />
             )}
@@ -78,7 +78,7 @@ export const NotificationList = () => {
                 showDismissButton={true}
                 onHover={() => setHoveredId(notification.id)}
                 onHoverLost={() => setHoveredId(null)}
-                maxWidth={200}
+                maxWidth={220}
                 cssClasses={["notification", "notification-read"]}
               />
             )}

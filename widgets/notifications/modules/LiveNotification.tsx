@@ -53,9 +53,8 @@ export function NotificationWidget({
       onClick={handleClick}
       onHover={() => timeoutManager.handleHover()}
       onHoverLost={() => timeoutManager.handleHoverLost()}
-      maxBodyChars={50}
-      maxSummaryChars={24}
       cssClasses={["notification"]}
+      maxWidth={285}
     />
   );
 }

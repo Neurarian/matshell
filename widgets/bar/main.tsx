@@ -38,6 +38,20 @@ function Bar({ gdkmonitor, ...props }: any) {
     style === "corners" ? 0 : 5,
   );
 
+  const showCavaExpanded = createComputed(
+    [options["bar.modules.cava.show"], options["bar.style"]],
+    (cavaEnabled, barStyle) => {
+      return cavaEnabled && ["expanded", "corners"].includes(String(barStyle));
+    },
+  );
+
+  const showCavaFloating = createComputed(
+    [options["bar.modules.cava.show"], options["bar.style"]],
+    (cavaEnabled, barStyle) => {
+      return cavaEnabled && barStyle === "floating";
+    },
+  );
+
   return (
     <window
       visible
@@ -70,7 +84,7 @@ function Bar({ gdkmonitor, ...props }: any) {
         <box
           $type={"overlay"}
           canTarget={false}
-          visible={options["bar.modules.cava.show"]((value) => Boolean(value))}
+          visible={showCavaExpanded((s) => Boolean(s))}
         >
           <CavaDraw
             vexpand
@@ -89,8 +103,27 @@ function Bar({ gdkmonitor, ...props }: any) {
             </box>
             <Workspaces />
           </box>
-          <box visible={hasActivePlayers} $type="center">
-            <Media />
+          <box
+            visible={hasActivePlayers}
+            $type="center"
+            overflow={Gtk.Overflow.HIDDEN}
+          >
+            <overlay>
+              <box
+                $type={"overlay"}
+                canTarget={false}
+                visible={showCavaFloating((s) => Boolean(s))}
+              >
+                <CavaDraw
+                  vexpand
+                  hexpand
+                  style={options["bar.modules.cava.style"]((value) =>
+                    String(value),
+                  )}
+                />
+              </box>
+              <Media />
+            </overlay>
           </box>
           <box hexpand halign={Gtk.Align.END} $type="end">
             <SysTray />

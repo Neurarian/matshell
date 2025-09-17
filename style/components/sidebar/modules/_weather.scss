@@ -7,7 +7,12 @@
   border-radius: calc(#{$round} * 3);
   padding: $spacing-md;
   margin: $spacing-md;
-  color: $fg;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  @if $darkmode {
+  } @else {
+    // Light mode enhancements
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
 
   .current-weather {
     .current-icon {

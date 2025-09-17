@@ -1,19 +1,15 @@
 // widgets/sidebar/modules/MatshellSettingsWidget.tsx
 import { Gtk } from "ags/gtk4";
 import { createState, onCleanup } from "ags";
+import {
+  OptionSelectProps,
+  OptionToggleProps,
+  BAR_POSITION_OPTIONS,
+  BAR_STYLE_OPTIONS,
+  CAVA_STYLE_OPTIONS,
+  OS_OPTIONS,
+} from "utils/config";
 import options from "options.ts";
-
-interface OptionSelectProps {
-  option: string;
-  label: string;
-  choices: string[];
-}
-
-interface OptionToggleProps {
-  option: string;
-  label: string;
-  icon?: string | null;
-}
 
 function OptionSelect({ option, label, choices = [] }: OptionSelectProps) {
   return (
@@ -27,26 +23,27 @@ function OptionSelect({ option, label, choices = [] }: OptionSelectProps) {
       <Gtk.ComboBoxText
         cssClasses={["option-dropdown"]}
         onChanged={(self) => {
-          const selectedText = self.get_active_text();
-          if (selectedText) {
-            options[option].value = selectedText;
-          }
+          const selectedIndex = self.get_active();
+          const selectedChoice = choices[selectedIndex];
+          options[option].value = selectedChoice.value;
         }}
         $={(self) => {
           // Populate items
           choices.forEach((choice) => {
-            self.append_text(choice);
+            self.append_text(choice.label);
           });
+
+          // Find current value and set active index
           const currentValue = String(options[option].get());
-          const initialIndex = choices.indexOf(currentValue);
+          const initialIndex = choices.findIndex(
+            (choice) => choice.value === currentValue,
+          );
 
           if (initialIndex !== -1) {
             self.set_active(initialIndex);
           } else {
             self.set_active(0);
-            if (choices.length > 0) {
-              options[option].value = choices[0];
-            }
+            options[option].value = choices[0].value;
           }
         }}
       />
@@ -77,21 +74,6 @@ function OptionToggle({ option, label }: OptionToggleProps) {
 
 export default function MatshellSettingsWidget() {
   const [currentPage, setCurrentPage] = createState("bar");
-
-  const cavaStyleOptions = [
-    "catmull_rom",
-    "smooth",
-    "bars",
-    "jumping_bars",
-    "dots",
-    "circular",
-    "particles",
-    "wave_particles",
-    "waterfall",
-    "mesh",
-  ];
-
-  const osOptions = ["Arch", "NixOS"];
 
   const pages = [
     { id: "bar", label: "Bar", icon: "Bottom_Navigation" },
@@ -170,17 +152,17 @@ export default function MatshellSettingsWidget() {
             <OptionSelect
               option="bar.position"
               label="Position"
-              choices={["top", "bottom"]}
+              choices={BAR_POSITION_OPTIONS}
             />
             <OptionSelect
               option="bar.style"
               label="Style"
-              choices={["expanded", "floating", "corners"]}
+              choices={BAR_STYLE_OPTIONS}
             />
             <OptionSelect
               option="bar.modules.os-icon.type"
               label="OS Icon"
-              choices={osOptions}
+              choices={OS_OPTIONS}
             />
             <OptionToggle
               option="bar.modules.os-icon.show"
@@ -200,14 +182,13 @@ export default function MatshellSettingsWidget() {
             <OptionSelect
               option="bar.modules.cava.style"
               label="Cava Style"
-              choices={cavaStyleOptions}
+              choices={CAVA_STYLE_OPTIONS}
             />
             <OptionToggle
               option="bar.modules.media.cava.show"
               label="Enable Cover Cava"
             />
             <Gtk.Separator />
-
             <label
               label="Music Player Visualizer"
               cssClasses={["subsection-title"]}
@@ -219,7 +200,7 @@ export default function MatshellSettingsWidget() {
             <OptionSelect
               option="musicPlayer.modules.cava.style"
               label="Style"
-              choices={cavaStyleOptions}
+              choices={CAVA_STYLE_OPTIONS}
             />
           </box>
 

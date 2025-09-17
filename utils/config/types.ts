@@ -26,3 +26,20 @@ export interface ConfigDefinition {
   useCache?: boolean;
   autoSave?: boolean;
 }
+
+export interface OptionChoice {
+  label: string;
+  value: string;
+}
+
+export interface OptionSelectProps {
+  option: string;
+  label: string;
+  choices: OptionChoice[];
+}
+
+export interface OptionToggleProps {
+  option: string;
+  label: string;
+  icon?: string | null;
+}

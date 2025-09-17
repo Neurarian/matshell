@@ -4,6 +4,7 @@ import { With } from "ags";
 import {
   formatBlockTime,
   getIcon,
+  getRelativeForecasts,
   WeatherService,
   WeatherCondition,
 } from "utils/weather";
@@ -66,15 +67,16 @@ export default function WeatherWidget() {
           }
 
           const current = data.current;
-          const today = data.forecast?.[0];
-          const forecastItems = today.hourly
-            .slice(0, 5)
-            .map((block) => <ForecastItem block={block} />);
+          const relativeForecasts = getRelativeForecasts(data);
+          const forecastItems = relativeForecasts.map((block) => (
+            <ForecastItem block={block} />
+          ));
 
           const currentIcon = getIcon(current.weatherDesc?.[0]?.value ?? "");
           const currentTemp = current.tempC ?? "?";
           const wind = current.windspeedKmph ?? "?";
           const rainPct = current.precipitation ?? current.humidity ?? "?";
+
           const extraWeatherData = [
             { icon: "Thermometer", value: `${currentTemp}°C` },
             { icon: "Air", value: `${wind} km/h` },
@@ -101,7 +103,6 @@ export default function WeatherWidget() {
                     halign={Gtk.Align.CENTER}
                   />
                 </box>
-
                 <box
                   orientation={Gtk.Orientation.VERTICAL}
                   hexpand

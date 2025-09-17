@@ -4,6 +4,7 @@ export interface WeatherCondition {
   humidity: string;
   tempC: string; // normalized
   tempF: string;
+  time?: string;
   weatherDesc: { value: string }[];
   [key: string]: any;
 }

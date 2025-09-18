@@ -29,10 +29,3 @@
     margin-right: $spacing-md;
   }
 }
-
-.sidebar-spacer {
-  background-color: $accent; // or a muted $fg variant
-  min-height: 2px; // thinner than normal separators
-  margin-bottom: $spacing-md;
-}
-// accent line at the very top inside the sidebar

@@ -5,14 +5,12 @@
   .digit-stack {
     min-width: 1.2em; // keeps digits aligned
     label {
-      font-family: "JetBrainsMono Nerd Font", monospace;
       font-size: 2.2rem;
       font-weight: bold;
     }
   }
 
   .colon {
-    font-family: "JetBrainsMono Nerd Font", monospace;
     font-size: 2.2rem;
     font-weight: bold;
     margin: 0 2px;

@@ -3,21 +3,11 @@
 @use "sass:color";
 
 .weather-widget {
-  @include window;
-  border-radius: calc(#{$round} * 3);
-  padding: $spacing-md;
-  margin: $spacing-md;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  @if $darkmode {
-  } @else {
-    // Light mode enhancements
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  }
+  @include widget-container;
 
   .current-weather {
     .current-icon {
-      font-family: "Material Symbols Outlined";
-      font-size: 100px;
+      @include material-icon(100px);
       min-width: 72px;
       min-height: 72px;
       color: $fg;
@@ -41,8 +31,7 @@
       color: $outline;
     }
     .weather-extra-icon {
-      font-family: "Material Symbols Outlined";
-      font-size: 25px;
+      @include material-icon(25px);
     }
   }
 
@@ -58,8 +47,7 @@
       }
 
       .forecast-icon {
-        font-family: "Material Symbols Outlined";
-        font-size: 32px;
+        @include material-icon(32px);
         margin: 0.3rem 0;
         color: $fg;
       }

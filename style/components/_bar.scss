@@ -8,7 +8,6 @@
   border-radius: calc(#{$round} * 4);
   font-size: $font;
 
-  /* Common styles for both modes */
   cava {
     opacity: 0.1;
     margin: 0 -0.5rem;
@@ -45,45 +44,19 @@
     }
 
     .monitor0 {
-      background: $primaryMon;
-      box-shadow: inset -2px -2px 2px color.scale($primaryMon, $lightness: -25%);
-      &:hover {
-        background: $primaryMonHover;
-        box-shadow: inset -2px -2px 2px
-          color.scale($primaryMonHover, $lightness: -25%);
-      }
+      @include hypr-workspace-style($primaryMon, $primaryMonHover);
     }
 
     .monitor1 {
-      background: $secondaryMon;
-      box-shadow: inset -2px -2px 2px
-        color.scale($secondaryMon, $lightness: -25%);
-      &:hover {
-        background: $secondaryMonHover;
-        box-shadow: inset -2px -2px 2px
-          color.scale($secondaryMonHover, $lightness: -25%);
-      }
+      @include hypr-workspace-style($secondaryMon, $secondaryMonHover);
     }
 
     .monitor2 {
-      background: $tertiaryMon;
-      box-shadow: inset -2px -2px 2px
-        color.scale($tertiaryMon, $lightness: -25%);
-      &:hover {
-        background: $tertiaryMonHover;
-        box-shadow: inset -2px -2px 2px
-          color.scale($tertiaryMonHover, $lightness: -25%);
-      }
+      @include hypr-workspace-style($tertiaryMon, $tertiaryMonHover);
     }
 
     .monitor3 {
-      background: $fourthMon;
-      box-shadow: inset -2px -2px 2px color.scale($fourthMon, $lightness: -25%);
-      &:hover {
-        background: $fourthMonHover;
-        box-shadow: inset -2px -2px 2px
-          color.scale($fourthMonHover, $lightness: -25%);
-      }
+      @include hypr-workspace-style($fourthMon, $fourthMonHover);
     }
   }
 
@@ -135,33 +108,10 @@
 
   /* hw-monitor */
   .bar-hw-ram-box {
-    @include hw-circular-progress;
-
-    circularprogress progress {
-      color: $ramProc;
-    }
-
-    button {
-      label {
-        margin: 1px 0px 0px 2px;
-        font-size: 1.2rem;
-      }
-    }
+    @include hw-monitor-box($ramProc);
   }
-
   .bar-hw-cpu-box {
-    @include hw-circular-progress;
-
-    circularprogress progress {
-      color: $cpuProc;
-    }
-
-    button {
-      label {
-        margin: 1px 0px 0px 1px;
-        font-size: 1.3rem;
-      }
-    }
+    @include hw-monitor-box($cpuProc, 1px 0px 0px 1px, 1.3rem);
   }
 
   /* System menu */

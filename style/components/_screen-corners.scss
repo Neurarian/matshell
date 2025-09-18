@@ -4,42 +4,42 @@
 
 .ScreenCorners {
   background-color: transparent;
-  
+
   .corner-content {
     background-color: transparent;
   }
 
   &.corner-top .corner-content {
-    border-top-left-radius: calc(#{$round2});
-    border-top-right-radius: calc(#{$round2});
-    box-shadow: 
+    border-top-left-radius: $round2;
+    border-top-right-radius: $round2;
+    box-shadow:
       0 0 0 99px $barBg,
       inset 0 10px 10px -10px rgba(0, 0, 0, 0.2);
     min-height: max(12px, calc(#{$round} * 8));
   }
 
   &.corner-bottom .corner-content {
-    border-bottom-left-radius: calc(#{$round2});
-    border-bottom-right-radius: calc(#{$round2});
-    box-shadow: 
+    border-bottom-left-radius: $round2;
+    border-bottom-right-radius: $round2;
+    box-shadow:
       0 0 0 99px $barBg,
       inset 0 -10px 10px -10px rgba(0, 0, 0, 0.2);
     min-height: max(12px, calc(#{$round} * 8));
   }
 
   &.corner-left .corner-content {
-    border-top-left-radius: calc(#{$round2});
-    border-bottom-left-radius: calc(#{$round2});
-    box-shadow: 
+    border-top-left-radius: $round2;
+    border-bottom-left-radius: $round2;
+    box-shadow:
       0 0 0 99px $barBg,
       inset 10px 0 10px -10px rgba(0, 0, 0, 0.2);
     min-width: calc(#{$round} * 8);
   }
 
   &.corner-right .corner-content {
-    border-top-right-radius: calc(#{$round2});
-    border-bottom-right-radius: calc(#{$round2});
-    box-shadow: 
+    border-top-right-radius: $round2;
+    border-bottom-right-radius: $round2;
+    box-shadow:
       0 0 0 99px $barBg,
       inset -10px 0 10px -10px rgba(0, 0, 0, 0.2);
     min-width: calc(#{$round} * 8);

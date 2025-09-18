@@ -1,0 +1,22 @@
+@use "sass:color";
+@use "../variables" as *;
+@use "../theme_variables_matugen" as *;
+
+// Base animation and transitions
+@mixin animate($duration: 400ms, $easing: cubic-bezier(0.05, 0.7, 0.1, 1)) {
+  transition: $duration $easing;
+}
+
+// Basic border styling
+@mixin border($color: rgba(0, 0, 0, 0.1), $width: 1px) {
+  border: $width solid $color;
+}
+
+// Border radius
+@mixin rounding($radius: calc(#{$round2} - #{$spacing-sm} - #{$border-width})) {
+  border-radius: $radius;
+}
+
+@mixin window-rounding {
+  border-radius: $round2;
+}

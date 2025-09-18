@@ -1,0 +1,55 @@
+@use "sass:color";
+@use "../variables" as *;
+@use "../theme_variables_matugen" as *;
+@use "base" as *;
+@use "effects" as *;
+
+// Base button
+@mixin button {
+  @include animate;
+  @include light-mode-shadow;
+  background: $buttonDisabled;
+  border: 1px solid color.adjust($fg, $alpha: -0.9);
+  border-radius: calc(#{$round} * 1.97);
+  padding: 0.4rem;
+  
+  &:hover {
+    background: $buttonDisabledHover;
+  }
+}
+
+// Active/enabled button
+@mixin button-active {
+  @include animate;
+  background: $buttonEnabled;
+  border: 1px solid color.adjust($buttonEnabled, $alpha: 0.1);
+  border-radius: calc(#{$round} * 1.97);
+  padding: 0.4rem;
+  @if not $darkmode {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  }
+  
+  &:hover {
+    background: $buttonEnabledHover;
+  }
+}
+
+@mixin menu {
+  background: $tooltipBg;
+  border-radius: $round;
+  font-size: $font;
+  
+  separator {
+    background-color: $surface;
+  }
+  
+  menuitem {
+    @include button;
+    border-radius: 0;
+    padding: 0.4rem 0.7rem;
+    
+    &:first-child { border-radius: $round $round 0 0; }
+    &:last-child { border-radius: 0 0 $round $round; }
+    &:only-child { border-radius: $round; }
+  }
+}

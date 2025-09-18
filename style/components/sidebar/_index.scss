@@ -8,24 +8,15 @@
 
 .sidebar {
   @include window;
+  @include border;
+  @include light-mode-shadow;
   min-width: 300px;
   margin: $spacing-md;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-
-  @if $darkmode {
-  } @else {
-    // Light mode enhancements
-    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.08);
-  }
 
   & > box {
     @include window-box;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-
-    @if $darkmode {
-    } @else {
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    }
+    @include border;
+    @include light-mode-shadow;
   }
 
   separator {
@@ -39,60 +30,7 @@
   }
 }
 
-/* Section inside sidebar */
-.sidebar-section {
-  margin-bottom: $spacing-md;
-
-  .section-title {
-    font-weight: bold;
-    font-size: 1rem;
-    margin: $spacing-sm 0 $spacing-xs 0;
-    color: color.adjust($fg, $alpha: -0.2);
-  }
-
-  .sidebar-button {
-    @include button;
-    @include window-box;
-    @include rounding;
-    margin: $spacing-xs 0;
-    padding: 0.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-
-    @if $darkmode {
-    } @else {
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-
-      &:hover,
-      &:focus {
-        border: 1px solid rgba(0, 0, 0, 0.04);
-      }
-    }
-
-    image {
-      -gtk-icon-size: 1.2rem;
-      margin-right: $spacing-sm;
-    }
-
-    label {
-      font-size: $font;
-      margin: 0 $spacing-sm;
-    }
-  }
-}
-
-/* Header */
-.sidebar-header {
-  margin-bottom: $spacing-md;
-  padding-bottom: $spacing-sm;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-
-  .sidebar-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-}
-
-.sidebar-header-separator {
+.sidebar-spacer {
   background-color: $accent; // or a muted $fg variant
   min-height: 2px; // thinner than normal separators
   margin-bottom: $spacing-md;

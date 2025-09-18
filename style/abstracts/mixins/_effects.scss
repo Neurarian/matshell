@@ -1,0 +1,26 @@
+@use "sass:color";
+@use "../theme_variables_matugen" as *;
+@use "../variables" as *;
+
+// Shadow system
+@mixin light-mode-shadow($shadow-type: "default") {
+  @if not $darkmode {
+    @if $shadow-type == "subtle" {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    } @else if $shadow-type == "elevated" {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    } @else if $shadow-type == "strong" {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+    } @else {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+  }
+}
+
+@mixin window-shadow {
+  box-shadow: 0 3px 5px 1px color.adjust($background, $alpha: -0.9);
+}
+
+@mixin inset-shadow {
+  box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+}

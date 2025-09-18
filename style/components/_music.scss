@@ -41,8 +41,7 @@
   label,
   .title,
   image {
-    @if $darkmode {
-    } @else {
+    @if not $darkmode {
       color: $background;
     }
   }
@@ -69,8 +68,7 @@
   button {
     margin: 0 1.6rem;
     -gtk-icon-size: 1.5rem;
-    @if $darkmode {
-    } @else {
+    @if not $darkmode {
       color: $background;
     }
   }

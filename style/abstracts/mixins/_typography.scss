@@ -1,0 +1,5 @@
+// Material Design icons
+@mixin material-icon($size: 24px) {
+  font-family: "Material Symbols Outlined";
+  font-size: $size;
+}

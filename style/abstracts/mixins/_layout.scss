@@ -1,0 +1,31 @@
+@use "sass:color";
+@use "../variables" as *;
+@use "../theme_variables_matugen" as *;
+@use "base" as *;
+@use "effects" as *;
+
+// Window container base
+@mixin window {
+  @include window-rounding;
+  @include window-shadow;
+  background: $bg;
+  margin: 5px 10px 15px;
+  padding: $spacing-sm;
+}
+
+@mixin window-box {
+  @include rounding;
+  @include inset-shadow;
+  background: $surface;
+  margin: $spacing-sm;
+  padding: $spacing-sm;
+}
+
+@mixin widget-container {
+  @include window;
+  @include light-mode-shadow;
+  @include border;
+  border-radius: calc(#{$round} * 3);
+  padding: $spacing-md;
+  margin: $spacing-md;
+}

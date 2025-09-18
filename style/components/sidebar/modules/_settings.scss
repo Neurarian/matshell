@@ -3,10 +3,7 @@
 @use "sass:color";
 
 .stacked-settings-widget {
-  @include window;
-  border-radius: calc(#{$round} * 3);
-  padding: $spacing-md;
-  margin: $spacing-md;
+  @include widget-container;
 
   .settings-header {
     margin: 0 $spacing-sm;
@@ -39,8 +36,7 @@
       margin: 0 $spacing-xs;
 
       .nav-icon {
-        font-family: "Material Symbols Outlined";
-        font-size: 24px;
+        @include material-icon;
       }
 
       .nav-label {

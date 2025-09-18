@@ -9,11 +9,6 @@ import QuickActionsWidget from "./modules/QuickActionWidget";
 import TemplateWidget from "./modules/BaseTemplateWidget";
 import options from "options";
 
-/** ---------- Header (spacer only) ---------- **/
-function Header() {
-  return <box cssClasses={["sidebar-spacer"]} />;
-}
-
 /** ---------- Sidebar Window ---------- **/
 export default function Sidebar(
   props: {
@@ -45,8 +40,6 @@ export default function Sidebar(
         vexpand={true}
         spacing={12}
       >
-        <Header />
-
         {/* Built-in widgets */}
         <ClockWidget />
         <Gtk.Separator />

@@ -7,18 +7,14 @@
 .system-menu {
   -gtk-icon-size: $font;
   @include window;
+  @include border;
   margin-top: $spacing-md;
   margin-right: $spacing-md;
-  border: 1px solid rgba(0, 0, 0, 0.1);
 
   & > box {
     @include window-box;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    @if $darkmode {
-    } @else {
-      // Light mode enhancements
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    }
+    @include light-mode-shadow;
+    @include border;
   }
 }
 
@@ -84,13 +80,9 @@
 }
 .system-menu-list {
   @include window;
+  @include light-mode-shadow;
+  @include border;
   margin: $spacing-sm;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  @if $darkmode {
-  } @else {
-    // Light mode enhancements
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  }
 }
 
 .network-item {
@@ -132,7 +124,7 @@
 .refresh-button,
 .disconnect-button,
 .settings-button {
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  @include border;
   @include button;
   margin: $spacing-sm;
 }
@@ -147,13 +139,7 @@
 .pair-button,
 .trust-button {
   margin: $spacing-sm;
-  margin-top: $spacing-sm;
-  margin-bottom: $spacing-sm;
-  @if $darkmode {
-  } @else {
-    // Light mode enhancements
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-  }
+  @include light-mode-shadow($shadow-type: "strong");
 }
 
 //avoid artifacts
@@ -169,8 +155,8 @@ image {
 }
 .password-search {
   @include window-box;
+  @include border;
   background: $bg;
-  border: 1px solid rgba(0, 0, 0, 0.1);
   entry {
     menu {
       @include menu;
@@ -186,15 +172,11 @@ image {
 .saved-network {
   @include button;
   @include rounding;
+  @include light-mode-shadow;
   margin: $spacing-sm $spacing-sm $spacing-sm $spacing-md;
   padding: $spacing-xs;
   > label {
     margin-left: $spacing-sm;
-  }
-  @if $darkmode {
-  } @else {
-    // Light mode enhancements
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   }
 }
 

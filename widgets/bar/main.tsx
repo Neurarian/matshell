@@ -106,7 +106,9 @@ function Bar({ gdkmonitor, ...props }: any) {
           <box
             visible={hasActivePlayers}
             $type="center"
-            overflow={Gtk.Overflow.HIDDEN}
+            overflow={options["bar.style"]((style) =>
+              style === "floating" ? Gtk.Overflow.HIDDEN : Gtk.Overflow.VISIBLE,
+            )}
           >
             <overlay>
               <box

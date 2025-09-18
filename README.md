@@ -85,6 +85,7 @@ ______________________________________________________________________
 - libastal-powerprofiles-git
 - libgtop
 - libadwaita
+- libsoup3
 - hyprland
 - coreutils
 - dart-sass
@@ -245,7 +246,7 @@ https://github.com/user-attachments/assets/7a7851e3-9ebc-4f52-8b0f-e9a062122d9e
 <b> Square bar with rounded screen corners & Hyprland blur</b>
 </p>
 
-<img width="3442" height="1441" alt="2025-09-06T00:25:06,809833716+02:00" src="https://github.com/user-attachments/assets/1339ee40-cb49-4d35-b282-19026a95c7e1" />
+<img width="3439" height="1441" alt="2025-09-18T19:08:46,034329229+02:00" src="https://github.com/user-attachments/assets/b61585b6-e17c-4d43-98e8-3e49962ae108" />
 
 <details>
    <summary><h3></b>Detailed Widget List</h3></summary>

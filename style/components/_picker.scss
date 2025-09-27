@@ -1,0 +1,160 @@
+@use "../layouts" as *;
+@use "../abstracts" as *;
+@use "sass:color";
+
+box.picker {
+  @include window;
+
+  box.search {
+    @include window-box;
+    margin: 1rem 0.5rem;
+    background-color: color.adjust($primary, $alpha: -0.85);
+
+    label {
+      @include material-icon(2rem);
+      margin: 0.3rem;
+    }
+
+    entry {
+      font-size: 1.5rem;
+      margin: $spacing-xs;
+
+      menu {
+        @include menu;
+      }
+    }
+  }
+
+  box.results-list {
+    @include window-box;
+
+    button {
+      padding: 0.4rem;
+
+      image {
+        -gtk-icon-size: 3rem;
+        margin-right: 0.3rem;
+        margin-left: 0.3rem;
+      }
+
+      label.name {
+        font-weight: bold;
+        font-size: $font;
+      }
+
+      label.description {
+        color: color.adjust($fg, $alpha: -0.2);
+      }
+
+      &:focus,
+      &:hover {
+        @include button-active;
+        background-color: $buttonEnabledHover;
+        border: transparent;
+      }
+    }
+  }
+
+  // Wallpaper grid styles
+  box.results-grid {
+    @include window-box;
+
+    box.wallpaper-content {
+      padding: 0.5rem;
+    }
+
+    box.wallpaper-row {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  box.not-found {
+    padding: 1rem;
+
+    image {
+      -gtk-icon-size: 6rem;
+      color: color.adjust($fg, $alpha: -0.3);
+    }
+
+    label {
+      color: color.adjust($fg, $alpha: -0.1);
+      font-size: 1.2em;
+    }
+  }
+}
+
+// Mode bar styles
+.mode-bar {
+  padding: 8px;
+  .mode-button {
+    @include rounding;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+    .mode-icon {
+      @include material-icon;
+    }
+
+    &:hover,
+    &:focus {
+      @include button-active;
+      @include rounding;
+      background-color: $buttonEnabledHover;
+      border: transparent;
+      padding: 6px 12px;
+      transition: all 0.2s ease;
+    }
+  }
+}
+
+button.wallpaper-thumbnail {
+  @include rounding;
+  @include animate;
+  padding: 0.5rem;
+  background-color: transparent;
+  border: 1px solid transparent;
+
+  &:hover,
+  &:focus {
+    background-color: color.adjust($fg, $alpha: -0.9);
+    border-color: color.adjust($fg, $alpha: -0.7);
+  }
+
+  box.wallpaper-preview-container {
+    @include rounding;
+    @include border;
+    min-width: 140px;
+    min-height: 100px;
+    background-color: color.adjust($fg, $alpha: -0.9);
+  }
+
+  picture.wallpaper-picture {
+    @include rounding;
+  }
+
+  box.wallpaper-placeholder {
+    @include rounding;
+    background-color: rgba(255, 255, 255, 0.1);
+    min-width: 140px;
+    min-height: 100px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  label.wallpaper-name {
+    color: color.adjust($fg, $alpha: -0.1);
+    margin-top: 0.25rem;
+    font-weight: 500;
+  }
+}
+
+.action-bar {
+  padding: $spacing-sm;
+  .action-icon {
+    @include material-icon;
+  }
+  button {
+    @include light-mode-shadow;
+    margin-bottom: 0;
+    border-radius: 5rem;
+    padding: $spacing-xs $spacing-sm;
+  }
+}

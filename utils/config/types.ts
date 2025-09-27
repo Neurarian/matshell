@@ -8,6 +8,9 @@ export type ConfigValue =
   | string
   | number
   | boolean
+  | null
+  | undefined
+  | Record<string, any>
   | ConfigValueObject
   | ConfigValueArray;
 
@@ -21,8 +24,8 @@ export interface IConfigOption {
   subscribe(cb: (v: ConfigValue) => void): () => void;
 }
 
-export interface ConfigDefinition {
-  defaultValue: ConfigValue;
+export interface ConfigDefinition<T = ConfigValue> {
+  defaultValue: T;
   useCache?: boolean;
   autoSave?: boolean;
 }

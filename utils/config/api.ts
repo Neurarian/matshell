@@ -4,24 +4,25 @@ import { ConfigValue, ConfigDefinition } from "./types.ts";
 
 let configManager: ConfigManager | null = null;
 
-export function defineOption<T extends ConfigValue>(
+export function defineOption<T = ConfigValue>(
   defaultValue: T,
-  options: { useCache?: boolean; autoSave?: boolean } = {},
-): ConfigDefinition {
+  config?: Omit<ConfigDefinition<T>, "defaultValue">,
+): ConfigDefinition<T> {
   return {
     defaultValue,
-    useCache: options.useCache ?? false,
-    autoSave: options.autoSave ?? true,
+    useCache: config?.useCache ?? false,
+    autoSave: config?.autoSave ?? true,
   };
 }
 
-export function initializeConfig(
+export function initializeConfig<
+  TConfig extends Record<string, ConfigDefinition<any>>
+>(
   configPath: string,
-  config: Record<string, ConfigDefinition>,
-): Record<string, ConfigOption<ConfigValue>> {
+  config: TConfig,
+): Record<keyof TConfig, ConfigOption<ConfigValue>> {
   configManager = new ConfigManager(configPath);
 
-  // Create options from flattened config
   const options: Record<string, ConfigOption<ConfigValue>> = {};
 
   for (const [path, def] of Object.entries(config)) {
@@ -34,5 +35,5 @@ export function initializeConfig(
   configManager.initialize();
   configManager.watchChanges();
 
-  return options;
+  return options as Record<keyof TConfig, ConfigOption<ConfigValue>>;
 }

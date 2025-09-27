@@ -116,8 +116,12 @@
                 --prefix PATH : ${
                 pkgs.lib.makeBinPath (with pkgs; [
                   # runtime executables
+                  libnotify
                   dart-sass
                   imagemagick
+                  hyprpaper
+                  inputs.matugen.packages.${system}.default
+                  inputs.image-hct.packages.${system}.default
                 ])
               }
               )

@@ -2,6 +2,7 @@ import app from "ags/gtk4/app";
 import { exec } from "ags/process";
 import { monitorFile } from "ags/file";
 import GLib from "gi://GLib?version=2.0";
+import { picker } from "utils/picker";
 
 // Widgets
 import {
@@ -10,7 +11,7 @@ import {
   OnScreenDisplay,
   Notifications,
   LogoutMenu,
-  Applauncher,
+  PickerWindow,
   MusicPlayer,
   Sidebar,
 } from "./widgets";
@@ -36,9 +37,9 @@ app.start({
   requestHandler(argv: string[], res: (response: any) => void) {
     const request = argv[0];
     switch (request) {
-      case "launcher":
-        app.toggle_window("launcher");
-        res("app launcher toggled");
+      case "picker":
+        app.toggle_window("picker");
+        res("picker toggled");
         break;
       case "logout":
         app.toggle_window("logout-menu");
@@ -52,6 +53,10 @@ app.start({
         reloadCss();
         res("css reloaded");
         break;
+      case "wall-rand":
+        picker.randomFromCurrentProvider();
+        res("random wallpaper set");
+        break;
       default:
         res("not found");
     }
@@ -61,10 +66,7 @@ app.start({
     // Compile & watch SCSS
     exec(`sass ${scss} ${css}`);
     styleDirectories.forEach((dir) =>
-      monitorFile(
-        `${GLib.get_user_config_dir()}/ags/style/${dir}`,
-        reloadCss,
-      ),
+      monitorFile(`${GLib.get_user_config_dir()}/ags/style/${dir}`, reloadCss),
     );
 
     // Initialize widgets
@@ -73,7 +75,7 @@ app.start({
     OnScreenDisplay();
     SystemMenu();
     MusicPlayer();
-    Applauncher();
+    PickerWindow();
     LogoutMenu();
     Sidebar();
   },

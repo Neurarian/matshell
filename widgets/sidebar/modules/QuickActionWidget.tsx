@@ -29,7 +29,7 @@ export default function QuickActionsWidget() {
     {
       label: "Apps",
       icon: "Apps",
-      action: () => app.toggle_window("launcher"),
+      action: () => app.toggle_window("picker"),
     },
     {
       label: "Terminal",

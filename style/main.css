@@ -10,8 +10,6 @@
 /* button colors */
 /* hw circular proc colors */
 /* numeric variables */
-/* mixins */
-/* buttons */
 * {
   all: unset;
   font-family: FiraCode Nerd Font;
@@ -59,13 +57,11 @@ popover modelbutton {
   border: 1px solid rgba(249, 220, 212, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
+  border-radius: 0;
+  padding: 0.4rem 0.7rem;
 }
 popover modelbutton:hover {
   background: rgba(71, 53, 48, 0.99);
-}
-popover modelbutton {
-  border-radius: 0;
-  padding: 0.4rem 0.7rem;
 }
 popover modelbutton:first-child {
   border-radius: 8px 8px 0 0;
@@ -108,25 +104,25 @@ popover modelbutton:only-child {
 .Bar {
   border-radius: calc(8px * 4);
   font-size: 1.1rem;
-  /* Common styles for both modes */
+  /* OS Icon */
+  /* Hyperland */
+  /* music */
+  /* tray */
+  /* hw-monitor */
+  /* System menu */
 }
 .Bar cava {
   opacity: 0.1;
+  margin: 0 -0.5rem;
 }
 .Bar .module {
   margin: 0 0.4rem;
-}
-.Bar {
-  /* OS Icon */
 }
 .Bar .OsIcon {
   -gtk-icon-size: 2rem;
   margin-left: 0.8rem;
   margin-right: -0.5rem;
   color: rgb(220, 193, 185);
-}
-.Bar {
-  /* Hyperland */
 }
 .Bar .Workspaces {
   margin: 0.4rem 0.8rem;
@@ -175,9 +171,6 @@ popover modelbutton:only-child {
   background: rgb(148.6, 106.15, 76.65);
   box-shadow: inset -2px -2px 2px rgb(111.45, 79.6125, 57.4875);
 }
-.Bar {
-  /* music */
-}
 .Bar .Media > box {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   border-radius: 16px;
@@ -198,9 +191,6 @@ popover modelbutton:only-child {
   min-height: 2rem;
   margin: 0.1rem 0.4rem;
 }
-.Bar {
-  /* tray */
-}
 .Bar .SysTray {
   background: none;
 }
@@ -215,9 +205,6 @@ popover modelbutton:only-child {
 }
 .Bar .SysTray.active {
   background: rgba(71, 53, 48, 0.6);
-}
-.Bar {
-  /* hw-monitor */
 }
 .Bar .bar-hw-ram-box {
   margin-right: 0.4rem;
@@ -260,9 +247,6 @@ popover modelbutton:only-child {
 .Bar .bar-hw-cpu-box button label {
   margin: 1px 0px 0px 1px;
   font-size: 1.3rem;
-}
-.Bar {
-  /* System menu */
 }
 .Bar .system-menu-toggler box {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
@@ -310,107 +294,192 @@ popover modelbutton:only-child {
 
 /* variables & mixins */
 /* general styles */
-box.applauncher {
-  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
+box.picker {
   border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
 }
-box.applauncher box.search {
+box.picker box.search {
   border-radius: calc(16px - 0.4rem - 2px);
-  background: rgba(71, 53, 48, 0.6);
   box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
   margin: 0.4rem;
   padding: 0.4rem;
-  margin: 1rem 0.5rem 1rem 0.5rem;
+  margin: 1rem 0.5rem;
   background-color: rgba(255, 181, 158, 0.15);
 }
-box.applauncher box.search image {
-  -gtk-icon-size: 2rem;
+box.picker box.search label {
+  font-family: "Material Symbols Outlined";
+  font-size: 2rem;
   margin: 0.3rem;
 }
-box.applauncher box.search entry {
+box.picker box.search entry {
   font-size: 1.5rem;
-  margin: 0.3rem;
+  margin: 0.25rem;
 }
-box.applauncher box.search entry menu {
+box.picker box.search entry menu {
   background: rgb(30, 16, 12);
   border-radius: 8px;
   font-size: 1.1rem;
 }
-box.applauncher box.search entry menu separator {
+box.picker box.search entry menu separator {
   background-color: rgba(71, 53, 48, 0.6);
 }
-box.applauncher box.search entry menu menuitem {
+box.picker box.search entry menu menuitem {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
   border: 1px solid rgba(249, 220, 212, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-}
-box.applauncher box.search entry menu menuitem:hover {
-  background: rgba(71, 53, 48, 0.99);
-}
-box.applauncher box.search entry menu menuitem {
   border-radius: 0;
   padding: 0.4rem 0.7rem;
 }
-box.applauncher box.search entry menu menuitem:first-child {
+box.picker box.search entry menu menuitem:hover {
+  background: rgba(71, 53, 48, 0.99);
+}
+box.picker box.search entry menu menuitem:first-child {
   border-radius: 8px 8px 0 0;
 }
-box.applauncher box.search entry menu menuitem:last-child {
+box.picker box.search entry menu menuitem:last-child {
   border-radius: 0 0 8px 8px;
 }
-box.applauncher box.search entry menu menuitem:only-child {
+box.picker box.search entry menu menuitem:only-child {
   border-radius: 8px;
 }
-box.applauncher box.apps {
+box.picker box.results-list {
   border-radius: calc(16px - 0.4rem - 2px);
-  background: rgba(71, 53, 48, 0.6);
   box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
   margin: 0.4rem;
   padding: 0.4rem;
 }
-box.applauncher box.apps button {
+box.picker box.results-list button {
   padding: 0.4rem;
 }
-box.applauncher box.apps button image {
+box.picker box.results-list button image {
   -gtk-icon-size: 3rem;
   margin-right: 0.3rem;
   margin-left: 0.3rem;
 }
-box.applauncher box.apps button label.name {
+box.picker box.results-list button label.name {
   font-weight: bold;
   font-size: 1.1rem;
 }
-box.applauncher box.apps button label.description {
+box.picker box.results-list button label.description {
   color: rgba(249, 220, 212, 0.8);
 }
-box.applauncher box.apps button:focus, box.applauncher box.apps button:hover {
+box.picker box.results-list button:focus, box.picker box.results-list button:hover {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(255, 181, 158, 0.2);
   border: 1px solid rgba(255, 181, 158, 0.3);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-}
-box.applauncher box.apps button:focus:hover, box.applauncher box.apps button:hover:hover {
-  background: rgba(255, 181, 158, 0.3);
-}
-box.applauncher box.apps button:focus, box.applauncher box.apps button:hover {
   background-color: rgba(255, 181, 158, 0.3);
   border: transparent;
 }
-box.applauncher box.not-found {
+box.picker box.results-list button:focus:hover, box.picker box.results-list button:hover:hover {
+  background: rgba(255, 181, 158, 0.3);
+}
+box.picker box.results-grid {
+  border-radius: calc(16px - 0.4rem - 2px);
+  box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
+  margin: 0.4rem;
+  padding: 0.4rem;
+}
+box.picker box.results-grid box.wallpaper-content {
+  padding: 0.5rem;
+}
+box.picker box.results-grid box.wallpaper-row {
+  margin-bottom: 0.5rem;
+}
+box.picker box.not-found {
   padding: 1rem;
 }
-box.applauncher box.not-found image {
+box.picker box.not-found image {
   -gtk-icon-size: 6rem;
   color: rgba(249, 220, 212, 0.7);
 }
-box.applauncher box.not-found label {
+box.picker box.not-found label {
   color: rgba(249, 220, 212, 0.9);
   font-size: 1.2em;
+}
+
+.mode-bar {
+  padding: 8px;
+}
+.mode-bar .mode-button {
+  border-radius: calc(16px - 0.4rem - 2px);
+  padding: 6px 12px;
+  transition: all 0.2s ease;
+}
+.mode-bar .mode-button .mode-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 24px;
+}
+.mode-bar .mode-button:hover, .mode-bar .mode-button:focus {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+  border-radius: calc(8px * 1.97);
+  padding: 0.4rem;
+  border-radius: calc(16px - 0.4rem - 2px);
+  background-color: rgba(255, 181, 158, 0.3);
+  border: transparent;
+  padding: 6px 12px;
+  transition: all 0.2s ease;
+}
+.mode-bar .mode-button:hover:hover, .mode-bar .mode-button:focus:hover {
+  background: rgba(255, 181, 158, 0.3);
+}
+
+button.wallpaper-thumbnail {
+  border-radius: calc(16px - 0.4rem - 2px);
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  padding: 0.5rem;
+  background-color: transparent;
+  border: 1px solid transparent;
+}
+button.wallpaper-thumbnail:hover, button.wallpaper-thumbnail:focus {
+  background-color: rgba(249, 220, 212, 0.1);
+  border-color: rgba(249, 220, 212, 0.3);
+}
+button.wallpaper-thumbnail box.wallpaper-preview-container {
+  border-radius: calc(16px - 0.4rem - 2px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  min-width: 140px;
+  min-height: 100px;
+  background-color: rgba(249, 220, 212, 0.1);
+}
+button.wallpaper-thumbnail picture.wallpaper-picture {
+  border-radius: calc(16px - 0.4rem - 2px);
+}
+button.wallpaper-thumbnail box.wallpaper-placeholder {
+  border-radius: calc(16px - 0.4rem - 2px);
+  background-color: rgba(255, 255, 255, 0.1);
+  min-width: 140px;
+  min-height: 100px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+button.wallpaper-thumbnail label.wallpaper-name {
+  color: rgba(249, 220, 212, 0.9);
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.action-bar {
+  padding: 0.4rem;
+}
+.action-bar .action-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 24px;
+}
+.action-bar button {
+  margin-bottom: 0;
+  border-radius: 5rem;
+  padding: 0.25rem 0.4rem;
 }
 
 /* variables & mixins */
@@ -419,8 +488,8 @@ box.logout-background {
   background-color: rgba(30, 16, 12, 0.5);
 }
 box.logout-background .logout-menu {
-  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
@@ -428,8 +497,8 @@ box.logout-background .logout-menu {
 }
 box.logout-background .logout-menu button {
   border-radius: calc(16px - 0.4rem - 2px);
-  background: rgba(71, 53, 48, 0.6);
   box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
   margin: 0.4rem;
   padding: 0.4rem;
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
@@ -437,13 +506,11 @@ box.logout-background .logout-menu button {
   border: 1px solid rgba(249, 220, 212, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 1rem;
 }
 box.logout-background .logout-menu button:hover {
   background: rgba(71, 53, 48, 0.99);
-}
-box.logout-background .logout-menu button {
-  margin: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 box.logout-background .logout-menu button:focus {
   background: rgba(255, 181, 158, 0.3);
@@ -457,8 +524,8 @@ box.logout-background .logout-menu button label {
 /* variables & mixins */
 /* general styles */
 .music.window {
-  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
@@ -521,12 +588,13 @@ box.logout-background .logout-menu button label {
 /* variables & mixins */
 /* general styles */
 .notification {
-  margin: 0.75rem;
-  min-width: 15px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 16px;
-  background-color: rgba(30, 16, 12, 0.5);
-  border: 1px solid transparent;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
+  background: rgba(30, 16, 12, 0.5);
+  margin: 5px 10px 15px;
+  padding: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 0.75rem;
   padding: 0.4rem 0.75rem;
 }
 .notification.critical {
@@ -583,8 +651,8 @@ box.logout-background .logout-menu button label {
 }
 .notification .actions .action-button {
   border-radius: calc(16px - 0.4rem - 2px);
-  background: rgba(71, 53, 48, 0.6);
   box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
   margin: 0.4rem;
   padding: 0.4rem;
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
@@ -598,8 +666,8 @@ box.logout-background .logout-menu button label {
 /* variables & mixins */
 /* general styles */
 .osd {
-  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
@@ -634,19 +702,19 @@ box.logout-background .logout-menu button label {
 /* general */
 .system-menu {
   -gtk-icon-size: 1.1rem;
-  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   margin-top: 0.75rem;
   margin-right: 0.75rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 .system-menu > box {
   border-radius: calc(16px - 0.4rem - 2px);
-  background: rgba(71, 53, 48, 0.6);
   box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
   margin: 0.4rem;
   padding: 0.4rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -706,13 +774,13 @@ box.logout-background .logout-menu button label {
 }
 
 .system-menu-list {
-  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
-  margin: 0.4rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 0.4rem;
 }
 
 .network-item {
@@ -721,14 +789,12 @@ box.logout-background .logout-menu button label {
   border: 1px solid rgba(249, 220, 212, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-}
-.network-item:hover {
-  background: rgba(71, 53, 48, 0.99);
-}
-.network-item {
   border-radius: calc(16px - 0.4rem - 2px);
   margin: 0.25rem 0.4rem 0.4rem 0.75rem;
   padding: 0.75rem;
+}
+.network-item:hover {
+  background: rgba(71, 53, 48, 0.99);
 }
 .network-item image:first-child {
   margin-right: 0.4rem;
@@ -743,20 +809,18 @@ box.logout-background .logout-menu button label {
   border: 1px solid rgba(255, 181, 158, 0.3);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-}
-.network-item-active:hover {
-  background: rgba(255, 181, 158, 0.3);
-}
-.network-item-active {
   border-radius: calc(16px - 0.4rem - 2px);
   margin: 0.25rem 0.4rem 0.4rem 0.75rem;
   padding: 0.75rem;
 }
+.network-item-active:hover {
+  background: rgba(255, 181, 158, 0.3);
+}
 
 .password-dialog {
   border-radius: calc(16px - 0.4rem - 2px);
-  background: rgba(71, 53, 48, 0.6);
   box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
   margin: 0.4rem;
   padding: 0.4rem;
   margin-bottom: 0.75rem;
@@ -781,16 +845,12 @@ box.logout-background .logout-menu button label {
   border: 1px solid rgba(249, 220, 212, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
+  margin: 0.4rem;
 }
 .refresh-button:hover,
 .disconnect-button:hover,
 .settings-button:hover {
   background: rgba(71, 53, 48, 0.99);
-}
-.refresh-button,
-.disconnect-button,
-.settings-button {
-  margin: 0.4rem;
 }
 
 .disconnect-button {
@@ -803,8 +863,6 @@ box.logout-background .logout-menu button label {
 .pair-button,
 .trust-button {
   margin: 0.4rem;
-  margin-top: 0.4rem;
-  margin-bottom: 0.4rem;
 }
 
 .disconnect-button,
@@ -820,12 +878,12 @@ image {
 
 .password-search {
   border-radius: calc(16px - 0.4rem - 2px);
-  background: rgba(71, 53, 48, 0.6);
   box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
   margin: 0.4rem;
   padding: 0.4rem;
-  background: rgba(30, 16, 12, 0.5);
   border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(30, 16, 12, 0.5);
 }
 .password-search entry menu {
   background: rgb(30, 16, 12);
@@ -841,13 +899,11 @@ image {
   border: 1px solid rgba(249, 220, 212, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
+  border-radius: 0;
+  padding: 0.4rem 0.7rem;
 }
 .password-search entry menu menuitem:hover {
   background: rgba(71, 53, 48, 0.99);
-}
-.password-search entry menu menuitem {
-  border-radius: 0;
-  padding: 0.4rem 0.7rem;
 }
 .password-search entry menu menuitem:first-child {
   border-radius: 8px 8px 0 0;
@@ -870,14 +926,12 @@ image {
   border: 1px solid rgba(249, 220, 212, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-}
-.saved-network:hover {
-  background: rgba(71, 53, 48, 0.99);
-}
-.saved-network {
   border-radius: calc(16px - 0.4rem - 2px);
   margin: 0.4rem 0.4rem 0.4rem 0.75rem;
   padding: 0.25rem;
+}
+.saved-network:hover {
+  background: rgba(71, 53, 48, 0.99);
 }
 .saved-network > label {
   margin-left: 0.4rem;
@@ -896,26 +950,26 @@ image {
   background-color: transparent;
 }
 .ScreenCorners.corner-top .corner-content {
-  border-top-left-radius: calc(16px);
-  border-top-right-radius: calc(16px);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
   box-shadow: 0 0 0 99px rgba(30, 16, 12, 0.5), inset 0 10px 10px -10px rgba(0, 0, 0, 0.2);
   min-height: max(12px, 8px * 8);
 }
 .ScreenCorners.corner-bottom .corner-content {
-  border-bottom-left-radius: calc(16px);
-  border-bottom-right-radius: calc(16px);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
   box-shadow: 0 0 0 99px rgba(30, 16, 12, 0.5), inset 0 -10px 10px -10px rgba(0, 0, 0, 0.2);
   min-height: max(12px, 8px * 8);
 }
 .ScreenCorners.corner-left .corner-content {
-  border-top-left-radius: calc(16px);
-  border-bottom-left-radius: calc(16px);
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
   box-shadow: 0 0 0 99px rgba(30, 16, 12, 0.5), inset 10px 0 10px -10px rgba(0, 0, 0, 0.2);
   min-width: calc(8px * 8);
 }
 .ScreenCorners.corner-right .corner-content {
-  border-top-right-radius: calc(16px);
-  border-bottom-right-radius: calc(16px);
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
   box-shadow: 0 0 0 99px rgba(30, 16, 12, 0.5), inset -10px 0 10px -10px rgba(0, 0, 0, 0.2);
   min-width: calc(8px * 8);
 }
@@ -936,14 +990,12 @@ image {
   border: 1px solid rgba(249, 220, 212, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-}
-.quick-actions-widget .actions-grid .action-button:hover {
-  background: rgba(71, 53, 48, 0.99);
-}
-.quick-actions-widget .actions-grid .action-button {
   background: transparent;
   border-radius: 1.65rem;
   margin: 0 0.4rem;
+}
+.quick-actions-widget .actions-grid .action-button:hover {
+  background: rgba(71, 53, 48, 0.99);
 }
 .quick-actions-widget .actions-grid .action-button:hover {
   background: rgba(255, 181, 158, 0.2);
@@ -963,12 +1015,10 @@ image {
   min-width: 1.2em;
 }
 .clock-widget .digit-stack label {
-  font-family: "JetBrainsMono Nerd Font", monospace;
   font-size: 2.2rem;
   font-weight: bold;
 }
 .clock-widget .colon {
-  font-family: "JetBrainsMono Nerd Font", monospace;
   font-size: 2.2rem;
   font-weight: bold;
   margin: 0 2px;
@@ -985,11 +1035,12 @@ image {
 /* variables & mixins */
 /* general styles */
 .stacked-settings-widget {
-  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: calc(8px * 3);
   padding: 0.75rem;
   margin: 0.75rem;
@@ -1098,8 +1149,6 @@ image {
 }
 .stacked-settings-widget .option-row .option-dropdown {
   min-width: 140px;
-  padding: 0.1rem;
-  margin: 0;
 }
 .stacked-settings-widget .option-row .option-dropdown button {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
@@ -1107,14 +1156,12 @@ image {
   border: 1px solid rgba(255, 181, 158, 0.3);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-}
-.stacked-settings-widget .option-row .option-dropdown button:hover {
-  background: rgba(255, 181, 158, 0.3);
-}
-.stacked-settings-widget .option-row .option-dropdown button {
   border-radius: calc(8px * 1.5);
   padding: 0.25rem 0.4rem;
   border-color: rgba(249, 220, 212, 0.1);
+}
+.stacked-settings-widget .option-row .option-dropdown button:hover {
+  background: rgba(255, 181, 158, 0.3);
 }
 .stacked-settings-widget .option-row .option-dropdown button:hover {
   border-color: rgba(249, 220, 212, 0.3);
@@ -1128,15 +1175,15 @@ image {
 /* variables & mixins */
 /* general styles */
 .weather-widget {
-  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: calc(8px * 3);
   padding: 0.75rem;
   margin: 0.75rem;
-  color: rgb(249, 220, 212);
 }
 .weather-widget .current-weather .current-icon {
   font-family: "Material Symbols Outlined";
@@ -1189,16 +1236,17 @@ image {
 /* variables & mixins */
 /* general styles */
 .base-widget {
-  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: calc(8px * 3);
   padding: 0.75rem;
   margin: 0.75rem;
-  color: rgb(249, 220, 212);
   /* Generic "header/content" row */
+  /* Generic "items row" for children */
 }
 .base-widget .header-row {
   margin-bottom: 0.4rem;
@@ -1223,9 +1271,6 @@ image {
   font-size: 1.1rem;
   color: rgb(163, 139, 133);
 }
-.base-widget {
-  /* Generic "items row" for children */
-}
 .base-widget .items-row {
   margin-top: 0.4rem;
 }
@@ -1247,19 +1292,19 @@ image {
 }
 
 .sidebar {
-  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
   background: rgba(30, 16, 12, 0.5);
   margin: 5px 10px 15px;
   padding: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   min-width: 300px;
   margin: 0.75rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 .sidebar > box {
   border-radius: calc(16px - 0.4rem - 2px);
-  background: rgba(71, 53, 48, 0.6);
   box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
   margin: 0.4rem;
   padding: 0.4rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -1271,63 +1316,6 @@ image {
 }
 .sidebar image {
   margin-right: 0.75rem;
-}
-
-/* Section inside sidebar */
-.sidebar-section {
-  margin-bottom: 0.75rem;
-}
-.sidebar-section .section-title {
-  font-weight: bold;
-  font-size: 1rem;
-  margin: 0.4rem 0 0.25rem 0;
-  color: rgba(249, 220, 212, 0.8);
-}
-.sidebar-section .sidebar-button {
-  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 212, 0.1);
-  border-radius: calc(8px * 1.97);
-  padding: 0.4rem;
-}
-.sidebar-section .sidebar-button:hover {
-  background: rgba(71, 53, 48, 0.99);
-}
-.sidebar-section .sidebar-button {
-  border-radius: calc(16px - 0.4rem - 2px);
-  background: rgba(71, 53, 48, 0.6);
-  box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
-  margin: 0.4rem;
-  padding: 0.4rem;
-  border-radius: calc(16px - 0.4rem - 2px);
-  margin: 0.25rem 0;
-  padding: 0.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-.sidebar-section .sidebar-button image {
-  -gtk-icon-size: 1.2rem;
-  margin-right: 0.4rem;
-}
-.sidebar-section .sidebar-button label {
-  font-size: 1.1rem;
-  margin: 0 0.4rem;
-}
-
-/* Header */
-.sidebar-header {
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-.sidebar-header .sidebar-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.sidebar-header-separator {
-  background-color: rgb(100, 63, 7);
-  min-height: 2px;
-  margin-bottom: 0.75rem;
 }
 
 /*# sourceMappingURL=main.css.map */

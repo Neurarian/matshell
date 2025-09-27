@@ -86,6 +86,7 @@ ______________________________________________________________________
 - libgtop
 - libadwaita
 - libsoup3
+- glib-networking
 - hyprland
 - coreutils
 - dart-sass
@@ -98,7 +99,8 @@ ______________________________________________________________________
 - ttf-firacode-nerd
 - ***For matugen theming:***
   - matugen
-  - [image-hct](https://github.com/Neurarian/image-hct) (optional; for additional chroma/tone based theming)
+  - hyprpaper
+  - [image-hct](https://github.com/Neurarian/image-hct) (optional; for proper chroma/tone based theming)
 
 #### Not required but useful for laptop device features:
 
@@ -120,6 +122,7 @@ Run the installation script (Currently supports Arch-based with [yay](https://gi
 ```
 
 ... and implement the colors into your [hyprland config](https://github.com/Neurarian/NixOS-config/blob/master/home/Liqyid/common/optional/desktop/hypr/hyprland.nix#L39) to your liking.
+
 > [!TIP]
 > Use Hyprland layerrules to add some blur to the shell for smoother visuals.
 

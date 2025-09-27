@@ -1,6 +1,6 @@
 import { WeatherData } from "./types";
 
-/** ---------- Time Parsing Utilities ---------- **/
+// Time parsing utilities
 export function parseBlockHour(timeString: string): number {
   // wttr.in returns "0", "300", "600", etc.
   return Math.floor(parseInt(timeString, 10) / 100);
@@ -13,7 +13,7 @@ export function formatBlockTime(t: string): string {
   return d.toLocaleTimeString([], { hour: "numeric" });
 }
 
-/** ---------- Icon Mapping ---------- **/
+// Icon mapping
 export function getIcon(desc: string): string {
   if (!desc) return "Partly_Cloudy_Day";
   desc = desc.toLowerCase();
@@ -29,7 +29,7 @@ export function getIcon(desc: string): string {
   return "Partly_Cloudy_Day";
 }
 
-/** ---------- Forecast Operations ---------- **/
+// Forecast Operations
 export function getRelativeForecasts(
   weatherData: WeatherData,
   count: number = 5,

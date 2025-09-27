@@ -1,5 +1,7 @@
 import GLib from "gi://GLib?version=2.0";
 import { execAsync } from "ags/process";
+import { WeatherData } from "utils/weather";
+import { CachedThemeEntry } from "utils/picker/types";
 import { initializeConfig, defineOption } from "./utils/config";
 
 const options = await (async () => {
@@ -31,12 +33,28 @@ const options = await (async () => {
       "musicPlayer.modules.cava.style": defineOption("catmull_rom"),
       "system-menu.modules.bluetooth-advanced.enable": defineOption(true),
       "system-menu.modules.wifi-advanced.enable": defineOption(true),
-      "wallpaper.folder": defineOption(
+      "wallpaper.dir": defineOption(
         `${GLib.get_home_dir()}/Pictures/wallpapers`,
       ),
+      "wallpaper.cache": defineOption(50),
+      "wallpaper.theme-cache-max-size": defineOption(100),
       "wallpaper.current": defineOption(currentWallpaper, {
         useCache: true,
       }),
+      "wallpaper.theme-cache": defineOption<Record<string, CachedThemeEntry>>(
+        {},
+        { useCache: true },
+      ),
+      "weather.update-interval": defineOption(900_000),
+      "weather.cache": defineOption<
+        Record<
+          string,
+          {
+            data: WeatherData;
+            timestamp: number;
+          }
+        >
+      >({}, { useCache: true }),
     },
   );
   return config;

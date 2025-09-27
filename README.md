@@ -100,7 +100,7 @@ ______________________________________________________________________
 - ***For matugen theming:***
   - matugen
   - hyprpaper
-  - [image-hct](https://github.com/Neurarian/image-hct) (optional; for proper chroma/tone based theming)
+  - [image-hct](https://github.com/Neurarian/image-hct) (optional; for proper chroma/tone based theming. Uses imagemagick as fallback)
 
 #### Not required but useful for laptop device features:
 
@@ -213,7 +213,7 @@ programs.matshell= {
 
 This project wouldn't be possible without:
 
-- [Aylur](https://github.com/Aylur) for the powerful widget toolkit
+- [Aylur](https://github.com/Aylur) for the powerful widget toolkit and the [gnofi](https://github.com/Aylur/gnofi) picker
 - [fufexan's dotfiles](https://github.com/fufexan/dotfiles) for the initial inspiration and foundation
 - [matugen](https://github.com/InioX/matugen) for the amazing Material Color theming utility
 - [kotontrion](https://github.com/kotontrion/kompass) for the GTK4 CAVA Catmull-Rom spline widget

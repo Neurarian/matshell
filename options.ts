@@ -36,8 +36,8 @@ const options = await (async () => {
       "wallpaper.dir": defineOption(
         `${GLib.get_home_dir()}/Pictures/wallpapers`,
       ),
-      "wallpaper.cache": defineOption(50),
-      "wallpaper.theme-cache-max-size": defineOption(100),
+      "wallpaper.cache-size": defineOption(50),
+      "wallpaper.theme-cache-size": defineOption(100),
       "wallpaper.current": defineOption(currentWallpaper, {
         useCache: true,
       }),

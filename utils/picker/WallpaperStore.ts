@@ -57,8 +57,8 @@ export class WallpaperStore extends GObject.Object {
     // Setup accessors from options
     this.wallpaperDir = options["wallpaper.dir"]((wd) => String(wd));
     this.currentWallpaper = options["wallpaper.current"]((w) => String(w));
-    this.maxThumbnailCacheSize = options["wallpaper.cache"]((c) => Number(c));
-    this.maxThemeCacheSize = options["wallpaper.theme-cache-max-size"]((s) =>
+    this.maxThumbnailCacheSize = options["wallpaper.cache-size"]((c) => Number(c));
+    this.maxThemeCacheSize = options["wallpaper.theme-cache-size"]((s) =>
       Number(s),
     );
 

@@ -219,7 +219,7 @@ This project wouldn't be possible without:
 - [saimoomedits' eww-widgets](https://github.com/saimoomedits/eww-widgets) for design influence
 - [end-4's dots-hyprland](https://github.com/end-4/dots-hyprland) for some inspiration on the color generation
 
-______________________________________________________________________
+## Showcase
 
 ### Video Demo Desktop
 
@@ -241,13 +241,19 @@ https://github.com/user-attachments/assets/7a7851e3-9ebc-4f52-8b0f-e9a062122d9e
 
 ![2025-04-19T03:22:32,664157108+02:00](https://github.com/user-attachments/assets/458f11ac-2de2-455c-847b-15bd515a8f48)
 
-### 🌞 Light Theme (Desktop)
+### 🌞 Light Theme
 
 <p align="center">
 <b> Square bar with rounded screen corners & Hyprland blur</b>
 </p>
 
 <img width="3439" height="1441" alt="2025-09-18T19:08:46,034329229+02:00" src="https://github.com/user-attachments/assets/b61585b6-e17c-4d43-98e8-3e49962ae108" />
+
+<p align="center">
+<b> Floating on 1080p Notebook </b>
+</p>
+
+<img width="1921" height="1081" alt="2025-09-28T20:12:07,500340780+02:00" src="https://github.com/user-attachments/assets/b109641e-ff3f-4423-9f62-1a4e3bb4b7e7" />
 
 <details>
    <summary><h3></b>Detailed Widget List</h3></summary>

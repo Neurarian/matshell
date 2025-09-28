@@ -159,6 +159,7 @@ export class BluetoothAgent extends Service {
 
     try {
       await this.unregisterFromBlueZ();
+      this.stop();
       this.isRegistered = false;
       return true;
     } catch (error) {

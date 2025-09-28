@@ -1,7 +1,7 @@
 import { register } from "ags/gobject";
 import { BaseProvider } from "../SearchProvider.ts";
 import { WallpaperItem, ProviderConfig, ISearchProvider } from "../types.ts";
-import { WallpaperStore } from "../WallpaperStore.ts";
+import { getWallpaperStore } from "utils/wallpaper";
 import { Gdk } from "ags/gtk4";
 
 @register({ GTypeName: "WallpaperProvider" })
@@ -22,7 +22,7 @@ export class WallpaperProvider
     },
   };
 
-  private wallpapers = new WallpaperStore();
+  private wallpapers = getWallpaperStore({ includeHidden: true });
 
   constructor() {
     super();

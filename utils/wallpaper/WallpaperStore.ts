@@ -1,16 +1,16 @@
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
-import GdkPixbuf from "gi://GdkPixbuf";
 import { Gdk } from "ags/gtk4";
 import { Accessor } from "ags";
 import { execAsync } from "ags/process";
 import { timeout, Timer } from "ags/time";
 import { register, property, signal } from "ags/gobject";
+import { getThumbnailManager, ThumbnailManager } from ".";
 import options from "options";
-import Fuse from "./fuse.js";
+import Fuse from "../fuse.js";
+import type { WallpaperItem } from "utils/picker/types.ts";
 import type {
-  WallpaperItem,
   CachedThemeEntry,
   CachedThumbnail,
   ThemeProperties,
@@ -35,7 +35,6 @@ export class WallpaperStore extends GObject.Object {
   // Configuration accessors
   private wallpaperDir: Accessor<string>;
   private currentWallpaper: Accessor<string>;
-  private maxThumbnailCacheSize: Accessor<number>;
   private maxThemeCacheSize: Accessor<number>;
 
   private unsubscribers: (() => void)[] = [];
@@ -49,15 +48,19 @@ export class WallpaperStore extends GObject.Object {
   private themeDebounceTimer: Timer | null = null;
   private readonly THEME_DEBOUNCE_DELAY = 100;
 
+  // Thumbnail generation
+  private thumbnailManager: ThumbnailManager;
+
   constructor(params: { includeHidden?: boolean } = {}) {
     super();
+
+    this.thumbnailManager = getThumbnailManager();
 
     this.includeHidden = params.includeHidden ?? false;
 
     // Setup accessors from options
     this.wallpaperDir = options["wallpaper.dir"]((wd) => String(wd));
     this.currentWallpaper = options["wallpaper.current"]((w) => String(w));
-    this.maxThumbnailCacheSize = options["wallpaper.cache-size"]((c) => Number(c));
     this.maxThemeCacheSize = options["wallpaper.theme-cache-size"]((s) =>
       Number(s),
     );
@@ -68,7 +71,6 @@ export class WallpaperStore extends GObject.Object {
     // Init
     this.loadThemeCache();
     this.loadWallpapers();
-    this.startPeriodicCleanup();
   }
 
   // Setup & Configuration
@@ -603,67 +605,7 @@ export class WallpaperStore extends GObject.Object {
 
   // Thumbnail Management
   async getThumbnail(imagePath: string): Promise<Gdk.Texture | null> {
-    const cached = this.thumbnailCache.get(imagePath);
-    if (cached) {
-      cached.lastAccessed = Date.now();
-      return cached.texture;
-    }
-
-    try {
-      const texture = await this.loadThumbnail(imagePath);
-      if (texture) {
-        this.thumbnailCache.set(imagePath, {
-          texture,
-          timestamp: Date.now(),
-          lastAccessed: Date.now(),
-        });
-        setTimeout(() => this.performThumbnailCacheCleanup(), 0);
-      }
-      return texture;
-    } catch (error) {
-      console.error(`Failed to load thumbnail for ${imagePath}:`, error);
-      return null;
-    }
-  }
-
-  private async loadThumbnail(imagePath: string): Promise<Gdk.Texture | null> {
-    try {
-      const thumbnailPixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-        imagePath,
-        280,
-        200,
-        true,
-      );
-      return thumbnailPixbuf
-        ? Gdk.Texture.new_for_pixbuf(thumbnailPixbuf)
-        : null;
-    } catch (error) {
-      console.error(`Failed to load thumbnail for ${imagePath}:`, error);
-      return null;
-    }
-  }
-
-  private performThumbnailCacheCleanup(): void {
-    const maxSize = this.maxThumbnailCacheSize.get();
-    if (this.thumbnailCache.size <= maxSize) return;
-
-    const entries = Array.from(this.thumbnailCache.entries()).sort(
-      (a, b) => a[1].lastAccessed - b[1].lastAccessed,
-    );
-
-    const toDelete = this.thumbnailCache.size - maxSize;
-    for (let i = 0; i < toDelete; i++) {
-      this.thumbnailCache.delete(entries[i][0]);
-    }
-  }
-
-  private startPeriodicCleanup(): void {
-    this.thumbnailCleanupInterval = setInterval(
-      () => {
-        this.performThumbnailCacheCleanup();
-      },
-      10 * 60 * 1000, // 10 minutes
-    );
+    return this.thumbnailManager.getThumbnail(imagePath);
   }
 
   // Utility Methods

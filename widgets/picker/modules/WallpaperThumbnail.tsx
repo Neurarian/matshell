@@ -4,6 +4,7 @@ import { timeout } from "ags/time";
 import Pango from "gi://Pango?version=1.0";
 import { PickerCoordinator } from "utils/picker";
 import type { WallpaperItem } from "utils/picker/types.ts";
+import Adw from "gi://Adw?version=1";
 
 interface WallpaperThumbnailProps {
   item: WallpaperItem;
@@ -40,27 +41,39 @@ export function WallpaperThumbnail({
           <box
             cssClasses={["wallpaper-preview-container"]}
             onRealize={() => {
-              timeout(20, () => {
-                loadImageAsync(item.path!);
-              });
+              loadImageAsync(item.path!);
             }}
           >
             <With value={texture}>
               {(tex) =>
                 tex ? (
-                  <Gtk.Picture
-                    paintable={tex}
-                    cssClasses={["wallpaper-picture"]}
-                    contentFit={Gtk.ContentFit.COVER}
-                  />
+                  <Adw.Clamp maximumSize={160}>
+                    <Gtk.Picture
+                      paintable={tex}
+                      width_request={160}
+                      cssClasses={["wallpaper-picture"]}
+                      contentFit={Gtk.ContentFit.COVER}
+                    />
+                  </Adw.Clamp>
                 ) : (
-                  <box hexpand cssClasses={["loading-placeholder"]} />
+                  <Adw.Clamp maximumSize={160}>
+                    <box
+                      width_request={160}
+                      cssClasses={["loading-placeholder"]}
+                      homogeneous
+                    >
+                      <Adw.Spinner
+                        halign={Gtk.Align.CENTER}
+                        valign={Gtk.Align.CENTER}
+                      />
+                    </box>
+                  </Adw.Clamp>
                 )
               }
             </With>
           </box>
         ) : (
-          <box cssClasses={["wallpaper-placeholder"]} />
+          <></>
         )}
 
         <label

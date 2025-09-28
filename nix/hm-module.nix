@@ -1,88 +1,10 @@
 self: inputs: {
   config,
-  pkgs,
   system,
   lib,
   ...
 }: let
   cfg = config.programs.matshell;
-
-  # Wallpaper setter script
-  wal_set = pkgs.writeShellApplication {
-    name = "wal_set";
-    runtimeInputs = with pkgs; [
-      hyprpaper
-      fd
-      ripgrep
-      libnotify
-      gawk
-      coreutils
-      inputs.matugen.packages.${system}.default
-      inputs.image-hct.packages.${system}.default
-    ];
-    text = ''
-      #!/bin/bash
-      set -euo pipefail
-
-      if [ ! -d ~/Pictures/wallpapers/ ]; then
-        wallpaper_path=${builtins.toString ../assets/default_wallpaper}
-        echo "Required directory: $HOME/Pictures/wallpapers not found. Fallback to default wallpaper"
-      else
-        wallpaper_path="$(fd . "$HOME/Pictures/wallpapers" -t f | shuf -n 1)"
-      fi
-
-      apply_hyprpaper() {
-        # Preload the wallpaper once, since it doesn't change per monitor
-        hyprctl hyprpaper preload "$wallpaper_path"
-
-        # Set wallpaper for each monitor
-        hyprctl monitors | rg 'Monitor' | awk '{print $2}' | while read -r monitor; do
-        hyprctl hyprpaper wallpaper "$monitor, $wallpaper_path"
-        done
-      }
-
-      if [ "$(image-hct "$wallpaper_path" tone)" -gt 60 ]; then
-        mode="light"
-      else
-        mode="dark"
-      fi
-
-      if [ "$(image-hct "$wallpaper_path" chroma)" -lt 20 ]; then
-        scheme="scheme-neutral"
-      else
-        scheme="scheme-vibrant"
-      fi
-
-      # Set Material colortheme
-      matugen -t "$scheme" -m "$mode" image "$wallpaper_path"
-
-      # Write mode and scheme to the matugen variables SCSS file
-      matugen_scss_file="$HOME/.config/ags/style/abstracts/_theme_variables_matugen.scss"
-
-      {
-        echo ""
-        echo "/* Theme mode and scheme variables */"
-        if [ "$mode" = "dark" ]; then
-          echo "\$darkmode: true;"
-        else
-          echo "\$darkmode: false;"
-        fi
-        echo "\$material-color-scheme: \"$scheme\";"
-      } > "$matugen_scss_file"
-
-      # unload previous wallpaper
-      hyprctl hyprpaper unload all
-
-      # Set the new wallpaper
-      apply_hyprpaper
-
-      # Get wallpaper image name & send notification
-      newwall=$(basename "$wallpaper_path")
-      notify-send "Colors and Wallpaper updated" "with image: $newwall"
-
-      echo "DONE!"
-    '';
-  };
 in {
   imports = [
     inputs.ags.homeManagerModules.default
@@ -105,13 +27,6 @@ in {
         description = "Whether to start MatShell automatically.";
       };
 
-      # Keep these options in the new namespace
-      matugenThemeSetter = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Enable custom wallpaper setter using matugen theming.";
-      };
-
       matugenConfig = lib.mkOption {
         type = lib.types.bool;
         default = false;
@@ -121,10 +36,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    home.packages =
-      [cfg.package]
-      # Add theme setter if enabled
-      ++ lib.optionals cfg.matugenThemeSetter [wal_set];
+    home.packages = [cfg.package];
 
     # Systemd service for matshell autostart
     systemd.user.services.matshell = lib.mkIf cfg.autostart {

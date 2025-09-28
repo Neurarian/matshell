@@ -95,7 +95,8 @@ box.picker {
     }
 
     &:hover,
-    &:focus {
+    &:focus,
+    &.active {
       @include button-active;
       @include rounding;
       background-color: $buttonEnabledHover;

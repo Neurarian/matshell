@@ -23,7 +23,6 @@ export class WallpaperProvider
   };
 
   private wallpapers = new WallpaperStore();
-  private wallpaperSignalIds: number[] = [];
 
   constructor() {
     super();
@@ -69,12 +68,6 @@ export class WallpaperProvider
   }
 
   dispose(): void {
-    // Disconnect all signal handlers
-    this.wallpaperSignalIds.forEach((id) => {
-      this.wallpapers.disconnect(id);
-    });
-    this.wallpaperSignalIds = [];
-
     this.wallpapers.dispose();
   }
 }

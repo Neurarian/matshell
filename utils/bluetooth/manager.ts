@@ -225,8 +225,8 @@ export class BluetoothDeviceManager {
   get connectionClasses() {
     return this.isConnected((connected) =>
       connected
-        ? ["network-item", "network-item-connected"]
-        : ["network-item", "network-item-disconnected"],
+        ? ["network-item-active", "bt-item"]
+        : ["network-item", "bt-item"],
     );
   }
 

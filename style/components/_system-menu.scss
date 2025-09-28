@@ -88,7 +88,7 @@
 .network-item {
   @include button;
   @include rounding;
-  margin: $spacing-xs $spacing-sm $spacing-sm $spacing-md;
+  margin: $spacing-xs $spacing-sm $spacing-sm $spacing-sm;
   padding: $spacing-md;
   image {
     &:first-child {
@@ -98,12 +98,19 @@
   label {
     margin: 0 $spacing-sm;
   }
+  // more padding for bluetooth items
+  &.bt-item {
+    padding: 1rem $spacing-md;
+  }
 }
 .network-item-active {
   @include button-active;
   @include rounding;
-  margin: $spacing-xs $spacing-sm $spacing-sm $spacing-md;
+  margin: $spacing-xs $spacing-sm $spacing-sm $spacing-sm;
   padding: $spacing-md;
+  &.bt-item {
+    padding: 1rem $spacing-md;
+  }
 }
 
 .password-dialog {

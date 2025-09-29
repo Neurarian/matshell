@@ -168,6 +168,20 @@ export class PickerCoordinator extends GObject.Object {
     }
   }
 
+  async delete(item: PickerItem): Promise<void> {
+    const provider = this.currentProvider;
+    if (provider?.delete) {
+      await provider.delete(item);
+    }
+  }
+
+  async wipe(): Promise<void> {
+    const provider = this.currentProvider;
+    if (provider?.wipe) {
+      await provider.wipe();
+    }
+  }
+
   async randomFromCurrentProvider(): Promise<void> {
     const provider = this.currentProvider;
     if (provider?.random) {

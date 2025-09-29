@@ -116,6 +116,8 @@ install_dependencies() {
         ["hyprland"]="hyprland"
         ["coreutils"]="coreutils"
         ["dart-sass"]="dart-sass"
+        ["cliphist"]="cliphist"
+        ["wl-clipboard"]="wl-clipboard"
         ["imagemagick"]="imagemagick"
         ["networkmanager"]="networkmanager"
         ["wireplumber"]="wireplumber"

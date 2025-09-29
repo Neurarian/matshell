@@ -20,7 +20,6 @@ import {
 const scss = `${GLib.get_user_config_dir()}/ags/style/main.scss`;
 const css = `${GLib.get_user_config_dir()}/ags/style/main.css`;
 const icons = `${GLib.get_user_config_dir()}/ags/assets/icons`;
-
 const styleDirectories = ["abstracts", "components", "layouts", "base"];
 
 function reloadCss() {
@@ -33,7 +32,6 @@ app.start({
   icons,
   css,
   instanceName: "matshell",
-
   requestHandler(argv: string[], res: (response: any) => void) {
     const request = argv[0];
     switch (request) {
@@ -61,7 +59,6 @@ app.start({
         res("not found");
     }
   },
-
   main() {
     // Compile & watch SCSS
     exec(`sass ${scss} ${css}`);
@@ -80,3 +77,4 @@ app.start({
     Sidebar();
   },
 });
+

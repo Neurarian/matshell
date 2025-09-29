@@ -28,7 +28,10 @@ box.picker {
   box.results-list {
     @include window-box;
 
-    button {
+    .app-button {
+      .action-icon {
+        @include material-icon;
+      }
       padding: 0.4rem;
 
       image {
@@ -51,6 +54,23 @@ box.picker {
         @include button-active;
         background-color: $buttonEnabledHover;
         border: transparent;
+      }
+    }
+    .action-button {
+      .action-icon {
+        @include material-icon;
+      }
+      margin-bottom: 0;
+      border-radius: 5rem;
+      padding: 0 0.6rem;
+
+      &:focus,
+      &:hover {
+        @include button-active;
+        background-color: $buttonEnabledHover;
+        border: transparent;
+        border-radius: 5rem;
+        padding: 0 0.6rem;
       }
     }
   }
@@ -151,10 +171,17 @@ button.wallpaper-thumbnail {
   .action-icon {
     @include material-icon;
   }
-  button {
-    @include light-mode-shadow;
-    margin-bottom: 0;
+  .action-button {
     border-radius: 5rem;
-    padding: $spacing-xs $spacing-sm;
+    padding: 0.2rem 0.4rem;
+
+    &:focus,
+    &:hover {
+      @include button-active;
+      background-color: $buttonEnabledHover;
+      border: transparent;
+      border-radius: 5rem;
+      padding: 0.2rem 0.4rem;
+    }
   }
 }

@@ -6,3 +6,4 @@ export { default as LogoutMenu } from "./logout-menu/main.tsx";
 export { default as PickerWindow } from "./picker/main.tsx";
 export { default as MusicPlayer } from "./music/main.tsx";
 export { default as Sidebar } from "./sidebar/main.tsx";
+export { default as Clipboard } from "./clipboard/main.tsx";

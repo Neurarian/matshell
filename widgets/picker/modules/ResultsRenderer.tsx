@@ -13,7 +13,6 @@ export function ResultsRenderer({ picker }: ResultsRendererProps) {
   const hasQuery = createBinding(picker, "hasQuery");
   const isLoading = createBinding(picker, "isLoading");
   const hasResults = createBinding(picker, "hasResults");
-
   const viewState = createComputed([hasQuery, isLoading, hasResults], () => {
     if (!hasQuery.get()) return "empty";
     if (isLoading.get()) return "loading";
@@ -27,7 +26,7 @@ export function ResultsRenderer({ picker }: ResultsRendererProps) {
         cssClasses={["results-container"]}
         orientation={Gtk.Orientation.VERTICAL}
       >
-        <With value={hasResults}>
+        <With value={hasQuery}>
           {(results) => results && <ActionBar picker={picker} />}
         </With>
         <With value={viewState}>
@@ -119,7 +118,11 @@ function ActionBar({ picker }: { picker: PickerCoordinator }) {
           cssClasses={["action-button"]}
           onClicked={() => picker.refreshCurrentProvider()}
         >
-          <label label="Refresh" cssClasses={["action-icon"]} />
+          <label
+            label="Refresh"
+            tooltipText={"Reload"}
+            cssClasses={["action-icon"]}
+          />
         </button>
       )}
 
@@ -130,7 +133,20 @@ function ActionBar({ picker }: { picker: PickerCoordinator }) {
           cssClasses={["action-button"]}
           onClicked={() => picker.randomFromCurrentProvider()}
         >
-          <label label="Shuffle" cssClasses={["action-icon"]} />
+          <label
+            label="Shuffle"
+            tooltipText={"Select randomly"}
+            cssClasses={["action-icon"]}
+          />
+        </button>
+      )}
+      {config?.features?.wipe && (
+        <button
+          cssClasses={["action-button"]}
+          tooltipText={"Purge history"}
+          onClicked={() => picker.wipe()}
+        >
+          <label label="Delete_History" cssClasses={["action-icon"]} />
         </button>
       )}
     </box>

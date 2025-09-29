@@ -9,27 +9,49 @@ interface ItemButtonProps {
 }
 
 export function ItemButton({ item, picker }: ItemButtonProps) {
+  const config = picker.currentConfig;
+  const hasActions = config?.features?.refresh || config?.features?.random;
+
   return (
-    <button cssClasses={["AppButton"]} onClicked={() => picker.activate(item)}>
-      <box>
-        <image iconName={item.iconName || "image-x-generic"} />
-        <box valign={Gtk.Align.CENTER} orientation={Gtk.Orientation.VERTICAL}>
-          <label
-            cssClasses={["name"]}
-            ellipsize={Pango.EllipsizeMode.END}
-            xalign={0}
-            label={item.name}
-          />
-          {item.description && (
-            <label
-              cssClasses={["description"]}
-              wrap
-              xalign={0}
-              label={item.description}
-            />
+    <box>
+      <button
+        cssClasses={["app-button"]}
+        onClicked={() => picker.activate(item)}
+        hexpand
+      >
+        <box>
+          {item.iconName && (
+            <image iconName={item.iconName || "image-x-generic"} />
           )}
+          <box valign={Gtk.Align.CENTER} orientation={Gtk.Orientation.VERTICAL}>
+            <label
+              cssClasses={["name"]}
+              ellipsize={Pango.EllipsizeMode.END}
+              xalign={0}
+              label={item.name}
+            />
+            {item.description && (
+              <label
+                cssClasses={["description"]}
+                wrap
+                xalign={0}
+                label={item.description}
+              />
+            )}
+          </box>
         </box>
-      </box>
-    </button>
+      </button>
+      {config?.features?.delete && (
+        <box>
+          <button
+            cssClasses={["action-button"]}
+            tooltipText={"Delete item"}
+            onClicked={() => picker.delete(item)}
+          >
+            <label label="Delete_Forever" cssClasses={["action-icon"]} />
+          </button>
+        </box>
+      )}
+    </box>
   );
 }

@@ -120,6 +120,8 @@
                   dart-sass
                   imagemagick
                   hyprpaper
+                  cliphist
+                  wl-clipboard
                   inputs.matugen.packages.${system}.default
                   inputs.image-hct.packages.${system}.default
                 ])

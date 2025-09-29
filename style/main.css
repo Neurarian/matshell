@@ -355,22 +355,26 @@ box.picker box.results-list {
   margin: 0.4rem;
   padding: 0.4rem;
 }
-box.picker box.results-list button {
+box.picker box.results-list .app-button {
   padding: 0.4rem;
 }
-box.picker box.results-list button image {
+box.picker box.results-list .app-button .action-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 24px;
+}
+box.picker box.results-list .app-button image {
   -gtk-icon-size: 3rem;
   margin-right: 0.3rem;
   margin-left: 0.3rem;
 }
-box.picker box.results-list button label.name {
+box.picker box.results-list .app-button label.name {
   font-weight: bold;
   font-size: 1.1rem;
 }
-box.picker box.results-list button label.description {
+box.picker box.results-list .app-button label.description {
   color: rgba(249, 220, 212, 0.8);
 }
-box.picker box.results-list button:focus, box.picker box.results-list button:hover {
+box.picker box.results-list .app-button:focus, box.picker box.results-list .app-button:hover {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(255, 181, 158, 0.2);
   border: 1px solid rgba(255, 181, 158, 0.3);
@@ -379,7 +383,30 @@ box.picker box.results-list button:focus, box.picker box.results-list button:hov
   background-color: rgba(255, 181, 158, 0.3);
   border: transparent;
 }
-box.picker box.results-list button:focus:hover, box.picker box.results-list button:hover:hover {
+box.picker box.results-list .app-button:focus:hover, box.picker box.results-list .app-button:hover:hover {
+  background: rgba(255, 181, 158, 0.3);
+}
+box.picker box.results-list .action-button {
+  margin-bottom: 0;
+  border-radius: 5rem;
+  padding: 0 0.6rem;
+}
+box.picker box.results-list .action-button .action-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 24px;
+}
+box.picker box.results-list .action-button:focus, box.picker box.results-list .action-button:hover {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+  border-radius: calc(8px * 1.97);
+  padding: 0.4rem;
+  background-color: rgba(255, 181, 158, 0.3);
+  border: transparent;
+  border-radius: 5rem;
+  padding: 0 0.6rem;
+}
+box.picker box.results-list .action-button:focus:hover, box.picker box.results-list .action-button:hover:hover {
   background: rgba(255, 181, 158, 0.3);
 }
 box.picker box.results-grid {
@@ -419,20 +446,12 @@ box.picker box.not-found label {
   font-family: "Material Symbols Outlined";
   font-size: 24px;
 }
-.mode-bar .mode-button:hover, .mode-bar .mode-button:focus {
-  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  background: rgba(255, 181, 158, 0.2);
-  border: 1px solid rgba(255, 181, 158, 0.3);
-  border-radius: calc(8px * 1.97);
-  padding: 0.4rem;
+.mode-bar .mode-button:hover, .mode-bar .mode-button:focus, .mode-bar .mode-button.active {
   border-radius: calc(16px - 0.4rem - 2px);
-  background-color: rgba(255, 181, 158, 0.3);
+  background-color: rgba(255, 181, 158, 0.15);
   border: transparent;
   padding: 6px 12px;
   transition: all 0.2s ease;
-}
-.mode-bar .mode-button:hover:hover, .mode-bar .mode-button:focus:hover {
-  background: rgba(255, 181, 158, 0.3);
 }
 
 button.wallpaper-thumbnail {
@@ -476,10 +495,23 @@ button.wallpaper-thumbnail label.wallpaper-name {
   font-family: "Material Symbols Outlined";
   font-size: 24px;
 }
-.action-bar button {
-  margin-bottom: 0;
+.action-bar .action-button {
   border-radius: 5rem;
-  padding: 0.25rem 0.4rem;
+  padding: 0.2rem 0.4rem;
+}
+.action-bar .action-button:focus, .action-bar .action-button:hover {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+  border-radius: calc(8px * 1.97);
+  padding: 0.4rem;
+  background-color: rgba(255, 181, 158, 0.3);
+  border: transparent;
+  border-radius: 5rem;
+  padding: 0.2rem 0.4rem;
+}
+.action-bar .action-button:focus:hover, .action-bar .action-button:hover:hover {
+  background: rgba(255, 181, 158, 0.3);
 }
 
 /* variables & mixins */
@@ -790,7 +822,7 @@ box.logout-background .logout-menu button label {
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
   border-radius: calc(16px - 0.4rem - 2px);
-  margin: 0.25rem 0.4rem 0.4rem 0.75rem;
+  margin: 0.25rem 0.4rem 0.4rem 0.4rem;
   padding: 0.75rem;
 }
 .network-item:hover {
@@ -802,6 +834,9 @@ box.logout-background .logout-menu button label {
 .network-item label {
   margin: 0 0.4rem;
 }
+.network-item.bt-item {
+  padding: 1rem 0.75rem;
+}
 
 .network-item-active {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
@@ -810,11 +845,14 @@ box.logout-background .logout-menu button label {
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
   border-radius: calc(16px - 0.4rem - 2px);
-  margin: 0.25rem 0.4rem 0.4rem 0.75rem;
+  margin: 0.25rem 0.4rem 0.4rem 0.4rem;
   padding: 0.75rem;
 }
 .network-item-active:hover {
   background: rgba(255, 181, 158, 0.3);
+}
+.network-item-active.bt-item {
+  padding: 1rem 0.75rem;
 }
 
 .password-dialog {
@@ -866,7 +904,6 @@ box.logout-background .logout-menu button label {
 }
 
 .disconnect-button,
-.connect-button,
 .forget-button,
 .cancel-button {
   border-radius: calc(8px * 1.6);

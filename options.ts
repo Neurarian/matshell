@@ -1,7 +1,7 @@
 import GLib from "gi://GLib?version=2.0";
 import { execAsync } from "ags/process";
 import { WeatherData } from "utils/weather";
-import { CachedThemeEntry } from "utils/picker/types";
+import { CachedThemeEntry } from "utils/wallpaper/types";
 import { initializeConfig, defineOption } from "./utils/config";
 
 const options = await (async () => {

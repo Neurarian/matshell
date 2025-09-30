@@ -1,5 +1,5 @@
 import { register } from "ags/gobject";
-import { execAsync, subprocess, Subprocess } from "ags/process";
+import { execAsync, subprocess, Process } from "ags/process";
 import { BaseProvider } from "../SearchProvider.ts";
 import GLib from "gi://GLib?version=2.0";
 import { ClipboardItem, ProviderConfig, ISearchProvider } from "../types.ts";
@@ -28,13 +28,14 @@ export class ClipboardProvider
   private currentQuery: string = "";
   private fuse!: Fuse;
 
-  private cliphistWatcher: Subprocess | null = null;
+  private cliphistWatcher: Process | null = null;
 
   constructor() {
     super();
     this.command = "clipboard";
     this.initClipboardWatcher();
   }
+
   private async initClipboardWatcher(): Promise<void> {
     try {
       const cliphist = GLib.find_program_in_path("cliphist");
@@ -53,13 +54,11 @@ export class ClipboardProvider
 
       this.cliphistWatcher = subprocess(
         ["wl-paste", "--watch", "cliphist", "store"],
-        {
-          onStdout: (data) => {
-            console.debug("Clipboard watcher stdout:", data);
-          },
-          onStderr: (data) => {
-            console.warn("Clipboard watcher stderr:", data);
-          },
+        (stdout: string) => {
+          console.debug("Clipboard watcher stdout:", stdout);
+        },
+        (stderr: string) => {
+          console.warn("Clipboard watcher stderr:", stderr);
         },
       );
     } catch (error) {
@@ -234,7 +233,7 @@ export class ClipboardProvider
   dispose(): void {
     if (this.cliphistWatcher) {
       try {
-        this.cliphistWatcher.force_exit();
+        this.cliphistWatcher.kill();
         console.log("Clipboard watcher stopped");
       } catch (error) {
         console.error("Failed to stop clipboard watcher:", error);

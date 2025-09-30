@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "allowJs": true,
@@ -11,10 +10,12 @@
     "moduleResolution": "Bundler",
     "noImplicitAny": false,
     "paths": {
-      "ags/*": [
-        "${pkgs.ags}/share/ags/js/src"
-      ]
+      "ags/*": ["/nix/store/g7d6dz9jcfldvfdwrf68yvivj864g9fh-ags-3.0.0/share/ags/js/lib/*"],
+      "ags": ["/nix/store/g7d6dz9jcfldvfdwrf68yvivj864g9fh-ags-3.0.0/share/ags/js/lib/index.ts"]
     },
+    "typeRoots": [
+      "./@girs"
+    ],
     "strict": true,
     "target": "ES2020"
   }

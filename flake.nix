@@ -91,6 +91,7 @@
 
       perSystem = {system, ...}: let
         pkgs = mkPkgs system;
+        agsPackage = ags.packages.${system}.default;
       in {
         packages.default = let
           matshell-bundle = pkgs.stdenv.mkDerivation {
@@ -101,7 +102,7 @@
 
             nativeBuildInputs =
               mkNativeBuildInputs system
-              ++ [ags.packages.${system}.default];
+              ++ [agsPackage];
 
             buildInputs = mkBuildInputs system;
 
@@ -141,7 +142,6 @@
             # Create a wrapper script for matshell to copy files that require mutability out of the store
             mv $out/bin/matshell $out/bin/.matshell-unwrapped
 
-
             makeWrapper $out/bin/.matshell-unwrapped $out/bin/matshell \
               --run 'STYLE_DIR="$HOME/.config/ags/style"
                      ICONS_DIR="$HOME/.config/ags/assets/icons"
@@ -169,6 +169,7 @@
                        find "$HOME/.config/ags" -type f -exec chmod 644 {} \;
                      fi'
           '';
+
         apps.default = {
           type = "app";
           program = "${self.packages.${system}.default}/bin/matshell";
@@ -176,7 +177,50 @@
 
         devShells.default = pkgs.mkShell {
           inputsFrom = [self.packages.${system}.default];
-          buildInputs = mkBuildInputs system;
+          buildInputs =
+            mkBuildInputs system
+            ++ [agsPackage];
+
+          shellHook = ''
+            echo "Setting up Matshell devenv..."
+
+            # Generate tsconfig.json with correct AGS paths
+            cat > tsconfig.json << EOF
+            {
+              "compilerOptions": {
+                "allowImportingTsExtensions": true,
+                "allowJs": true,
+                "baseUrl": ".",
+                "experimentalDecorators": false,
+                "jsx": "react-jsx",
+                "jsxImportSource": "ags/gtk4",
+                "module": "ES2022",
+                "moduleResolution": "Bundler",
+                "noImplicitAny": false,
+                "paths": {
+                  "ags/*": ["${agsPackage}/share/ags/js/lib/*"],
+                  "ags": ["${agsPackage}/share/ags/js/lib/index.ts"]
+                },
+                "typeRoots": [
+                  "./@girs"
+                ],
+                "strict": true,
+                "target": "ES2020"
+              }
+            }
+            EOF
+
+            echo "Generated tsconfig.json with AGS path: ${agsPackage}/share/ags/js/lib/"
+
+            # Generate @girs types if they don't exist
+            if [ ! -d "@girs" ]; then
+              echo "Generating @girs types..."
+              ags types
+              echo "Generated @girs types"
+            fi
+
+            echo "Devenv ready"
+          '';
         };
       };
 

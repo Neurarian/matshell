@@ -1,7 +1,8 @@
 import GLib from "gi://GLib?version=2.0";
 import { execAsync } from "ags/process";
-import { WeatherData } from "utils/weather";
-import { CachedThemeEntry } from "utils/wallpaper/types";
+import type { WeatherData } from "utils/weather";
+import type { CachedThemeEntry } from "utils/wallpaper/types";
+import type { UsageEntry } from "utils/picker/frecency/types";
 import { initializeConfig, defineOption } from "./utils/config";
 
 const options = await (async () => {
@@ -42,6 +43,10 @@ const options = await (async () => {
         useCache: true,
       }),
       "wallpaper.theme-cache": defineOption<Record<string, CachedThemeEntry>>(
+        {},
+        { useCache: true },
+      ),
+      "picker.frecency-cache": defineOption<Record<string, UsageEntry>>(
         {},
         { useCache: true },
       ),

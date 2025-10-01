@@ -27,8 +27,9 @@ export class ClipboardProvider
   private allItems: ClipboardItem[] = [];
   private currentQuery: string = "";
   private fuse!: Fuse;
-
   private cliphistWatcher: Process | null = null;
+
+  private contentToIdMap = new Map<string, string>();
 
   constructor() {
     super();
@@ -84,19 +85,44 @@ export class ClipboardProvider
         await this.loadClipboardItems();
       }
 
-      let results: ClipboardItem[];
-      const fuseResults = this.fuse.search(query, {
-        limit: this.config.maxResults,
-      });
-      results = fuseResults.map((result) => result.item);
-
-      this.setResults(results);
+      if (query.trim().length === 0) {
+        // Frecency defaults
+        this.setDefaultResults(this.allItems);
+      } else {
+        const fuseResults = this.fuse.search(query, {
+          limit: this.config.maxResults,
+        });
+        const results = fuseResults.map((result) => result.item);
+        this.setResults(results);
+      }
     } catch (e) {
       console.error("Clipboard search failed:", e);
       this.setResults([]);
     } finally {
       this.setLoading(false);
     }
+  }
+
+  // ID based on content hash (cliphist IDs change)
+  private generateId(content: string): string {
+    // Mini hash function for content-based ID
+    let hash = 0;
+    for (let i = 0; i < content.length; i++) {
+      const char = content.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash;
+    }
+
+    const hashStr = Math.abs(hash).toString(36);
+
+    const existingId = this.contentToIdMap.get(content);
+    if (existingId) {
+      return existingId;
+    }
+
+    const ID = `clip_${hashStr}`;
+    this.contentToIdMap.set(content, ID);
+    return ID;
   }
 
   private async loadClipboardItems(): Promise<void> {
@@ -112,6 +138,9 @@ export class ClipboardProvider
         const actualContent =
           tabIndex !== -1 ? line.substring(tabIndex + 1) : line;
 
+        // Generate ID based on content, cliphist's changing ID doesn't work for caching
+        const ID = this.generateId(actualContent);
+
         // Content for display
         const normalizedContent = actualContent
           .replace(/\n/g, " ")
@@ -119,7 +148,7 @@ export class ClipboardProvider
           .trim();
 
         return {
-          id: cliphistId, // Keep original ID
+          id: ID,
           name:
             normalizedContent.length > 80
               ? normalizedContent.slice(0, 77) + "..."
@@ -127,6 +156,7 @@ export class ClipboardProvider
           description: `#${cliphistId} : ${this.getContentTypeDescription(actualContent)}`,
           content: line, // Original line for cliphist operations
           searchableText: actualContent.toLowerCase(),
+          cliphistId: cliphistId, // Keep original ID
         };
       });
 
@@ -141,7 +171,7 @@ export class ClipboardProvider
 
   private getContentTypeDescription(content: string): string {
     // Detect content type
-    //TODO: Add more content types
+    // TODO:: Expand content type regex
     if (content.match(/^https?:\/\//)) {
       return "URL";
     }
@@ -196,7 +226,7 @@ export class ClipboardProvider
 
   async refresh(): Promise<void> {
     this.allItems = [];
-    await this.search("");
+    await this.search(this.currentQuery);
   }
 
   async delete(item: ClipboardItem): Promise<void> {
@@ -221,8 +251,9 @@ export class ClipboardProvider
     try {
       await execAsync(["cliphist", "wipe"]);
 
-      // Clear cache
+      // Clear all caches
       this.allItems = [];
+      this.contentToIdMap.clear();
       this.updateFuse();
       this.setResults([]);
     } catch (e) {

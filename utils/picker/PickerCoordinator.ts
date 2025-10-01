@@ -3,6 +3,7 @@ import { Gtk, Gdk } from "ags/gtk4";
 import { register, property, signal } from "ags/gobject";
 import { SearchProviderInstance } from "./SearchProvider.ts";
 import { PickerItem, ProviderConfig } from "./types.ts";
+import { FrecencyManager } from "./frecency/manager.ts";
 
 @register({ GTypeName: "PickerCoordinator" })
 export class PickerCoordinator extends GObject.Object {
@@ -25,9 +26,11 @@ export class PickerCoordinator extends GObject.Object {
   private providerSignalIds = new Map<string, number[]>();
   private windowRef: Gtk.Window | null = null;
   private searchEntryRef: Gtk.Entry | null = null;
+  private frecencyManager: FrecencyManager;
 
   constructor() {
     super();
+    this.frecencyManager = FrecencyManager.getInstance();
   }
 
   public static getInstance(): PickerCoordinator {
@@ -79,6 +82,11 @@ export class PickerCoordinator extends GObject.Object {
       this.searchIcon = provider.config.icon;
       this.placeholderText = provider.config.placeholder;
       this.providerName = provider.config.name;
+
+      // Trigger initial display of frecency defaults after provider connects
+      setTimeout(() => {
+        provider.search("");
+      }, 0);
     }
   }
 
@@ -106,7 +114,6 @@ export class PickerCoordinator extends GObject.Object {
   setActiveProvider(command: string): boolean {
     if (this.providers.has(command) && this.activeProvider !== command) {
       this.activeProvider = command;
-      this.hasResults = this.currentProvider?.hasResults || false;
 
       // Update reactive UI properties
       const provider = this.currentProvider;
@@ -117,9 +124,19 @@ export class PickerCoordinator extends GObject.Object {
       }
 
       this.emit("provider-changed", command);
-
       this.focusSearch();
-      this.clearSearch();
+      this.searchText = "";
+      this.hasQuery = false;
+
+      //  Trigger empty search to show defaults
+      if (provider) {
+        setTimeout(() => {
+          provider.search("").then(() => {
+            this.hasResults = provider.hasResults;
+          });
+        }, 0);
+      }
+
       return true;
     }
     return false;
@@ -131,6 +148,7 @@ export class PickerCoordinator extends GObject.Object {
       this.hasQuery = text.trim().length > 0;
 
       if (this.currentProvider) {
+        // Provider decides between frecency defaults/fuzzy
         await this.currentProvider.search(text);
         this.emit("search-completed", text);
       }
@@ -140,14 +158,33 @@ export class PickerCoordinator extends GObject.Object {
   clearSearch(): void {
     this.searchText = "";
     this.hasQuery = false;
-    this.hasResults = false;
-    this.currentProvider?.search("");
+
+    // Show updated defaults instead of clearing everything
+    if (this.currentProvider) {
+      this.currentProvider.search("").then(() => {
+        this.hasResults = this.currentProvider?.hasResults || false;
+      });
+    }
     this.emit("search-completed", "");
   }
 
   activate(item: PickerItem): void {
-    this.currentProvider?.activate(item);
+    const provider = this.currentProvider;
+    if (provider) {
+      // Record activation for frecency
+      provider.recordActivation(item);
+      provider.activate(item);
+    }
     this.hide();
+  }
+
+  showDefaults(): void {
+    const provider = this.currentProvider;
+    if (provider && provider.hasDefaults) {
+      this.currentResults = provider.defaultResults;
+      this.hasResults = true;
+      this.emit("results-changed", provider.defaultResults);
+    }
   }
 
   activateFirstResult(): boolean {

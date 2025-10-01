@@ -184,7 +184,7 @@
           shellHook = ''
             echo "Setting up Matshell devenv..."
 
-            # Generate tsconfig.json with correct AGS paths
+            # Generate tsconfig.json
             cat > tsconfig.json << EOF
             {
               "compilerOptions": {

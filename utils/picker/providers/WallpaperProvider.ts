@@ -1,8 +1,7 @@
 import { register } from "ags/gobject";
-import { BaseProvider } from "../SearchProvider.ts";
-import { WallpaperItem, ProviderConfig, ISearchProvider } from "../types.ts";
+import { BaseProvider } from "../SearchProvider";
+import { WallpaperItem, ProviderConfig, ISearchProvider } from "../types";
 import { getWallpaperStore } from "utils/wallpaper";
-import { Gdk } from "ags/gtk4";
 
 @register({ GTypeName: "WallpaperProvider" })
 export class WallpaperProvider
@@ -22,52 +21,48 @@ export class WallpaperProvider
     },
   };
 
-  private wallpapers = getWallpaperStore({ includeHidden: true });
+  private store = getWallpaperStore({ includeHidden: true });
 
   constructor() {
     super();
     this.command = "wallpapers";
-    this.wallpapers.maxItems = this.config.maxResults;
   }
 
   async search(query: string): Promise<void> {
     this.setLoading(true);
 
     try {
-      if (query.trim().length === 0) {
-        this.setResults([]);
-        return;
+      const trimmedQuery = query.trim();
+
+      if (trimmedQuery.length === 0) {
+        // Show frecency defaults
+        this.setDefaultResults(this.store.wallpapers);
+      } else {
+        const fuzzyResults = this.store.search(trimmedQuery);
+        this.setResults(fuzzyResults.slice(0, this.config.maxResults));
       }
-      const results = this.wallpapers.search(query);
-      const limitedResults = results.slice(0, this.wallpapers.maxItems);
-      this.setResults(limitedResults);
     } finally {
       this.setLoading(false);
     }
   }
 
   activate(item: WallpaperItem): void {
-    this.wallpapers.setWallpaper(item.file);
+    this.store.setWallpaper(item.file);
   }
 
   async refresh(): Promise<void> {
-    this.setLoading(true);
-    try {
-      await this.wallpapers.refresh();
-    } finally {
-      this.setLoading(false);
-    }
+    await this.store.refresh();
   }
 
   async random(): Promise<void> {
-    await this.wallpapers.setRandomWallpaper();
+    await this.store.setRandomWallpaper();
   }
 
-  async getThumbnail(imagePath: string): Promise<Gdk.Texture | null> {
-    return await this.wallpapers.getThumbnail(imagePath);
+  async getThumbnail(imagePath: string) {
+    return await this.store.getThumbnail(imagePath);
   }
 
   dispose(): void {
-    this.wallpapers.dispose();
+    this.store.dispose();
   }
 }

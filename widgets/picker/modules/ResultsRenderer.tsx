@@ -14,7 +14,7 @@ export function ResultsRenderer({ picker }: ResultsRendererProps) {
   const isLoading = createBinding(picker, "isLoading");
   const hasResults = createBinding(picker, "hasResults");
   const viewState = createComputed([hasQuery, isLoading, hasResults], () => {
-    if (!hasQuery.get()) return "empty";
+    if (!hasQuery.get() && !hasResults.get()) return "empty";
     if (isLoading.get()) return "loading";
     if (hasResults.get()) return "results";
     return "not-found";
@@ -26,8 +26,8 @@ export function ResultsRenderer({ picker }: ResultsRendererProps) {
         cssClasses={["results-container"]}
         orientation={Gtk.Orientation.VERTICAL}
       >
-        <With value={hasQuery}>
-          {(results) => results && <ActionBar picker={picker} />}
+        <With value={viewState}>
+          {(state) => state !== "empty" && <ActionBar picker={picker} />}
         </With>
         <With value={viewState}>
           {(state) => {

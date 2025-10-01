@@ -26,6 +26,7 @@ This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice
 - **Multi-monitor Support**: Designed with multi-monitor setups in mind
 - **Hyprland Integration**: Built specifically for the Hyprland compositor
 - **Cava visualizer library**: Ships with an extensive lib of optional Cava visualizers to enjoy your music to
+- **Multimodal Fuzzy & Frecency Picker**: Apps, clipboard, wallpapers - all ranked by frequency + recency, loosely based on [gnofi](https://github.com/Aylur/gnofi).
 - **Nix Support**: Support for NixOS / Home-Manager with dedicated module
 - **Configurable**: Includes option menu to hot-reload styles and components
 
@@ -57,7 +58,7 @@ This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice
 
 - 💤 Logout Menu - wlogout-like but ags
 
-- 🎯 App Launcher - Fast fuzzy search application access
+- 🎯 Multimodal Launcher - Fast fuzzy search application access and frecency default items
 
 - 💻 On-Screen Display - Tracks Audio, Brightness, and Bluetooth connections
 

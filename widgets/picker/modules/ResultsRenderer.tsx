@@ -27,9 +27,6 @@ export function ResultsRenderer({ picker }: ResultsRendererProps) {
         orientation={Gtk.Orientation.VERTICAL}
       >
         <With value={viewState}>
-          {(state) => state !== "empty" && <ActionBar picker={picker} />}
-        </With>
-        <With value={viewState}>
           {(state) => {
             switch (state) {
               case "loading":
@@ -42,6 +39,9 @@ export function ResultsRenderer({ picker }: ResultsRendererProps) {
                 return <box />;
             }
           }}
+        </With>
+        <With value={viewState}>
+          {(state) => state !== "empty" && <ActionBar picker={picker} />}
         </With>
       </box>
     </box>

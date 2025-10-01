@@ -72,8 +72,8 @@ export default function PickerWindow() {
 
       <PickerLayout onClickOutside={() => picker.hide()}>
         <ModeBar picker={picker} />
-        <ResultsRenderer picker={picker} />
         <SearchSection picker={picker} />
+        <ResultsRenderer picker={picker} />
       </PickerLayout>
     </window>
   );

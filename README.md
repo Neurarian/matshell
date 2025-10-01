@@ -180,7 +180,7 @@ output_path = "~/.config/hypr/hyprlock_colors.conf"
 
 #### ❄️ Nix
 
-You can generally test out matshell via the flake exposed package `nix run github:Neurarian/matshell`. For a NixOS implementation and example [script](https://github.com/Neurarian/matshell/blob/master/nix/hm-module.nix) for use with hyprpaper, matugen, and the [custom cli utility](https://github.com/Neurarian/image-hct) to get chroma/tone, you can enable dedicated options in the home-manager module:
+You can generally test out matshell via the flake exposed package `nix run github:Neurarian/matshell`. To integrate matshell into your home-manager config you can enable dedicated options from the module:
 
 ```nix
 # ...

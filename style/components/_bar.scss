@@ -10,6 +10,7 @@
 
   cava {
     opacity: 0.1;
+    // causes invalid width warnings but works
     margin: 0 -0.5rem;
   }
 
@@ -21,13 +22,12 @@
   .OsIcon {
     -gtk-icon-size: 2rem;
     margin-left: 0.8rem;
-    margin-right: -0.5rem;
     color: $os;
   }
 
   /* Hyperland */
   .Workspaces {
-    margin: 0.4rem 0.8rem;
+    margin: 0.4rem 0;
 
     button {
       background: rgba(0, 0, 0, 0.3);

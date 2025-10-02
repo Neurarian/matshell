@@ -20,6 +20,7 @@ export function CommandSuggestions({ picker }: CommandSuggestionsProps) {
       <box
         cssClasses={["commands-list"]}
         orientation={Gtk.Orientation.VERTICAL}
+        spacing={4}
       >
         {availableCommands.map((item) => (
           <CommandItem

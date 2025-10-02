@@ -197,6 +197,8 @@ box.picker {
     .command-icon {
       @include material-icon(3rem);
       color: color.adjust($fg, $alpha: -0.2);
+      margin-right: 0.3rem;
+      margin-left: 0.3rem;
     }
 
     .command-name {

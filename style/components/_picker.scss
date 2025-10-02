@@ -195,17 +195,17 @@ box.picker {
     padding: 0.4rem;
 
     .command-icon {
-      @include material-icon;
+      @include material-icon(3rem);
       color: color.adjust($fg, $alpha: -0.2);
     }
 
     .command-name {
       font-weight: bold;
       color: $primary;
+      font-size: $font;
     }
 
     .command-description {
-      font-size: 0.9rem;
       color: color.adjust($fg, $alpha: -0.2);
     }
 

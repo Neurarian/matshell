@@ -1,5 +1,5 @@
 import app from "ags/gtk4/app";
-import { Astal, Gtk } from "ags/gtk4";
+import { Astal, Gtk, Gdk } from "ags/gtk4";
 import { createBinding } from "ags";
 import { gdkmonitor, currentMonitorWidth } from "utils/monitors.ts";
 import { picker } from "utils/picker/";
@@ -18,33 +18,33 @@ function PickerLayout({ children, onClickOutside }: PickerLayoutProps) {
 
   return (
     <Adw.Clamp maximumSize={600}>
-    <box>
-      <button
-        widthRequest={currentMonitorWidth((w) => w / 2)}
-        onClicked={onClickOutside}
-        cssClasses={["invisible-close"]}
-      />
-      <box
-        hexpand={false}
-        orientation={Gtk.Orientation.VERTICAL}
-        valign={CENTER}
-      >
-        <button onClicked={onClickOutside} cssClasses={["invisible-close"]} />
+      <box>
+        <button
+          widthRequest={currentMonitorWidth((w) => w / 2)}
+          onClicked={onClickOutside}
+          cssClasses={["invisible-close"]}
+        />
         <box
-          widthRequest={600}
-          cssClasses={["picker"]}
+          hexpand={false}
           orientation={Gtk.Orientation.VERTICAL}
+          valign={CENTER}
         >
-          {children}
+          <button onClicked={onClickOutside} cssClasses={["invisible-close"]} />
+          <box
+            widthRequest={600}
+            cssClasses={["picker"]}
+            orientation={Gtk.Orientation.VERTICAL}
+          >
+            {children}
+          </box>
         </box>
-      </box>
 
-      <button
-        widthRequest={currentMonitorWidth((w) => w / 2)}
-        onClicked={onClickOutside}
-        cssClasses={["invisible-close"]}
-      />
-    </box>
+        <button
+          widthRequest={currentMonitorWidth((w) => w / 2)}
+          onClicked={onClickOutside}
+          cssClasses={["invisible-close"]}
+        />
+      </box>
     </Adw.Clamp>
   );
 }
@@ -67,7 +67,14 @@ export default function PickerWindow() {
       }}
     >
       <Gtk.EventControllerKey
-        onKeyPressed={({}, keyval: number) => picker.handleKeyPress(keyval)}
+        propagationPhase={Gtk.PropagationPhase.BUBBLE}
+        onKeyPressed={(_controller, keyval, _keycode, state) => {
+          const controlMod = (state & Gdk.ModifierType.CONTROL_MASK) !== 0;
+          return picker.handleKeyPress({
+            key: keyval,
+            controlMod,
+          });
+        }}
       />
 
       <PickerLayout onClickOutside={() => picker.hide()}>

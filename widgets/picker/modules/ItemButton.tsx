@@ -1,4 +1,6 @@
 import { Gtk } from "ags/gtk4";
+import { createBinding, createComputed } from "ags";
+import { Accessor } from "ags";
 import Pango from "gi://Pango";
 import { PickerCoordinator } from "utils/picker";
 import type { PickerItem } from "utils/picker/types.ts";
@@ -6,20 +8,28 @@ import type { PickerItem } from "utils/picker/types.ts";
 interface ItemButtonProps {
   item: PickerItem;
   picker: PickerCoordinator;
+  index: Accessor<number>;
 }
 
-export function ItemButton({ item, picker }: ItemButtonProps) {
+export function ItemButton({ item, picker, index }: ItemButtonProps) {
   const config = picker.currentConfig;
-  const hasActions = config?.features?.refresh || config?.features?.random;
+  const selectedIndex = createBinding(picker, "selectedIndex");
+  const hasNavigated = createBinding(picker, "hasNavigated");
 
   return (
     <box>
       <button
-        cssClasses={["app-button"]}
+        cssClasses={createComputed(
+          [selectedIndex, hasNavigated],
+          (s, n): string[] =>
+            s === index.get() && n
+              ? ["app-button", "selected"]
+              : ["app-button"],
+        )}
         onClicked={() => picker.activate(item)}
         hexpand
       >
-        <box>
+        <box spacing={4}>
           {item.iconName && (
             <image iconName={item.iconName || "image-x-generic"} />
           )}
@@ -27,14 +37,14 @@ export function ItemButton({ item, picker }: ItemButtonProps) {
             <label
               cssClasses={["name"]}
               ellipsize={Pango.EllipsizeMode.END}
-              xalign={0}
+              halign={Gtk.Align.START}
               label={item.name}
             />
             {item.description && (
               <label
                 cssClasses={["description"]}
                 wrap
-                xalign={0}
+                halign={Gtk.Align.START}
                 label={item.description}
               />
             )}

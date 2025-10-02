@@ -1,15 +1,12 @@
 import { register } from "ags/gobject";
 import { BaseProvider } from "../SearchProvider";
-import { WallpaperItem, ProviderConfig, ISearchProvider } from "../types";
+import { WallpaperItem, ProviderConfig } from "../types";
 import { getWallpaperStore } from "utils/wallpaper";
 
 @register({ GTypeName: "WallpaperProvider" })
-export class WallpaperProvider
-  extends BaseProvider
-  implements ISearchProvider<WallpaperItem>
-{
+export class WallpaperProvider extends BaseProvider {
   readonly config: ProviderConfig = {
-    command: "wallpapers",
+    command: "wp",
     icon: "Image_Search",
     name: "Wallpapers",
     placeholder: "Search wallpapers...",
@@ -25,7 +22,7 @@ export class WallpaperProvider
 
   constructor() {
     super();
-    this.command = "wallpapers";
+    this.command = "wp";
   }
 
   async search(query: string): Promise<void> {

@@ -52,7 +52,7 @@ app.start({
         res("css reloaded");
         break;
       case "wall-rand":
-        picker.randomFromCurrentProvider();
+        picker.random("wp");
         res("random wallpaper set");
         break;
       default:
@@ -77,4 +77,3 @@ app.start({
     Sidebar();
   },
 });
-

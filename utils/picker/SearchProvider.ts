@@ -4,8 +4,7 @@ import { PickerItem, ISearchProvider } from "./types";
 import { FrecencyManager } from "./frecency/manager.ts";
 import { ProviderConfig } from "./types";
 
-export type SearchProviderInstance<T = PickerItem> = BaseProvider &
-  ISearchProvider<T>;
+export type SearchProvider<T = PickerItem> = BaseProvider & ISearchProvider<T>;
 
 @register({ GTypeName: "BaseProvider" })
 export class BaseProvider extends GObject.Object {
@@ -23,9 +22,6 @@ export class BaseProvider extends GObject.Object {
   @signal([Boolean], GObject.TYPE_NONE, { default: false })
   loadingChanged(loading: boolean): undefined {}
 
-  @signal([Boolean], GObject.TYPE_NONE, { default: false })
-  defaultsChanged(showingDefaults: boolean): undefined {}
-
   constructor() {
     super();
     this.frecencyManager = FrecencyManager.getInstance();
@@ -39,7 +35,6 @@ export class BaseProvider extends GObject.Object {
     this.results = results;
     this.showingDefaults = false;
     this.emit("results-changed", results);
-    this.emit("defaults-changed", false);
   }
 
   // Results based on frecency when no search query
@@ -57,14 +52,12 @@ export class BaseProvider extends GObject.Object {
     this.results = defaults;
     this.showingDefaults = true;
     this.emit("results-changed", defaults);
-    this.emit("defaults-changed", true);
   }
 
   clearResults() {
     this.results = [];
     this.showingDefaults = false;
     this.emit("results-changed", []);
-    this.emit("defaults-changed", false);
   }
 
   setLoading(loading: boolean) {
@@ -74,12 +67,15 @@ export class BaseProvider extends GObject.Object {
     }
   }
 
-  recordActivation(item: PickerItem) {
-    this.frecencyManager.recordUsage(item, this.command);
+  complete(text: string): string {
+    const matches = this.results.filter((item) =>
+      item.name?.toLowerCase().startsWith(text.toLowerCase()),
+    );
+    return matches[0]?.name || text;
   }
 
-  get firstResult(): PickerItem | null {
-    return this.results.length > 0 ? this.results[0] : null;
+  recordActivation(item: PickerItem) {
+    this.frecencyManager.recordUsage(item, this.command);
   }
 
   get hasResults(): boolean {

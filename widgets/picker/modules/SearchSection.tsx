@@ -19,7 +19,7 @@ export function SearchSection({ picker }: SearchSectionProps) {
         placeholderText={placeholderText}
         onNotifyText={(self) => picker.setSearchText(self.text)}
         hexpand
-        onActivate={() => picker.activateFirstResult()}
+        onActivate={() => picker.activateSelectedResult()}
       />
     </box>
   );

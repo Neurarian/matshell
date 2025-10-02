@@ -15,20 +15,25 @@ export function WallpaperGrid({ items, picker }: WallpaperGridProps) {
       spacing={8}
       cssClasses={["wallpaper-content"]}
     >
-      {/* Wallpaper grid */}
       {Array.from({ length: Math.ceil(items.length / 3) }, (_, rowIndex) => (
         <box
           orientation={Gtk.Orientation.HORIZONTAL}
           spacing={8}
           cssClasses={["wallpaper-row"]}
         >
-          {items.slice(rowIndex * 3, (rowIndex + 1) * 3).map((item) => (
-            <WallpaperThumbnail
-              item={item}
-              picker={picker}
-              onActivate={() => picker.activate(item)}
-            />
-          ))}
+          {items
+            .slice(rowIndex * 3, (rowIndex + 1) * 3)
+            .map((item, colIndex) => {
+              const itemIndex = rowIndex * 3 + colIndex;
+              return (
+                <WallpaperThumbnail
+                  item={item}
+                  picker={picker}
+                  itemIndex={itemIndex}
+                  onActivate={() => picker.activate(item)}
+                />
+              );
+            })}
         </box>
       ))}
     </box>

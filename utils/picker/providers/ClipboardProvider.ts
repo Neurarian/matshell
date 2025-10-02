@@ -2,16 +2,13 @@ import { register } from "ags/gobject";
 import { execAsync, subprocess, Process } from "ags/process";
 import { BaseProvider } from "../SearchProvider.ts";
 import GLib from "gi://GLib?version=2.0";
-import { ClipboardItem, ProviderConfig, ISearchProvider } from "../types.ts";
+import { ClipboardItem, ProviderConfig } from "../types.ts";
 import Fuse from "utils/fuse.js";
 
 @register({ GTypeName: "ClipboardProvider" })
-export class ClipboardProvider
-  extends BaseProvider
-  implements ISearchProvider<ClipboardItem>
-{
+export class ClipboardProvider extends BaseProvider {
   readonly config: ProviderConfig = {
-    command: "clipboard",
+    command: "clip",
     icon: "Content_Paste_Search",
     name: "Clipboard",
     placeholder: "Search clipboard history...",
@@ -33,7 +30,7 @@ export class ClipboardProvider
 
   constructor() {
     super();
-    this.command = "clipboard";
+    this.command = "clip";
     this.initClipboardWatcher();
   }
 

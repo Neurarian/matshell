@@ -1,15 +1,12 @@
 import Apps from "gi://AstalApps";
 import { register } from "ags/gobject";
 import { BaseProvider } from "../SearchProvider";
-import { AppItem, ProviderConfig, ISearchProvider } from "../types";
+import { AppItem, ProviderConfig } from "../types";
 
 @register({ GTypeName: "AppProvider" })
-export class AppProvider
-  extends BaseProvider
-  implements ISearchProvider<AppItem>
-{
+export class AppProvider extends BaseProvider {
   readonly config: ProviderConfig = {
-    command: "apps",
+    command: "app",
     icon: "Apps",
     name: "Apps",
     placeholder: "Search apps...",
@@ -22,7 +19,7 @@ export class AppProvider
 
   constructor() {
     super();
-    this.command = "apps";
+    this.command = "app";
     this.loadAllApps();
   }
 

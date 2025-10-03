@@ -73,6 +73,7 @@ export class WallpaperStore extends GObject.Object {
     this.loadThemeCache();
     this.loadWallpapers();
     this.initSwww();
+    this.waitForSwww();
   }
 
   private setupWatchers(): void {
@@ -80,6 +81,22 @@ export class WallpaperStore extends GObject.Object {
       this.loadWallpapers();
     });
     this.unsubscribers.push(dirUnsubscribe);
+  }
+
+  private async waitForSwww(): Promise<void> {
+    const maxAttempts = 10;
+    const delayMs = 200;
+
+    for (let i = 0; i < maxAttempts; i++) {
+      try {
+        await execAsync(["swww", "query"]);
+        return;
+      } catch {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+
+    throw new Error("swww daemon failed to start");
   }
 
   private async initSwww(): Promise<void> {

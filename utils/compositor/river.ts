@@ -1,4 +1,3 @@
-// utils/compositor/river.ts
 import GObject from "gi://GObject";
 import { Gdk } from "ags/gtk4";
 import app from "ags/gtk4/app";

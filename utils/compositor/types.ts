@@ -1,4 +1,3 @@
-// utils/compositor/types.ts
 import { Gdk } from "ags/gtk4";
 import { Accessor } from "ags";
 

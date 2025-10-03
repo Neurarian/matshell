@@ -4,19 +4,17 @@ async function detectCompositor(): Promise<CompositorAdapter> {
   const adapterFactories = [
     async () => {
       try {
-        const { HyprlandAdapter } = await import("./hyprland");
-        return new HyprlandAdapter();
+        const { RiverAdapter } = await import("./river");
+        return new RiverAdapter();
       } catch (error) {
-        console.warn("Hyprland adapter unavailable:", error);
         throw error;
       }
     },
     async () => {
       try {
-        const { RiverAdapter } = await import("./river");
-        return new RiverAdapter();
+        const { HyprlandAdapter } = await import("./hyprland");
+        return new HyprlandAdapter();
       } catch (error) {
-        console.warn("River adapter unavailable:", error);
         throw error;
       }
     },
@@ -30,7 +28,7 @@ async function detectCompositor(): Promise<CompositorAdapter> {
         return adapter;
       }
     } catch (error) {
-      console.warn(`Failed to initialize adapter: ${error}`);
+      // Don't log this. Only if both fail.
       continue;
     }
   }

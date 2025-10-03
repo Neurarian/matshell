@@ -24,7 +24,7 @@ This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice
 - **Adaptive Layout**: Automatically adapts to desktop or laptop environments by conditionally rendering notebook-specific widgets
 - **Dynamic Material Design Theming**: Change themes on-the-fly via [matugen](https://github.com/InioX/matugen) templates
 - **Multi-monitor Support**: Designed with multi-monitor setups in mind
-- **Hyprland Integration**: Built specifically for the Hyprland compositor
+- **Hyprland & River support**: Automatic compositor detection and support
 - **Cava visualizer library**: Ships with an extensive lib of optional Cava visualizers to enjoy your music to
 - **Multimodal Fuzzy & Frecency Picker**: Apps, clipboard, wallpapers - all ranked by frequency + recency, loosely based on [gnofi](https://github.com/Aylur/gnofi).
 - **Nix Support**: Support for NixOS / Home-Manager with dedicated module
@@ -37,7 +37,7 @@ This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice
 
 - 📌 Status Bar - Sleek, informative main bar with system information
 
-  - Workspace Management - Themed Hyprland workspace integration
+  - Workspace Management - Themed Hyprland or River workspace integration
   - System Tray
   - Visual Performance Monitoring - CPU & memory
   - Simple Clock

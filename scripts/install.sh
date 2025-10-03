@@ -75,6 +75,41 @@ prompt_yes_no() {
     done
 }
 
+# Multiple choice prompt
+prompt_choice() {
+    local prompt="$1"
+    shift
+    local options=("$@")
+    local choice
+    
+    echo "$prompt"
+    for i in "${!options[@]}"; do
+        echo "  $((i+1))) ${options[$i]}"
+    done
+    
+    while true; do
+        echo -n "Enter choice [1-${#options[@]}]: "
+        read choice
+        
+        if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#options[@]}" ]; then
+            return $((choice-1))
+        else
+            echo "Invalid choice. Please enter a number between 1 and ${#options[@]}."
+        fi
+    done
+}
+
+# Detect running compositor
+detect_compositor() {
+    if pgrep -x "Hyprland" > /dev/null; then
+        echo "hyprland"
+    elif pgrep -x "river" > /dev/null; then
+        echo "river"
+    else
+        echo "none"
+    fi
+}
+
 # Install dependencies on Arch-based systems
 install_dependencies() {
     if ! is_arch_based; then
@@ -93,11 +128,69 @@ install_dependencies() {
         return 1
     fi
 
-    echo "Checking existing packages and installing missing dependencies..."
+    echo ""
+    echo "════════════════════════════════════════"
+    echo "  Compositor Selection"
+    echo "════════════════════════════════════════"
+    
+    local running_compositor=$(detect_compositor)
+    local compositor_choice
+    local compositor_lib
+    
+    if [ "$running_compositor" != "none" ]; then
+        echo "Detected running compositor: $running_compositor"
+        if prompt_yes_no "Use detected compositor ($running_compositor)?" "y"; then
+            compositor_choice="$running_compositor"
+        fi
+    fi
+    
+    if [ -z "$compositor_choice" ]; then
+        prompt_choice "Which compositor do you want to use?" "Hyprland" "River"
+        local choice=$?
+        if [ $choice -eq 0 ]; then
+            compositor_choice="hyprland"
+        else
+            compositor_choice="river"
+        fi
+    fi
+    
+    echo "Selected compositor: $compositor_choice"
+    
+    # Set compositor library based on choice
+    if [ "$compositor_choice" = "hyprland" ]; then
+        compositor_lib="libastal-hyprland-git"
+    else
+        compositor_lib="libastal-river-git"
+    fi
 
+    echo ""
+    echo "════════════════════════════════════════"
+    echo "  Wallpaper Daemon Selection"
+    echo "════════════════════════════════════════"
+    echo ""
+    echo "Choose wallpaper daemon:"
+    echo "  • swww: More feature-rich, animations, GIF support"
+    echo "  • hyprpaper: Simpler, lighter, Hyprland-specific"
+    echo ""
+    
+    local wallpaper_choice
+    prompt_choice "Which wallpaper daemon?" "swww" "hyprpaper" "Both (install both)"
+    local wp_choice=$?
+    
+    case $wp_choice in
+        0) wallpaper_choice="swww" ;;
+        1) wallpaper_choice="hyprpaper" ;;
+    esac
+    
+    echo "Selected wallpaper daemon: $wallpaper_choice"
+
+    echo ""
+    echo "════════════════════════════════════════"
+    echo "  Installing Core Dependencies"
+    echo "════════════════════════════════════════"
+    
     declare -A CORE_DEPS=(
         ["ags"]="aylurs-gtk-shell-git"
-        ["astal-hyprland"]="libastal-hyprland-git"
         ["astal-tray"]="libastal-tray-git"
         ["astal-notifd"]="libastal-notifd-git"
         ["astal-apps"]="libastal-apps-git"
@@ -113,7 +206,6 @@ install_dependencies() {
         ["libadwaita"]="libadwaita"
         ["libsoup"]="libsoup3"
         ["glib-networking"]="glib-networking"
-        ["hyprland"]="hyprland"
         ["coreutils"]="coreutils"
         ["dart-sass"]="dart-sass"
         ["cliphist"]="cliphist"
@@ -126,6 +218,29 @@ install_dependencies() {
         ["ttf-fira-code-nerd"]="ttf-firacode-nerd"
     )
 
+    # Install compositor-specific library
+    CORE_DEPS["astal-compositor"]="$compositor_lib"
+    
+    # Install compositor if not already installed
+    CORE_DEPS["compositor"]="$compositor_choice"
+    
+    # Install wallpaper daemon(s)
+    if [ "$wallpaper_choice" = "swww" ]; then
+        CORE_DEPS["wallpaper"]="swww"
+    elif [ "$wallpaper_choice" = "hyprpaper" ]; then
+        CORE_DEPS["wallpaper"]="hyprpaper"
+    fi
+
+    echo "Installing core dependencies..."
+    for base_name in "${!CORE_DEPS[@]}"; do
+        install_if_missing "${CORE_DEPS[$base_name]}" "$INSTALLER"
+    done
+
+    echo ""
+    echo "════════════════════════════════════════"
+    echo "  Optional Dependencies"
+    echo "════════════════════════════════════════"
+    
     declare -A OPTIONAL_DEPS=(
         ["bluez"]="bluez"
         ["bluez-utils"]="bluez-utils"
@@ -137,17 +252,12 @@ install_dependencies() {
         ["brightnessctl"]="brightnessctl"
     )
 
-    echo "Installing core dependencies..."
-    for base_name in "${!CORE_DEPS[@]}"; do
-        install_if_missing "${CORE_DEPS[$base_name]}" "$INSTALLER"
-    done
-
     echo ""
     echo "Optional dependencies provide additional functionality:"
     echo "  • bluez/bluez-utils: Bluetooth support"
     echo "  • gnome-control-center: System settings panel"
     echo "  • resources: System monitor"
-    echo "  • overskride: More advanced Bluetooth manager"
+    echo "  • overskride: Advanced Bluetooth manager"
     echo "  • pwvucontrol: PipeWire volume control"
     echo "  • upower: Battery management"
     echo "  • brightnessctl: Screen brightness control"
@@ -159,10 +269,19 @@ install_dependencies() {
             install_if_missing "${OPTIONAL_DEPS[$base_name]}" "$INSTALLER"
         done
     else
-        echo "Skipping optional dependencies. You can install the ones you need later:"
+        echo "Skipping optional dependencies. You can install them later:"
         echo "  yay -S bluez bluez-utils gnome-control-center resources overskride pwvucontrol upower brightnessctl"
     fi
 
+    echo ""
+    echo "════════════════════════════════════════"
+    echo "  Installation Summary"
+    echo "════════════════════════════════════════"
+    echo "Compositor: $compositor_choice"
+    echo "Compositor Library: $compositor_lib"
+    echo "Wallpaper Daemon: $wallpaper_choice"
+    echo "════════════════════════════════════════"
+    echo ""
     echo "Dependency installation complete!"
 }
 
@@ -215,6 +334,17 @@ output_path = "~/.config/hypr/hyprlock_colors.conf"
 EOF
 fi
 
-echo "Matshell installation and configuration complete!"
-echo "Start with: ags run"
+echo ""
+echo "════════════════════════════════════════"
+echo "  Installation Complete!"
+echo "════════════════════════════════════════"
+echo ""
+echo "Next steps:"
+echo "  1. Start matshell: ags run"
+echo "  2. Configure your compositor settings"
+echo "  3. Set a wallpaper with your chosen daemon"
+echo ""
+echo "For more information, visit:"
+echo "  https://github.com/Neurarian/matshell"
+echo "════════════════════════════════════════"
 

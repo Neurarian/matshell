@@ -23,9 +23,6 @@ export class FileOperations {
       }
 
       const config = JSON.parse(fileContent);
-      console.log(
-        `Loaded configuration with ${Object.keys(config).length} settings from ${filePath}`,
-      );
       return config;
     } catch (err) {
       console.error(`Failed to load configuration from ${filePath}:`, err);

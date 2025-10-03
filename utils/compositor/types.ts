@@ -35,7 +35,6 @@ export interface Client {
 export interface CompositorAdapter {
   readonly name: string;
 
-  // Reactive accessors - these automatically update
   readonly focusedMonitor: Accessor<Monitor | null>;
   readonly monitors: Accessor<Monitor[]>;
   readonly focusedWorkspace: Accessor<Workspace | null>;
@@ -43,24 +42,10 @@ export interface CompositorAdapter {
   readonly focusedClient: Accessor<Client | null>;
   readonly clients: Accessor<Client[]>;
 
-  // Availability check
   isAvailable(): boolean;
-
-  // Static getter methods (non-reactive)
-  getMonitors(): Monitor[];
-  getFocusedMonitor(): Monitor | null;
-  getWorkspaces(): Workspace[];
-  getFocusedWorkspace(): Workspace | null;
-  getClients(): Client[];
-  getFocusedClient(): Client | null;
 
   // Actions
   focusWorkspace(id: string | number): void;
-  moveClientToWorkspace(
-    clientAddress: string,
-    workspaceId: string | number,
-  ): void;
-
   // GDK Monitor matching
   matchMonitor(compositorMonitor: Monitor): Gdk.Monitor | null;
 }

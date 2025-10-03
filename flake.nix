@@ -75,8 +75,8 @@
         io
         notifd
         apps
-        hyprland
         river
+        hyprland
         wireplumber
         mpris
         network
@@ -121,7 +121,6 @@
                   libnotify
                   dart-sass
                   imagemagick
-                  hyprpaper
                   swww
                   cliphist
                   wl-clipboard
@@ -181,7 +180,7 @@
           inputsFrom = [self.packages.${system}.default];
           buildInputs =
             mkBuildInputs system
-            ++ [agsPackage pkgs.river-classic];
+            ++ [agsPackage];
 
           shellHook = ''
             echo "Setting up Matshell devenv..."

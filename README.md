@@ -74,7 +74,7 @@ ______________________________________________________________________
 #### Required:
 
 - aylurs-gtk-shell-git
-- libastal-hyprland-git
+- libastal-hyprland-git **or** libastal-river-git
 - libastal-tray-git
 - libastal-notifd-git
 - libastal-apps-git
@@ -89,7 +89,7 @@ ______________________________________________________________________
 - libadwaita
 - libsoup3
 - glib-networking
-- hyprland
+- hyprland **or** river
 - wl-clipboard
 - cliphist
 - coreutils

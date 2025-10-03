@@ -1,9 +1,10 @@
 import app from "ags/gtk4/app";
 import { For, createBinding, createComputed } from "ags";
 import { Astal, Gdk, Gtk } from "ags/gtk4";
+import { compositor } from "utils/compositor/detector";
 import { SysTray, hasTrayItems } from "./modules/SysTray.tsx";
 import Separator from "./modules/Separator.tsx";
-import Workspaces from "./modules/Workspaces.tsx";
+import { HyprlandWorkspaces, RiverWorkspaces } from "./modules/Workspaces.tsx";
 import Mem from "./modules/Mem.tsx";
 import Cpu from "./modules/Cpu.tsx";
 import { CavaDraw } from "widgets/music/modules/cava";
@@ -101,7 +102,11 @@ function Bar({ gdkmonitor, ...props }: any) {
             >
               <OsIcon />
             </box>
-            <Workspaces />
+            {compositor.name === "river" ? (
+              <RiverWorkspaces gdkmonitor={gdkmonitor} />
+            ) : (
+              <HyprlandWorkspaces />
+            )}
           </box>
           <box
             visible={hasActivePlayers}

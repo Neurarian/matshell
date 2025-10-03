@@ -103,7 +103,7 @@ ______________________________________________________________________
 - ttf-firacode-nerd
 - ***For matugen theming:***
   - matugen
-  - hyprpaper
+  - swww **or** hyprpaper
   - [image-hct](https://github.com/Neurarian/image-hct) (optional; for proper chroma/tone based theming. Uses imagemagick as fallback)
 
 #### Not required but useful for laptop device features:

@@ -72,7 +72,7 @@ export class WallpaperStore extends GObject.Object {
     // Init
     this.loadThemeCache();
     this.loadWallpapers();
-    this.initSwww(); // Initialize swww daemon
+    this.initSwww();
   }
 
   private setupWatchers(): void {
@@ -91,14 +91,11 @@ export class WallpaperStore extends GObject.Object {
     }
 
     try {
-      // Check if daemon is already running
       if (await this.isSwwwRunning()) {
         console.log("swww daemon already running");
         return;
       }
 
-      // Start swww daemon
-      console.log("Starting swww daemon...");
       this.swwwDaemon = subprocess(
         ["swww-daemon"],
         (stdout: string) => {
@@ -108,10 +105,6 @@ export class WallpaperStore extends GObject.Object {
           if (stderr.trim()) console.debug("swww-daemon:", stderr.trim());
         },
       );
-
-      // Wait for daemon to initialize
-      await this.waitForSwww();
-      console.log("swww daemon ready");
     } catch (error) {
       console.warn("Failed to start swww daemon:", error);
       console.log("Will use hyprpaper fallback");
@@ -127,22 +120,6 @@ export class WallpaperStore extends GObject.Object {
     }
   }
 
-  private async waitForSwww(): Promise<void> {
-    const maxAttempts = 10;
-    const delayMs = 200;
-
-    for (let i = 0; i < maxAttempts; i++) {
-      try {
-        await execAsync(["swww", "query"]);
-        return;
-      } catch {
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-      }
-    }
-
-    throw new Error("swww daemon failed to start");
-  }
-
   private loadThemeCache(): void {
     try {
       const persistentCache = options["wallpaper.theme-cache"].get() as Record<
@@ -156,7 +133,6 @@ export class WallpaperStore extends GObject.Object {
       }
     } catch (error) {
       console.warn("Failed to load theme cache:", error);
-      this.emit("error", "Failed to load theme cache");
     }
   }
 
@@ -170,7 +146,6 @@ export class WallpaperStore extends GObject.Object {
         options["wallpaper.theme-cache"].value = persistentCache as any;
       } catch (error) {
         console.error("Failed to save theme cache:", error);
-        this.emit("error", "Failed to save theme cache");
       }
     }, 0);
   }
@@ -213,7 +188,6 @@ export class WallpaperStore extends GObject.Object {
       console.log(`Loaded ${this.files.length} wallpapers from ${dirPath}`);
     } catch (error) {
       console.error("Failed to load wallpapers:", error);
-      this.emit("error", "Failed to load wallpapers");
       this.updateWallpapers([], []);
     }
   }
@@ -298,7 +272,6 @@ export class WallpaperStore extends GObject.Object {
   async setRandomWallpaper(): Promise<void> {
     if (this.wallpapers.length === 0) {
       console.warn("No wallpapers available for random selection");
-      this.emit("error", "No wallpapers available");
       return;
     }
 
@@ -324,7 +297,6 @@ export class WallpaperStore extends GObject.Object {
     const imagePath = file.get_path();
     if (!imagePath) {
       console.error("Could not get file path for wallpaper");
-      this.emit("error", "Could not get file path for wallpaper");
       return;
     }
 
@@ -351,7 +323,6 @@ export class WallpaperStore extends GObject.Object {
       this.emit("wallpaper-set", imagePath);
     } catch (error) {
       console.error("Wallpaper setting failed:", error);
-      this.emit("error", `Wallpaper setting failed: ${error}`);
       options["wallpaper.current"].value = currentWallpaper;
       this.currentWallpaperPath = currentWallpaper;
     }
@@ -361,13 +332,11 @@ export class WallpaperStore extends GObject.Object {
     if (!swww) return false;
 
     try {
-      // Ensure daemon is running
       if (!(await this.isSwwwRunning())) {
         console.log("swww daemon not running, attempting to start...");
         await this.initSwww();
       }
 
-      // Set wallpaper with transition
       await execAsync([
         "swww",
         "img",
@@ -428,7 +397,6 @@ export class WallpaperStore extends GObject.Object {
     this.themeDebounceTimer = timeout(this.THEME_DEBOUNCE_DELAY, () => {
       this.applyWallpaperTheme(imagePath).catch((error) => {
         console.error("Theme application failed:", error);
-        this.emit("error", `Theme application failed: ${error}`);
       });
       this.themeDebounceTimer = null;
     });
@@ -447,8 +415,6 @@ export class WallpaperStore extends GObject.Object {
       setTimeout(() => this.sendThemeNotification(imagePath, analysis), 0);
     } catch (error) {
       console.error("Failed to apply wallpaper theme:", error);
-      this.emit("error", `Failed to apply wallpaper theme: ${error}`);
-    } finally {
     }
   }
 
@@ -495,16 +461,25 @@ export class WallpaperStore extends GObject.Object {
     }
 
     // Try ImageMagick fallback
-    const magickAnalysis = await this.analyzeWithImageMagick(imagePath);
-    if (magickAnalysis) {
-      this.cacheThemeAnalysis(imagePath, magickAnalysis);
-      return magickAnalysis;
+    try {
+      const magickAnalysis = await this.analyzeWithImageMagick(imagePath);
+      if (magickAnalysis) {
+        this.cacheThemeAnalysis(imagePath, magickAnalysis);
+        return magickAnalysis;
+      }
+    } catch (error) {
+      console.error(
+        "ImageMagick failed, make sure to have either image-hct OR ImageMagick installed",
+        error,
+      );
     }
-
-    // Final fallback
-    analysis = this.fallbackColorAnalysis(imagePath);
-    this.cacheThemeAnalysis(imagePath, analysis);
-    return analysis;
+    // Fallback to default theme if all methods fail
+    return {
+      tone: 50,
+      chroma: 30,
+      mode: "dark",
+      scheme: "scheme-vibrant",
+    };
   }
 
   private async analyzeWithImageMagick(
@@ -560,50 +535,6 @@ export class WallpaperStore extends GObject.Object {
       console.warn("ImageMagick analysis failed:", error);
       return null;
     }
-  }
-
-  private fallbackColorAnalysis(imagePath: string): ThemeProperties {
-    const basename = GLib.path_get_basename(imagePath).toLowerCase();
-
-    let mode: "light" | "dark" = "dark";
-    let scheme: "scheme-neutral" | "scheme-vibrant" = "scheme-vibrant";
-
-    // Filename-based heuristics
-    if (
-      basename.includes("light") ||
-      basename.includes("day") ||
-      basename.includes("bright")
-    ) {
-      mode = "light";
-    } else if (
-      basename.includes("dark") ||
-      basename.includes("night") ||
-      basename.includes("moon")
-    ) {
-      mode = "dark";
-    } else {
-      // Time-based fallback
-      const hour = new Date().getHours();
-      mode = hour >= 6 && hour < 18 ? "light" : "dark";
-    }
-
-    if (
-      basename.includes("neutral") ||
-      basename.includes("gray") ||
-      basename.includes("grey") ||
-      basename.includes("mono") ||
-      basename.includes("black") ||
-      basename.includes("white")
-    ) {
-      scheme = "scheme-neutral";
-    }
-
-    return {
-      tone: mode === "light" ? 80 : 20,
-      chroma: scheme === "scheme-vibrant" ? 40 : 10,
-      mode,
-      scheme,
-    };
   }
 
   private cacheThemeAnalysis(

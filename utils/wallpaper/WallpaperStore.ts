@@ -3,7 +3,7 @@ import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import { Gdk } from "ags/gtk4";
 import { Accessor } from "ags";
-import { execAsync } from "ags/process";
+import { Process, subprocess, execAsync } from "ags/process";
 import { timeout, Timer } from "ags/time";
 import { register, property, signal } from "ags/gobject";
 import { getThumbnailManager, ThumbnailManager } from ".";
@@ -51,11 +51,12 @@ export class WallpaperStore extends GObject.Object {
   // Thumbnail generation
   private thumbnailManager: ThumbnailManager;
 
+  private swwwDaemon: Process | null = null;
+
   constructor(params: { includeHidden?: boolean } = {}) {
     super();
 
     this.thumbnailManager = getThumbnailManager();
-
     this.includeHidden = params.includeHidden ?? false;
 
     // Setup accessors from options
@@ -71,14 +72,75 @@ export class WallpaperStore extends GObject.Object {
     // Init
     this.loadThemeCache();
     this.loadWallpapers();
+    this.initSwww(); // Initialize swww daemon
   }
 
-  // Setup & Configuration
   private setupWatchers(): void {
     const dirUnsubscribe = this.wallpaperDir.subscribe(() => {
       this.loadWallpapers();
     });
     this.unsubscribers.push(dirUnsubscribe);
+  }
+
+  private async initSwww(): Promise<void> {
+    const swww = GLib.find_program_in_path("swww");
+
+    if (!swww) {
+      console.log("swww not found, will use hyprpaper fallback");
+      return;
+    }
+
+    try {
+      // Check if daemon is already running
+      if (await this.isSwwwRunning()) {
+        console.log("swww daemon already running");
+        return;
+      }
+
+      // Start swww daemon
+      console.log("Starting swww daemon...");
+      this.swwwDaemon = subprocess(
+        ["swww-daemon"],
+        (stdout: string) => {
+          if (stdout.trim()) console.debug("swww-daemon:", stdout.trim());
+        },
+        (stderr: string) => {
+          if (stderr.trim()) console.debug("swww-daemon:", stderr.trim());
+        },
+      );
+
+      // Wait for daemon to initialize
+      await this.waitForSwww();
+      console.log("swww daemon ready");
+    } catch (error) {
+      console.warn("Failed to start swww daemon:", error);
+      console.log("Will use hyprpaper fallback");
+    }
+  }
+
+  private async isSwwwRunning(): Promise<boolean> {
+    try {
+      await execAsync(["swww", "query"]);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private async waitForSwww(): Promise<void> {
+    const maxAttempts = 10;
+    const delayMs = 200;
+
+    for (let i = 0; i < maxAttempts; i++) {
+      try {
+        await execAsync(["swww", "query"]);
+        return;
+      } catch {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+
+    throw new Error("swww daemon failed to start");
   }
 
   private loadThemeCache(): void {
@@ -275,18 +337,53 @@ export class WallpaperStore extends GObject.Object {
     options["wallpaper.current"].value = imagePath;
     this.currentWallpaperPath = imagePath;
 
-    const wallpaperPromise = this.setWallpaperHyprctl(imagePath);
-    this.scheduleThemeUpdate(imagePath);
-
     try {
-      await wallpaperPromise;
+      // Try swww first (universal)
+      if (await this.setWallpaperSwww(imagePath)) {
+        console.log("Wallpaper set with swww");
+      } else {
+        // Fallback to hyprpaper
+        console.log("Falling back to hyprpaper");
+        await this.setWallpaperHyprctl(imagePath);
+      }
+
+      this.scheduleThemeUpdate(imagePath);
       this.emit("wallpaper-set", imagePath);
     } catch (error) {
       console.error("Wallpaper setting failed:", error);
       this.emit("error", `Wallpaper setting failed: ${error}`);
-      // Revert config on failure
       options["wallpaper.current"].value = currentWallpaper;
       this.currentWallpaperPath = currentWallpaper;
+    }
+  }
+  private async setWallpaperSwww(imagePath: string): Promise<boolean> {
+    const swww = GLib.find_program_in_path("swww");
+    if (!swww) return false;
+
+    try {
+      // Ensure daemon is running
+      if (!(await this.isSwwwRunning())) {
+        console.log("swww daemon not running, attempting to start...");
+        await this.initSwww();
+      }
+
+      // Set wallpaper with transition
+      await execAsync([
+        "swww",
+        "img",
+        imagePath,
+        "--transition-type",
+        "fade",
+        "--transition-duration",
+        "1",
+        "--transition-fps",
+        "60",
+      ]);
+
+      return true;
+    } catch (error) {
+      console.error("swww failed:", error);
+      return false;
     }
   }
 
@@ -296,11 +393,11 @@ export class WallpaperStore extends GObject.Object {
       throw new Error("hyprctl not found");
     }
 
-    console.log(`Setting wallpaper: ${imagePath}`);
+    console.log(`Setting wallpaper with hyprpaper: ${imagePath}`);
 
     // Unload and get monitors in parallel
-    const unloadPromise = execAsync(`${hyprctl} hyprpaper unload all`);
-    const monitorPromise = execAsync(`${hyprctl} monitors -j`);
+    const unloadPromise = execAsync([hyprctl, "hyprpaper", "unload", "all"]);
+    const monitorPromise = execAsync([hyprctl, "monitors", "-j"]);
 
     const [, monitorOutput] = await Promise.all([
       unloadPromise,
@@ -308,19 +405,21 @@ export class WallpaperStore extends GObject.Object {
     ]);
 
     // Preload after unload completes
-    await execAsync(`${hyprctl} hyprpaper preload "${imagePath}"`);
+    await execAsync([hyprctl, "hyprpaper", "preload", imagePath]);
 
     const monitors = JSON.parse(monitorOutput);
 
     await Promise.all(
       monitors.map((monitor: any) =>
-        execAsync(
-          `${hyprctl} hyprpaper wallpaper "${monitor.name},${imagePath}"`,
-        ),
+        execAsync([
+          hyprctl,
+          "hyprpaper",
+          "wallpaper",
+          `${monitor.name},${imagePath}`,
+        ]),
       ),
     );
   }
-
   private scheduleThemeUpdate(imagePath: string): void {
     if (this.themeDebounceTimer) {
       this.themeDebounceTimer.cancel();
@@ -640,6 +739,16 @@ export class WallpaperStore extends GObject.Object {
     if (this.thumbnailCleanupInterval) {
       clearInterval(this.thumbnailCleanupInterval);
       this.thumbnailCleanupInterval = undefined;
+    }
+
+    // Stop swww daemon if we started it
+    if (this.swwwDaemon) {
+      try {
+        this.swwwDaemon.kill();
+        console.log("swww daemon stopped");
+      } catch (error) {
+        console.error("Failed to stop swww daemon:", error);
+      }
     }
 
     this.clearThumbnailCache();

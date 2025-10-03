@@ -5,11 +5,13 @@ export default function Net() {
   const getNetIcon = (net) => {
     if (net.primary == 1) return "network-wired-symbolic";
 
-    return net.wifi.icon_name;
+    if (net.wifi?.icon_name) return net.wifi.icon_name;
+    return "network-error-symbolic";
   };
 
   const getNetText = (conn, net) => {
     // no connection
+    if (conn == 0) return "Unknown connection";
     if (conn == 1) return "No connection";
 
     // wired

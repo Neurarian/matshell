@@ -20,7 +20,7 @@ export const Toggles = () => {
     <box orientation={Gtk.Orientation.VERTICAL} visible={renderToggleBox}>
       {/* WiFi Box */}
       <box visible={networkPrimary((p) => p !== Network.Primary.WIRED)}>
-        <WiFiBox />
+        {network?.wifi ? <WiFiBox /> : <></>}
       </box>
       {/* Bluetooth Box */}
       {bluetooth?.adapter ? <BluetoothBox /> : <></>}

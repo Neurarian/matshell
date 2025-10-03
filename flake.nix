@@ -76,6 +76,7 @@
         notifd
         apps
         hyprland
+        river
         wireplumber
         mpris
         network
@@ -121,6 +122,7 @@
                   dart-sass
                   imagemagick
                   hyprpaper
+                  swww
                   cliphist
                   wl-clipboard
                   inputs.matugen.packages.${system}.default
@@ -179,7 +181,7 @@
           inputsFrom = [self.packages.${system}.default];
           buildInputs =
             mkBuildInputs system
-            ++ [agsPackage];
+            ++ [agsPackage pkgs.river-classic];
 
           shellHook = ''
             echo "Setting up Matshell devenv..."

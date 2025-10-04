@@ -1,4 +1,4 @@
-import GObject from "gi://GObject";
+import GObject from "ags/gobject";
 import { register, property, signal } from "ags/gobject";
 import options from "options";
 import type { UsageEntry, FrecencyConfig } from "./types";

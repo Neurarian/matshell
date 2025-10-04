@@ -1,5 +1,4 @@
-import GObject from "gi://GObject";
-import Gio from "gi://Gio?version=2.0";
+import GObject from "ags/gobject";
 import GLib from "gi://GLib";
 import GdkPixbuf from "gi://GdkPixbuf";
 import { Gdk } from "ags/gtk4";

@@ -1,7 +1,6 @@
-import GObject from "gi://GObject";
 import { Gdk } from "ags/gtk4";
 import app from "ags/gtk4/app";
-import { register } from "ags/gobject";
+import GObject, { register } from "ags/gobject";
 import { createBinding, Accessor } from "ags";
 import { CompositorAdapter, Monitor, Workspace, Client } from "./types";
 

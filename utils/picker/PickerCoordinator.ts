@@ -1,4 +1,4 @@
-import GObject from "gi://GObject";
+import GObject from "ags/gobject";
 import { Gtk, Gdk } from "ags/gtk4";
 import { register, property, signal } from "ags/gobject";
 import { SearchProvider } from "./SearchProvider.ts";

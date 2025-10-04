@@ -1,5 +1,4 @@
-import GObject from "gi://GObject";
-import { register, property, signal } from "ags/gobject";
+import GObject, { register, property, signal } from "ags/gobject";
 import { PickerItem, ISearchProvider } from "./types";
 import { FrecencyManager } from "./frecency/manager.ts";
 import { ProviderConfig } from "./types";

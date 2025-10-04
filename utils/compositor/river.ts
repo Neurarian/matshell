@@ -1,4 +1,4 @@
-import GObject from "gi://GObject";
+import GObject from "ags/gobject";
 import { Gdk } from "ags/gtk4";
 import app from "ags/gtk4/app";
 import { register } from "ags/gobject";

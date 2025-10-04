@@ -32,6 +32,11 @@ const options = await (async () => {
       "bar.modules.os-icon.show": defineOption(true),
       "musicPlayer.modules.cava.show": defineOption(true),
       "musicPlayer.modules.cava.style": defineOption("catmull_rom"),
+      "notification-center.max-notifications": defineOption(4),
+      "picker.frecency-cache": defineOption<Record<string, UsageEntry>>(
+        {},
+        { useCache: true },
+      ),
       "system-menu.modules.bluetooth-advanced.enable": defineOption(true),
       "system-menu.modules.wifi-advanced.enable": defineOption(true),
       "wallpaper.dir": defineOption(
@@ -43,10 +48,6 @@ const options = await (async () => {
         useCache: true,
       }),
       "wallpaper.theme-cache": defineOption<Record<string, CachedThemeEntry>>(
-        {},
-        { useCache: true },
-      ),
-      "picker.frecency-cache": defineOption<Record<string, UsageEntry>>(
         {},
         { useCache: true },
       ),

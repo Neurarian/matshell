@@ -8,6 +8,7 @@ import {
 import Notifd from "gi://AstalNotifd";
 import GLib from "gi://GLib?version=2.0";
 import type { StoredNotification } from "./types.ts";
+import options from "options.ts";
 
 export class NotificationManager {
   private notifications = new Map<number, StoredNotification>();
@@ -16,7 +17,9 @@ export class NotificationManager {
     typeof createState<StoredNotification[]>
   >[1];
   private notifd = Notifd.get_default();
-  private maxVisibleNotifications = 5;
+  private maxVisibleNotifications = Number(
+    options["notification-center.max-notifications"].get(),
+  );
 
   constructor() {
     const [notificationState, setNotificationState] = createState<

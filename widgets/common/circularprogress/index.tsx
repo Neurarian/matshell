@@ -17,38 +17,31 @@ export interface CircularProgressProps {
   fillRule?: Gsk.FillRule;
   startAt?: number;
   endAt?: number;
-  children?: JSX.Element;
+  children?: JSX.Element | JSX.Element[];
 }
 
 export function CircularProgressBar({
-  percentage,
-  inverted,
-  centerFilled,
-  radiusFilled,
-  lineWidth,
-  lineCap,
-  fillRule,
-  startAt,
-  endAt,
   children,
+  ...props
 }: CircularProgressProps): CircularProgressBarWidget {
-  const widget = jsx(CircularProgressBarWidget, {
-    percentage,
-    inverted,
-    centerFilled,
-    radiusFilled,
-    lineWidth,
-    lineCap,
-    fillRule,
-    startAt,
-    endAt,
-  });
+  const widget = jsx(CircularProgressBarWidget, props);
 
   if (children) {
-    if (isGtkWidget(children)) {
-      widget.child = children;
+    const childArray = Array.isArray(children) ? children : [children];
+    const validChildren = childArray.filter(isGtkWidget);
+
+    if (validChildren.length === 0) {
+      console.warn("CircularProgressBar: no valid Gtk.Widget children");
+    } else if (validChildren.length === 1) {
+      widget.child = validChildren[0];
     } else {
-      console.warn("CircularProgressBar: child is not a Gtk.Widget");
+      const box = new Gtk.Box({
+        orientation: Gtk.Orientation.VERTICAL,
+        halign: Gtk.Align.CENTER,
+        valign: Gtk.Align.CENTER,
+      });
+      validChildren.forEach((child) => box.append(child));
+      widget.child = box;
     }
   }
 

@@ -1,21 +1,21 @@
-// utils/monitors.ts
 import { Gdk } from "ags/gtk4";
 import app from "ags/gtk4/app";
 import { compositor } from "./compositor/detector";
+import { Monitor } from "./compositor/types";
 
-// Now we can use the adapter's reactive bindings directly
-export const gdkmonitor = compositor.focusedMonitor((focused) => {
-  if (!focused) {
-    const monitors = app.get_monitors();
-    return monitors.length > 0 ? monitors[0] : null;
+function getValidMonitor(focused: Monitor | null): Gdk.Monitor {
+  if (focused) {
+    const monitor = compositor.matchMonitor(focused);
+    if (monitor) return monitor;
   }
 
-  const monitor = compositor.matchMonitor(focused);
-  if (monitor) return monitor;
-
   const monitors = app.get_monitors();
-  return monitors.length > 0 ? monitors[0] : null;
-});
+  return monitors[0];
+}
+
+export const gdkmonitor = compositor.focusedMonitor((focused) =>
+  getValidMonitor(focused),
+);
 
 export const currentMonitorWidth = compositor.focusedMonitor((monitor) => {
   return monitor ? monitor.width : 1000;

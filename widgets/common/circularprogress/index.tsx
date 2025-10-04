@@ -3,6 +3,10 @@ import { Gtk } from "ags/gtk4";
 import Gsk from "gi://Gsk?version=4.0";
 import { CircularProgressBarWidget } from "./CircularProgressBar.ts";
 
+function isGtkWidget(obj: any): obj is Gtk.Widget {
+  return obj instanceof Gtk.Widget;
+}
+
 export interface CircularProgressProps {
   percentage?: number | Accessor<number>;
   inverted?: boolean;
@@ -13,7 +17,7 @@ export interface CircularProgressProps {
   fillRule?: Gsk.FillRule;
   startAt?: number;
   endAt?: number;
-  children?: Gtk.Widget | Gtk.Widget[];
+  children?: JSX.Element;
 }
 
 export function CircularProgressBar({
@@ -41,20 +45,10 @@ export function CircularProgressBar({
   });
 
   if (children) {
-    const childArray = Array.isArray(children) ? children : [children];
-
-    // Wrap multiple children in a Box
-    if (childArray.length === 1) {
-      widget.child = childArray[0];
-    } else if (childArray.length > 1) {
-      const box = new Gtk.Box({
-        orientation: Gtk.Orientation.VERTICAL,
-        halign: Gtk.Align.CENTER,
-        valign: Gtk.Align.CENTER,
-      });
-
-      childArray.forEach((child) => box.append(child));
-      widget.child = box;
+    if (isGtkWidget(children)) {
+      widget.child = children;
+    } else {
+      console.warn("CircularProgressBar: child is not a Gtk.Widget");
     }
   }
 

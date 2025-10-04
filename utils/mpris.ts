@@ -1,7 +1,7 @@
 import Mpris from "gi://AstalMpris";
 import GLib from "gi://GLib?version=2.0";
-import { createBinding, createExternal } from "ags";
-import { exec } from "ags/process";
+import { createExternal } from "ags";
+import { execAsync } from "ags/process";
 
 const mpris = Mpris.get_default();
 const MEDIA_CACHE_PATH = GLib.get_user_cache_dir() + "/media";
@@ -24,27 +24,31 @@ export function mprisStateIcon(status: Mpris.PlaybackStatus): string {
     : "media-playback-start-symbolic";
 }
 
-export function generateBackground(coverpath: string | null): string {
+export async function generateBackground(
+  coverpath: string | null,
+): Promise<string> {
   if (!coverpath) return "";
 
-  // Construct blurred path using path.join for safe concatenation
-  const relativePath = coverpath.substring(MEDIA_CACHE_PATH.length + 1); // +1 to skip slash
+  const relativePath = coverpath.substring(MEDIA_CACHE_PATH.length + 1);
   const blurred = GLib.build_filenamev([blurredPath, relativePath]);
 
-  // Create parent directory for blurred file
+  if (GLib.file_test(blurred, GLib.FileTest.EXISTS)) {
+    return blurred;
+  }
+
   const blurredDir = GLib.path_get_dirname(blurred);
-  !GLib.file_test(blurredDir, GLib.FileTest.EXISTS) &&
+  if (!GLib.file_test(blurredDir, GLib.FileTest.EXISTS)) {
     GLib.mkdir_with_parents(blurredDir, 0o755);
+  }
 
   try {
-    // Using async can cause race condition and idk how to use
-    // this function in a binding if the entire function is async.
-    exec(`magick "${coverpath}" -blur 0x22 "${blurred}"`);
+    await execAsync(`magick "${coverpath}" -blur 0x22 "${blurred}"`);
+    return blurred;
   } catch (e) {
     console.error("Background generation failed:", e);
-    return ""; // Fallback
+    // Fallback to original
+    return coverpath;
   }
-  return blurred;
 }
 
 export function lengthStr(length: number) {

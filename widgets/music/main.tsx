@@ -1,7 +1,7 @@
 import app from "ags/gtk4/app";
 import { Astal, Gtk } from "ags/gtk4";
 import Mpris from "gi://AstalMpris";
-import { createBinding, createState, With } from "ags";
+import { createBinding, createState, With, onCleanup } from "ags";
 import Gio from "gi://Gio?version=2.0";
 import { findPlayer, generateBackground } from "utils/mpris";
 import { Cover } from "./modules/Cover";
@@ -10,12 +10,29 @@ import { CavaDraw } from "./modules/cava";
 import options from "options.ts";
 
 function MusicBox({ player }: { player: Mpris.Player }) {
+  const [blurredCover, setBlurredCover] = createState(player.cover_art || "");
   let measureBox: Gtk.Box | null = null;
+
+  const coverBinding = createBinding(player, "cover_art");
+  const unsubscribe = coverBinding.subscribe(() => {
+    const coverArt = player.cover_art;
+    if (coverArt) {
+      generateBackground(coverArt).then(setBlurredCover);
+    }
+  });
+
+  onCleanup(() => {
+    unsubscribe();
+  });
+
+  // initial blur
+  if (player.cover_art) {
+    generateBackground(player.cover_art).then(setBlurredCover);
+  }
 
   return (
     <overlay
       $={(self) => {
-        // Set measure overlay after the child is added
         if (measureBox) {
           self.set_measure_overlay(measureBox, true);
         }
@@ -24,10 +41,7 @@ function MusicBox({ player }: { player: Mpris.Player }) {
       <Gtk.ScrolledWindow $type="overlay">
         <Gtk.Picture
           cssClasses={["blurred-cover"]}
-          file={createBinding(
-            player,
-            "cover_art",
-          )((c) => Gio.file_new_for_path(generateBackground(c)))}
+          file={blurredCover((path) => Gio.file_new_for_path(path))}
           contentFit={Gtk.ContentFit.COVER}
         />
       </Gtk.ScrolledWindow>

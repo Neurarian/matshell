@@ -1,6 +1,6 @@
 import Mpris from "gi://AstalMpris";
 import GLib from "gi://GLib?version=2.0";
-import { createBinding } from "ags";
+import { createBinding, createExternal } from "ags";
 import { exec } from "ags/process";
 
 const mpris = Mpris.get_default();
@@ -75,14 +75,22 @@ export function filterActivePlayers(players: Mpris.Player[]) {
   });
 }
 
-export const hasActivePlayers = createBinding(
-  mpris,
-  "players",
-)((players: Mpris.Player[]) => filterActivePlayers(players).length > 0);
-export const firstActivePlayer = createBinding(
-  mpris,
-  "players",
-)((players: Mpris.Player[]) => {
+export const activePlayers = createExternal(mpris.get_players(), (set) => {
+  // poll players periodically as binding to "players" does not seem to work reliably
+  const interval = setInterval(() => {
+    set(mpris.get_players());
+  }, 1000);
+
+  return () => {
+    clearInterval(interval);
+  };
+});
+
+export const hasActivePlayers = activePlayers(
+  (players) => filterActivePlayers(players).length > 0,
+);
+
+export const firstActivePlayer = activePlayers((players) => {
   const active = filterActivePlayers(players);
   return active.length > 0 ? active[0] : null;
 });

@@ -1,4 +1,3 @@
-
 export enum CavaStyle {
   SMOOTH = 0,
   CATMULL_ROM = 1,
@@ -28,7 +27,7 @@ export const styleMap = {
 // Utility function to convert style value to enum
 export function getStyleEnum(styleValue: string | number | any): CavaStyle {
   if (typeof styleValue === "string") {
-    return styleMap[styleValue.toLowerCase()] || CavaStyle.CATMULL_ROM;
+    return styleMap[styleValue.toLowerCase()] ;
   } else if (typeof styleValue === "number") {
     return styleValue;
   }

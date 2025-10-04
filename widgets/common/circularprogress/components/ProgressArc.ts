@@ -1,333 +1,157 @@
 import { Gtk, Gdk } from "ags/gtk4";
-import GObject from "gi://GObject";
 import Gsk from "gi://Gsk";
 import Graphene from "gi://Graphene";
-import { ProgressArcGeometry } from "../types.ts";
+import { register, property } from "ags/gobject";
 
-// ProgressArc widget - handles the main progress arc drawing
-export const ProgressArcWidget = GObject.registerClass(
-  {
-    CssName: "progress",
-    Properties: {
-      center_x: GObject.ParamSpec.double(
-        "center_x",
-        "Center X",
-        "X coordinate of the center",
-        GObject.ParamFlags.READWRITE,
-        0,
-        10000,
-        0,
-      ),
-      center_y: GObject.ParamSpec.double(
-        "center_y",
-        "Center Y",
-        "Y coordinate of the center",
-        GObject.ParamFlags.READWRITE,
-        0,
-        10000,
-        0,
-      ),
-      delta: GObject.ParamSpec.double(
-        "delta",
-        "Delta",
-        "Radius of the arc",
-        GObject.ParamFlags.READWRITE,
-        0,
-        10000,
-        0,
-      ),
-      line_width: GObject.ParamSpec.double(
-        "line_width",
-        "Line Width",
-        "Width of the line",
-        GObject.ParamFlags.READWRITE,
-        0,
-        1000,
-        1,
-      ),
-      line_cap: GObject.ParamSpec.enum(
-        "line_cap",
-        "Line Cap",
-        "Line cap style",
-        GObject.ParamFlags.READWRITE,
-        Gsk.LineCap.$gtype,
-        Gsk.LineCap.BUTT,
-      ),
-      percentage: GObject.ParamSpec.double(
-        "percentage",
-        "Percentage",
-        "Progress percentage",
-        GObject.ParamFlags.READWRITE,
-        0,
-        1,
-        0,
-      ),
-      start_at: GObject.ParamSpec.double(
-        "start_at",
-        "Start At",
-        "Start angle",
-        GObject.ParamFlags.READWRITE,
-        -1,
-        1,
-        0,
-      ),
-      end_at: GObject.ParamSpec.double(
-        "end_at",
-        "End At",
-        "End angle",
-        GObject.ParamFlags.READWRITE,
-        -1,
-        1,
-        1,
-      ),
-      inverted: GObject.ParamSpec.boolean(
-        "inverted",
-        "Inverted",
-        "Whether progress is inverted",
-        GObject.ParamFlags.READWRITE,
-        false,
-      ),
-    },
-  },
-  // GTK4 widget methods are provided at runtime by GObject system. Ignore TS complaints.
-  class ProgressArcWidget extends Gtk.Widget {
-    private _center_x: number = 0;
-    private _center_y: number = 0;
-    private _delta: number = 0;
-    private _line_width: number = 1;
-    private _line_cap: Gsk.LineCap = Gsk.LineCap.BUTT;
-    private _percentage: number = 0;
-    private _start_at: number = 0;
-    private _end_at: number = 1;
-    private _inverted: boolean = false;
-    private _updating_geometry: boolean = false;
+@register({ GTypeName: "ProgressArc" })
+export class ProgressArcWidget extends Gtk.Widget {
+  static {
+    Gtk.Widget.set_css_name.call(this, "progress");
+  }
 
-    constructor() {
-      super();
-    }
+  @property(Number) centerX = 0;
+  @property(Number) centerY = 0;
+  @property(Number) delta = 0;
+  @property(Number) lineWidth = 1;
+  @property(Number) percentage = 0;
+  @property(Number) startAt = 0;
+  @property(Number) endAt = 1;
+  @property(Boolean) inverted = false;
 
-    public redraw(): void {
-      this.queue_draw();
-    }
+  private _lineCap: Gsk.LineCap = Gsk.LineCap.BUTT;
 
-    public update_geometry(geometry: ProgressArcGeometry): void {
-      if (this._updating_geometry) return;
+  get lineCap(): Gsk.LineCap {
+    return this._lineCap;
+  }
 
-      this._updating_geometry = true;
-      Object.assign(this, {
-        _center_x: geometry.center_x,
-        _center_y: geometry.center_y,
-        _delta: geometry.delta,
-        _line_width: geometry.line_width,
-        _line_cap: geometry.line_cap,
-        _percentage: geometry.percentage,
-        _start_at: geometry.start_at,
-        _end_at: geometry.end_at,
-        _inverted: geometry.inverted,
-      });
-      this._updating_geometry = false;
+  set lineCap(value: Gsk.LineCap) {
+    this._lineCap = value;
+    this.queue_draw();
+  }
 
-      this.queue_draw();
-    }
+  updateGeometry(
+    centerX: number,
+    centerY: number,
+    delta: number,
+    lineWidth: number,
+    lineCap: Gsk.LineCap,
+    startAt: number,
+    endAt: number,
+    inverted: boolean,
+    percentage: number,
+  ): void {
+    this.centerX = centerX;
+    this.centerY = centerY;
+    this.delta = delta;
+    this.lineWidth = lineWidth;
+    this._lineCap = lineCap;
+    this.startAt = startAt;
+    this.endAt = endAt;
+    this.inverted = inverted;
+    this.percentage = percentage;
+    this.queue_draw();
+  }
 
-    get center_x(): number {
-      return this._center_x;
-    }
-    set center_x(value: number) {
-      this._center_x = value;
-      this.notify("center_x");
-    }
+  vfunc_snapshot(snapshot: Gtk.Snapshot): void {
+    if (this.percentage <= 0) return;
 
-    get center_y(): number {
-      return this._center_y;
-    }
-    set center_y(value: number) {
-      this._center_y = value;
-      this.notify("center_y");
-    }
+    const color = this.getColor();
+    const startAngle = this.startAt * 2 * Math.PI;
+    const endAngle = this.endAt * 2 * Math.PI;
+    const sweepAngle = endAngle - startAngle;
 
-    get delta(): number {
-      return this._delta;
-    }
-    set delta(value: number) {
-      this._delta = value;
-      this.notify("delta");
-    }
+    const progressAngle = this.inverted
+      ? startAngle + this.percentage * sweepAngle
+      : startAngle - this.percentage * sweepAngle;
 
-    get line_width(): number {
-      return this._line_width;
-    }
-    set line_width(value: number) {
-      this._line_width = value;
-      this.notify("line_width");
-    }
+    const pathBuilder = new Gsk.PathBuilder();
+    const isCompleteArc = this.shouldDrawFullCircle(sweepAngle);
 
-    get line_cap(): Gsk.LineCap {
-      return this._line_cap;
-    }
-    set line_cap(value: Gsk.LineCap) {
-      this._line_cap = value;
-      this.notify("line_cap");
-    }
-
-    get percentage(): number {
-      return this._percentage;
-    }
-    set percentage(value: number) {
-      this._percentage = value;
-      this.notify("percentage");
-      this.redraw();
-    }
-
-    get start_at(): number {
-      return this._start_at;
-    }
-    set start_at(value: number) {
-      this._start_at = value;
-      this.notify("start_at");
-    }
-
-    get end_at(): number {
-      return this._end_at;
-    }
-    set end_at(value: number) {
-      this._end_at = value;
-      this.notify("end_at");
-    }
-
-    get inverted(): boolean {
-      return this._inverted;
-    }
-    set inverted(value: boolean) {
-      this._inverted = value;
-      this.notify("inverted");
-    }
-
-    vfunc_snapshot(snapshot: Gtk.Snapshot): void {
-      if (this._percentage <= 0) return;
-
-      const color = this.get_color();
-      const start_angle = this._start_at * 2 * Math.PI;
-      const end_angle = this._end_at * 2 * Math.PI;
-      const sweep_angle = end_angle - start_angle;
-
-      const progress_angle = this._inverted
-        ? start_angle + this._percentage * sweep_angle
-        : start_angle - this._percentage * sweep_angle;
-
-      const path_builder = new Gsk.PathBuilder();
-
-      const is_complete_arc = this.should_draw_full_circle(sweep_angle);
-
-      // Draw as pie or arc based on line width
-      if (this._line_width <= 0) {
-        if (is_complete_arc) {
-          this.draw_full_circle(path_builder);
-        } else {
-          this.draw_arc(
-            path_builder,
-            start_angle,
-            progress_angle,
-            sweep_angle,
-            true,
-          );
-        }
-        snapshot.append_fill(
-          path_builder.to_path(),
-          Gsk.FillRule.EVEN_ODD,
-          color,
-        );
+    if (this.lineWidth <= 0) {
+      if (isCompleteArc) {
+        this.drawFullCircle(pathBuilder);
       } else {
-        if (is_complete_arc) {
-          this.draw_full_circle(path_builder);
-        } else {
-          this.draw_arc(
-            path_builder,
-            start_angle,
-            progress_angle,
-            sweep_angle,
-            false,
-          );
-        }
-        const stroke = new Gsk.Stroke(this._line_width);
-        stroke.set_line_cap(this._line_cap);
-        snapshot.append_stroke(path_builder.to_path(), stroke, color);
+        this.drawArc(pathBuilder, startAngle, progressAngle, sweepAngle, true);
       }
-    }
-
-    // Helper methods
-    private should_draw_full_circle(sweep_angle: number): boolean {
-      const diff_abs = Math.abs(this._end_at - this._start_at);
-      const exceeds_full_circle =
-        diff_abs > 1 && this._percentage >= 1.0 - (diff_abs - 1);
-
-      return (
-        (this._percentage == 1.0 || exceeds_full_circle) &&
-        Math.abs(sweep_angle) >= 2 * Math.PI
-      );
-    }
-
-    private draw_full_circle(path_builder: Gsk.PathBuilder): void {
-      path_builder.add_circle(
-        new Graphene.Point({ x: this._center_x, y: this._center_y }),
-        this._delta,
-      );
-    }
-
-    private draw_arc(
-      path_builder: Gsk.PathBuilder,
-      start_angle: number,
-      progress_angle: number,
-      sweep_angle: number,
-      as_pie: boolean = false,
-    ): void {
-      const points = this.calculate_arc_points(start_angle, progress_angle);
-      const large_arc = Math.abs(this._percentage * sweep_angle) > Math.PI;
-
-      if (as_pie) {
-        path_builder.move_to(this._center_x, this._center_y);
-        path_builder.line_to(points.start_x, points.start_y);
+      snapshot.append_fill(pathBuilder.to_path(), Gsk.FillRule.EVEN_ODD, color);
+    } else {
+      if (isCompleteArc) {
+        this.drawFullCircle(pathBuilder);
       } else {
-        path_builder.move_to(points.start_x, points.start_y);
+        this.drawArc(pathBuilder, startAngle, progressAngle, sweepAngle, false);
       }
+      const stroke = new Gsk.Stroke(this.lineWidth);
+      stroke.set_line_cap(this._lineCap);
+      snapshot.append_stroke(pathBuilder.to_path(), stroke, color);
+    }
+  }
 
-      path_builder.svg_arc_to(
-        this._delta,
-        this._delta,
-        0.0,
-        large_arc,
-        this._inverted,
-        points.end_x,
-        points.end_y,
-      );
+  private shouldDrawFullCircle(sweepAngle: number): boolean {
+    const diffAbs = Math.abs(this.endAt - this.startAt);
+    const exceedsFullCircle =
+      diffAbs > 1 && this.percentage >= 1.0 - (diffAbs - 1);
+    return (
+      (this.percentage === 1.0 || exceedsFullCircle) &&
+      Math.abs(sweepAngle) >= 2 * Math.PI
+    );
+  }
 
-      if (as_pie) {
-        path_builder.line_to(this._center_x, this._center_y);
-        path_builder.close();
-      }
+  private drawFullCircle(pathBuilder: Gsk.PathBuilder): void {
+    pathBuilder.add_circle(
+      new Graphene.Point({ x: this.centerX, y: this.centerY }),
+      this.delta,
+    );
+  }
+
+  private drawArc(
+    pathBuilder: Gsk.PathBuilder,
+    startAngle: number,
+    progressAngle: number,
+    sweepAngle: number,
+    asPie: boolean = false,
+  ): void {
+    const points = this.calculateArcPoints(startAngle, progressAngle);
+    const largeArc = Math.abs(this.percentage * sweepAngle) > Math.PI;
+
+    if (asPie) {
+      pathBuilder.move_to(this.centerX, this.centerY);
+      pathBuilder.line_to(points.startX, points.startY);
+    } else {
+      pathBuilder.move_to(points.startX, points.startY);
     }
 
-    private calculate_arc_points(
-      start_angle: number,
-      progress_angle: number,
-    ): { start_x: number; start_y: number; end_x: number; end_y: number } {
-      return {
-        start_x: this._center_x + this._delta * Math.cos(start_angle),
-        start_y: this._center_y + this._delta * Math.sin(start_angle),
-        end_x: this._center_x + this._delta * Math.cos(progress_angle),
-        end_y: this._center_y + this._delta * Math.sin(progress_angle),
-      };
-    }
+    pathBuilder.svg_arc_to(
+      this.delta,
+      this.delta,
+      0.0,
+      largeArc,
+      this.inverted,
+      points.endX,
+      points.endY,
+    );
 
-    private get_color(): Gdk.RGBA {
-      const rgba = new Gdk.RGBA();
-      rgba.parse("#3584e4"); // Default color
-
-      const styleContext = this.get_style_context();
-      if (styleContext) {
-        return styleContext.get_color();
-      }
-      return rgba;
+    if (asPie) {
+      pathBuilder.line_to(this.centerX, this.centerY);
+      pathBuilder.close();
     }
-  },
-);
+  }
+
+  private calculateArcPoints(
+    startAngle: number,
+    progressAngle: number,
+  ): { startX: number; startY: number; endX: number; endY: number } {
+    return {
+      startX: this.centerX + this.delta * Math.cos(startAngle),
+      startY: this.centerY + this.delta * Math.sin(startAngle),
+      endX: this.centerX + this.delta * Math.cos(progressAngle),
+      endY: this.centerY + this.delta * Math.sin(progressAngle),
+    };
+  }
+
+  private getColor(): Gdk.RGBA {
+    const rgba = new Gdk.RGBA();
+    rgba.parse("#3584e4");
+    const styleContext = this.get_style_context();
+    return styleContext ? styleContext.get_color() : rgba;
+  }
+}

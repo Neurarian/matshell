@@ -36,7 +36,7 @@ export function createParticleState(): ParticleState {
 export function createWaterfallState(): WaterfallState {
   return {
     historyFrames: [],
-    maxHistoryFrames: 16, // Increased for smoother vertical transition
+    maxHistoryFrames: 30, // Increased for smoother vertical transition
     transitionAlpha: 0.3, // Controls how quickly new frames blend in
   };
 }

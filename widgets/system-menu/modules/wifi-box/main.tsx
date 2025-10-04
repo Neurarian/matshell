@@ -113,18 +113,15 @@ export const WiFiBox = () => {
             }
           });
 
-          const windowListener = (app as any).connect(
-            "window-toggled",
-            (_, window) => {
-              if (
-                window.name === "system-menu" &&
-                !window.visible &&
-                isExpanded.get()
-              ) {
-                setIsExpanded(false);
-              }
-            },
-          );
+          const windowListener = app.connect("window-toggled", (_, window) => {
+            if (
+              window.name === "system-menu" &&
+              !window.visible &&
+              isExpanded.get()
+            ) {
+              setIsExpanded(false);
+            }
+          });
 
           onCleanup(() => {
             scanTimer.get()?.cancel();
@@ -240,15 +237,11 @@ export const WiFiBox = () => {
               cssClasses={["settings-button"]}
               halign={Gtk.Align.END}
               hexpand={false}
-              visible={options[
-                "system-menu.modules.wifi-advanced.enable"
-              ]((value) => Boolean(value))}
+              visible={options["system-menu.modules.wifi-advanced.enable"](
+                (value) => Boolean(value),
+              )}
               onClicked={() => {
-                execAsync([
-                  "sh",
-                  "-c",
-                  String(options["app.wifi"].get()),
-                ]);
+                execAsync(["sh", "-c", String(options["app.wifi"].get())]);
                 setIsExpanded(false);
               }}
             >

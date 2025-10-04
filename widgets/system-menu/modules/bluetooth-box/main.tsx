@@ -26,9 +26,7 @@ export const BluetoothBox = () => {
             "is_powered",
           )((powered) => (powered ? ["button"] : ["button-disabled"]))}
         >
-          <image
-            iconName={bluetoothIcon}
-          />
+          <image iconName={bluetoothIcon} />
         </button>
         <button
           hexpand={true}
@@ -70,18 +68,15 @@ export const BluetoothBox = () => {
           }
         }}
         $={(self) => {
-          const windowListener = (app as any).connect(
-            "window-toggled",
-            (_, window) => {
-              if (
-                window.name === "system-menu" &&
-                !window.visible &&
-                isExpanded.get()
-              ) {
-                setIsExpanded(false);
-              }
-            },
-          );
+          const windowListener = app.connect("window-toggled", (_, window) => {
+            if (
+              window.name === "system-menu" &&
+              !window.visible &&
+              isExpanded.get()
+            ) {
+              setIsExpanded(false);
+            }
+          });
 
           onCleanup(() => {
             app.disconnect(windowListener);

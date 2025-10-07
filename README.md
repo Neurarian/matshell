@@ -181,7 +181,7 @@ output_path = "~/.config/hypr/hyprlock_colors.conf"
 
 #### ❄️ Nix
 
-You can generally test out matshell via the flake exposed package `nix run github:Neurarian/matshell`. To integrate matshell into your home-manager config you can enable dedicated options from the module:
+You can generally test out matshell via the flake exposed package `nix run github:Neurarian/matshell` (`nix run github:Neurarian/matshell#matshell-river` for the River version). To integrate matshell into your home-manager config you can enable dedicated options from the module:
 
 ```nix
 # ...
@@ -195,6 +195,8 @@ programs.matshell= {
   enable = true; 
   # Enable a systemd service for matshell
   autostart = true;
+  # Compositor you are using. Defaults to hyprland.
+  compositor = "hyprland";
   # This sets up the entire matugen config & templates.
   # If you already have matugen set up you may want to omit this.
   # To use the hyprland/hyprlock templates, you would still need to

@@ -1,7 +1,7 @@
 self: inputs: {
   config,
-  system,
   lib,
+  pkgs,
   ...
 }: let
   cfg = config.programs.matshell;
@@ -11,34 +11,41 @@ in {
   ];
 
   options = {
-    # Use own namespace for bundled app now
     programs.matshell = {
-      enable = lib.mkEnableOption "MatShell desktop shell (bundled version)";
+      enable = lib.mkEnableOption "matshell desktop shell";
+
+      compositor = lib.mkOption {
+        type = lib.types.enum ["hyprland" "river"];
+        default = "hyprland";
+        description = "Which Wayland compositor to build matshell for.";
+      };
 
       package = lib.mkOption {
         type = lib.types.package;
-        default = self.packages.${system}.default;
-        description = "The bundled MatShell package to use.";
+        default =
+          if cfg.compositor == "river"
+          then self.packages.${pkgs.stdenv.hostPlatform.system}.matshell-river
+          else self.packages.${pkgs.stdenv.hostPlatform.system}.matshell-hyprland;
+        description = "The bundled matshell package to install.";
       };
+    };
 
-      autostart = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Whether to start MatShell automatically.";
-      };
+    autostart = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Whether to start matshell automatically.";
+    };
 
-      matugenConfig = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Generate required matugen templates & config.";
-      };
+    matugenConfig = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Generate required matugen templates & config.";
     };
   };
 
   config = lib.mkIf cfg.enable {
     home.packages = [cfg.package];
 
-    # Systemd service for matshell autostart
     systemd.user.services.matshell = lib.mkIf cfg.autostart {
       Unit = {
         Description = "Matshell";

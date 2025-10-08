@@ -44,9 +44,9 @@ export class CircularProgressBarWidget extends Gtk.Widget {
   @property(FillRuleSpec) fillRule = Gsk.FillRule.EVEN_ODD;
 
   private _child: Gtk.Widget | null = null;
-  private _progressArc!: ProgressArcWidget;
-  private _centerFill!: CenterFillWidget;
-  private _radiusFill!: RadiusFillWidget;
+  private _progressArc: ProgressArcWidget;
+  private _centerFill: CenterFillWidget;
+  private _radiusFill: RadiusFillWidget;
 
   constructor(params?: any) {
     const {
@@ -90,16 +90,6 @@ export class CircularProgressBarWidget extends Gtk.Widget {
     if (percentage !== undefined && typeof percentage === "number") {
       this.percentage = percentage;
     }
-  }
-
-
-  vfunc_dispose(): void {
-    this._progressArc?.unparent();
-    this._centerFill?.unparent();
-    this._radiusFill?.unparent();
-    this._child?.unparent();
-
-    super.vfunc_dispose();
   }
 
   get child(): Gtk.Widget | null {

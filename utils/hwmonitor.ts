@@ -1,11 +1,11 @@
-import GObject, { register, property, getter, signal } from "ags/gobject";
+import GObject, { register, property, signal } from "ags/gobject";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio";
 import GTop from "gi://GTop";
 import { readFileAsync } from "ags/file";
 import { execAsync } from "ags/process";
 
-interface DiskInfo {
+export interface DiskInfo {
   mountPoint: string;
   utilization: number;
   used: string;
@@ -55,10 +55,13 @@ export default class SystemMonitor extends GObject.Object {
   @property(Number) cpuLoad = 0;
   @property(Number) cpuFrequency = 0;
   @property(Number) cpuTemperature = 0;
+  @property(Number) cpuUsagePercent = 0;
   @property(Number) memoryUtilization = 0;
+  @property(Number) memoryUsagePercent = 0;
   @property(String) memoryUsed = "0 B";
   @property(String) memoryTotal = "0 B";
   @property(Number) swapUtilization = 0;
+  @property(Number) swapUsagePercent = 0;
   @property(String) swapUsed = "0 B";
   @property(String) swapTotal = "0 B";
 
@@ -67,24 +70,35 @@ export default class SystemMonitor extends GObject.Object {
   @property(Number) loadAverage5 = 0;
   @property(Number) loadAverage15 = 0;
   @property(Number) uptime = 0;
+  @property(String) uptimeFormatted = "0m";
   @property(Number) processCount = 0;
 
   // Network
   @property(Number) networkDownloadSpeed = 0;
   @property(Number) networkUploadSpeed = 0;
   @property(String) networkInterface = "";
+  @property(String) networkDownloadFormatted = "0 B/s";
+  @property(String) networkUploadFormatted = "0 B/s";
 
   // GPU
   @property(Number) gpuUtilization = 0;
   @property(Number) gpuMemoryUsed = 0;
   @property(Number) gpuMemoryTotal = 0;
   @property(Number) gpuTemperature = 0;
+  @property(Number) gpuUtilizationPercent = 0;
+  @property(String) gpuMemoryUsedFormatted = "0 B";
+  @property(String) gpuMemoryTotalFormatted = "0 B";
+  @property(Number) gpuMemoryUtilizationPercent = 0;
 
   // Disk
   @property(Object) disks: DiskInfo[] = [];
   @property(Number) diskUtilization = 0;
+  @property(Number) diskUsagePercent = 0;
   @property(String) diskUsed = "0 B";
   @property(String) diskTotal = "0 B";
+  @property(Number) totalDiskUtilization = 0;
+  @property(Number) totalDiskUtilizationPercent = 0;
+
 
   // Signals
   @signal([Number], GObject.TYPE_NONE, { default: false })
@@ -314,6 +328,7 @@ export default class SystemMonitor extends GObject.Object {
 
     this.cpuLoad =
       diffTotal > 0 ? Math.min(1, Math.max(0, diffUsed / diffTotal)) : 0;
+    this.cpuUsagePercent = Math.round(this.cpuLoad * 100);
 
     this.#lastCpuUsed = currentUsed;
     this.#lastCpuTotal = currentTotal;
@@ -330,7 +345,6 @@ export default class SystemMonitor extends GObject.Object {
     }
   }
 
-  // GTop does not provide this
   private async updateCpuTemperature(): Promise<void> {
     if (!this.#cpuTempPath) return;
 
@@ -346,6 +360,7 @@ export default class SystemMonitor extends GObject.Object {
     GTop.glibtop_get_mem(this.#memory);
     this.memoryUtilization = this.#memory.user / this.#memory.total;
     this.memoryUsed = this.formatBytes(this.#memory.user);
+    this.memoryUsagePercent = Math.round(this.memoryUtilization * 100);
   }
 
   private updateSwapMetrics(): void {
@@ -357,6 +372,7 @@ export default class SystemMonitor extends GObject.Object {
       this.swapUtilization = 0;
       this.swapUsed = "0 B";
     }
+    this.swapUsagePercent = Math.round(this.swapUtilization * 100);
   }
 
   private updateNetworkMetrics(): void {
@@ -373,6 +389,8 @@ export default class SystemMonitor extends GObject.Object {
         (currentBytesIn - this.#lastNetBytesIn) / intervalSec;
       this.networkUploadSpeed =
         (currentBytesOut - this.#lastNetBytesOut) / intervalSec;
+      this.networkDownloadFormatted = `${this.formatBytes(this.networkDownloadSpeed)}/s`;
+      this.networkUploadFormatted = `${this.formatBytes(this.networkUploadSpeed)}/s`;
 
       this.#lastNetBytesIn = currentBytesIn;
       this.#lastNetBytesOut = currentBytesOut;
@@ -391,6 +409,19 @@ export default class SystemMonitor extends GObject.Object {
   private updateUptime(): void {
     GTop.glibtop_get_uptime(this.#uptime);
     this.uptime = Math.floor(this.#uptime.uptime);
+
+    // Update formatted uptime
+    const days = Math.floor(this.uptime / 86400);
+    const hours = Math.floor((this.uptime % 86400) / 3600);
+    const minutes = Math.floor((this.uptime % 3600) / 60);
+
+    if (days > 0) {
+      this.uptimeFormatted = `${days}d ${hours}h ${minutes}m`;
+    } else if (hours > 0) {
+      this.uptimeFormatted = `${hours}h ${minutes}m`;
+    } else {
+      this.uptimeFormatted = `${minutes}m`;
+    }
   }
 
   private updateProcessCount(): void {
@@ -414,6 +445,13 @@ export default class SystemMonitor extends GObject.Object {
         this.gpuMemoryUsed = memUsed * 1024 * 1024;
         this.gpuMemoryTotal = memTotal * 1024 * 1024;
         this.gpuTemperature = temp;
+        this.gpuUtilizationPercent = Math.round(this.gpuUtilization * 100);
+        this.gpuMemoryUsedFormatted = this.formatBytes(this.gpuMemoryUsed);
+        this.gpuMemoryTotalFormatted = this.formatBytes(this.gpuMemoryTotal);
+        this.gpuMemoryUtilizationPercent =
+          this.gpuMemoryTotal > 0
+            ? Math.round((this.gpuMemoryUsed / this.gpuMemoryTotal) * 100)
+            : 0;
       } catch (error) {
         console.error("Nvidia GPU monitoring failed:", error);
       }
@@ -421,6 +459,7 @@ export default class SystemMonitor extends GObject.Object {
       try {
         const gpuBusy = await readFileAsync(this.#gpuBusyPath);
         this.gpuUtilization = parseInt(gpuBusy.trim()) / 100;
+        this.gpuUtilizationPercent = Math.round(this.gpuUtilization * 100);
 
         if (this.#gpuMemUsedPath && this.#gpuMemTotalPath) {
           try {
@@ -428,6 +467,16 @@ export default class SystemMonitor extends GObject.Object {
             const memTotal = await readFileAsync(this.#gpuMemTotalPath);
             this.gpuMemoryUsed = parseInt(memUsed.trim());
             this.gpuMemoryTotal = parseInt(memTotal.trim());
+
+            // Update derived properties
+            this.gpuMemoryUsedFormatted = this.formatBytes(this.gpuMemoryUsed);
+            this.gpuMemoryTotalFormatted = this.formatBytes(
+              this.gpuMemoryTotal,
+            );
+            this.gpuMemoryUtilizationPercent =
+              this.gpuMemoryTotal > 0
+                ? Math.round((this.gpuMemoryUsed / this.gpuMemoryTotal) * 100)
+                : 0;
           } catch (error) {
             console.warn("AMD GPU memory read failed:", error);
           }
@@ -496,6 +545,19 @@ export default class SystemMonitor extends GObject.Object {
 
       this.disks = disks;
 
+      // Calculate total disk utilization across all disks
+      if (disks.length > 0) {
+        const totalUsed = disks.reduce((sum, d) => sum + d.usedBytes, 0);
+        const totalSize = disks.reduce((sum, d) => sum + d.totalBytes, 0);
+        this.totalDiskUtilization = totalSize > 0 ? totalUsed / totalSize : 0;
+        this.totalDiskUtilizationPercent = Math.round(
+          this.totalDiskUtilization * 100,
+        );
+      } else {
+        this.totalDiskUtilization = 0;
+        this.totalDiskUtilizationPercent = 0;
+      }
+
       // Special treatment for home fs
       const homeDir = GLib.get_home_dir();
       const homeDisk = disks
@@ -506,11 +568,13 @@ export default class SystemMonitor extends GObject.Object {
         this.diskUtilization = homeDisk.utilization;
         this.diskUsed = homeDisk.used;
         this.diskTotal = homeDisk.total;
+        this.diskUsagePercent = Math.round(this.diskUtilization * 100);
       }
     } catch (error) {
       console.error("Disk space update failed:", error);
     }
   }
+
   private checkThresholds(): void {
     if (this.cpuLoad > SystemMonitor.HIGH_CPU_THRESHOLD) {
       this.emit("high-cpu-usage", this.cpuLoad);
@@ -542,90 +606,11 @@ export default class SystemMonitor extends GObject.Object {
     return this.calculateCpuUsed(cpu) + cpu.idle + cpu.iowait;
   }
 
-  private formatBytes(bytes: number): string {
+  formatBytes(bytes: number): string {
     if (bytes === 0) return "0 B";
     const units = ["B", "KB", "MB", "GB", "TB"];
     const exp = Math.floor(Math.log(bytes) / Math.log(1024));
     const value = bytes / Math.pow(1024, exp);
     return `${Math.round(value * 100) / 100} ${units[exp]}`;
-  }
-
-  @getter(Number)
-  get cpuUsagePercent(): number {
-    return Math.round(this.cpuLoad * 100);
-  }
-
-  @getter(Number)
-  get memoryUsagePercent(): number {
-    return Math.round(this.memoryUtilization * 100);
-  }
-
-  @getter(Number)
-  get swapUsagePercent(): number {
-    return Math.round(this.swapUtilization * 100);
-  }
-
-  @getter(String)
-  get uptimeFormatted(): string {
-    const days = Math.floor(this.uptime / 86400);
-    const hours = Math.floor((this.uptime % 86400) / 3600);
-    const minutes = Math.floor((this.uptime % 3600) / 60);
-
-    if (days > 0) {
-      return `${days}d ${hours}h ${minutes}m`;
-    } else if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else {
-      return `${minutes}m`;
-    }
-  }
-
-  @getter(String)
-  get networkDownloadFormatted(): string {
-    return `${this.formatBytes(this.networkDownloadSpeed)}/s`;
-  }
-
-  @getter(String)
-  get networkUploadFormatted(): string {
-    return `${this.formatBytes(this.networkUploadSpeed)}/s`;
-  }
-
-  @getter(Number)
-  get gpuUtilizationPercent(): number {
-    return Math.round(this.gpuUtilization * 100);
-  }
-
-  @getter(String)
-  get gpuMemoryUsedFormatted(): string {
-    return this.formatBytes(this.gpuMemoryUsed);
-  }
-
-  @getter(String)
-  get gpuMemoryTotalFormatted(): string {
-    return this.formatBytes(this.gpuMemoryTotal);
-  }
-
-  @getter(Number)
-  get gpuMemoryUtilizationPercent(): number {
-    if (this.gpuMemoryTotal === 0) return 0;
-    return Math.round((this.gpuMemoryUsed / this.gpuMemoryTotal) * 100);
-  }
-
-  @getter(Number)
-  get diskUsagePercent(): number {
-    return Math.round(this.diskUtilization * 100);
-  }
-
-  @getter(Number)
-  get totalDiskUtilization(): number {
-    if (this.disks.length === 0) return 0;
-    const totalUsed = this.disks.reduce((sum, d) => sum + d.usedBytes, 0);
-    const totalSize = this.disks.reduce((sum, d) => sum + d.totalBytes, 0);
-    return totalSize > 0 ? totalUsed / totalSize : 0;
-  }
-
-  @getter(Number)
-  get totalDiskUtilizationPercent(): number {
-    return Math.round(this.totalDiskUtilization * 100);
   }
 }

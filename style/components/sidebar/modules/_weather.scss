@@ -8,10 +8,7 @@
   .current-weather {
     .current-icon {
       @include material-icon(100px);
-      min-width: 72px;
-      min-height: 72px;
       color: $fg;
-      margin-bottom: 0.5rem;
     }
 
     .weather-temp {

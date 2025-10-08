@@ -1,0 +1,194 @@
+@use "sass:color";
+@use "../variables" as *;
+@use "../theme_variables_matugen" as *;
+@use "./_typography.scss" as *;
+
+// Hyprland workspace
+@mixin hypr-workspace-style($bg-color, $hover-color) {
+  background: $bg-color;
+  box-shadow: inset -2px -2px 2px color.scale($bg-color, $lightness: -25%);
+
+  &:hover {
+    background: $hover-color;
+    box-shadow: inset -2px -2px 2px color.scale($hover-color, $lightness: -25%);
+  }
+}
+
+// Hardware monitor circular progress base
+@mixin hw-circular-progress {
+  margin-right: 0.4rem;
+  margin-left: 0.3rem;
+
+  circularprogress {
+    progress {
+      color: $ramProc;
+      min-width: 2.3rem;
+    }
+    radius {
+      color: color.adjust($procBg, $alpha: -0.5);
+    }
+  }
+
+  button label {
+    font-family: "Material Symbols Outlined";
+  }
+}
+
+// Complete hardware monitor box
+@mixin hw-monitor-box(
+  $color,
+  $label-margin: 1px 0px 0px 2px,
+  $font-size: 1.2rem
+) {
+  @include hw-circular-progress;
+
+  circularprogress progress {
+    color: $color;
+  }
+
+  button label {
+    margin: $label-margin;
+    font-size: $font-size;
+  }
+}
+
+@mixin option-row {
+  background: color.adjust($barBg, $lightness: if($darkmode, 2%, -2%));
+  border: 1px solid color.adjust($fg, $alpha: -0.9);
+  border-radius: calc(#{$round} * 2);
+  padding: $spacing-sm $spacing-md;
+  margin: $spacing-xs 0;
+
+  @if not $darkmode {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+}
+
+@mixin toggle-switch {
+  border-radius: 5rem;
+  padding: 0.1rem;
+  background-color: color.adjust($fg, $alpha: -0.9);
+
+  @if not $darkmode {
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  slider {
+    border-radius: 1.5rem;
+    transition: all 200ms ease;
+    margin: 0.2rem;
+
+    @if $darkmode {
+      background-color: color.adjust($fg, $alpha: -0.7);
+    } @else {
+      background-color: $buttonDisabled;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  &:checked {
+    background-color: $buttonEnabled;
+
+    slider {
+      background-color: color.adjust($primary, $alpha: -0.3);
+    }
+  }
+}
+
+@mixin hw-circular-progress-theme($progress-color, $radius-color: null) {
+  circularprogress {
+    progress {
+      color: $progress-color;
+    }
+    radius {
+      color: if($radius-color, $radius-color, color.adjust($fg, $alpha: -0.9));
+    }
+  }
+}
+
+@mixin progress-bar(
+  $orientation: vertical,
+  $color: null,
+  $min-size: 6.5rem,
+  $bar-width: 0.6rem
+) {
+  @if $orientation == vertical {
+    min-height: $min-size;
+    min-width: $bar-width;
+  } @else {
+    min-width: $min-size;
+    min-height: $bar-width;
+  }
+  margin: $spacing-xs 0;
+
+  trough {
+    background: color.adjust($fg, $alpha: -0.9);
+    border-radius: $round;
+  }
+
+  block.filled {
+    border-radius: $round;
+    @if $color {
+      background: $color;
+    }
+  }
+}
+
+@mixin metric-label($font-scale: 0.7, $weight: 600, $color: $outline) {
+  font-size: calc(#{$font} * #{$font-scale});
+  font-weight: $weight;
+  color: $color;
+  letter-spacing: 0.05em;
+}
+
+@mixin metric-detail($font-scale: 0.75, $weight: 500, $color: $fg) {
+  font-size: calc(#{$font} * #{$font-scale});
+  font-family: monospace;
+  font-weight: $weight;
+  color: $color;
+}
+
+@mixin vertical-metric-container($min-width: 5.5rem) {
+  border-radius: $round;
+  min-width: $min-width;
+}
+
+@mixin nav-button(
+  $enabled-bg: $buttonEnabled,
+  $disabled-bg: transparent,
+  $disabled-hover-bg: $buttonDisabledHover
+) {
+  border-radius: $round2;
+  padding: $spacing-xs;
+  margin: 0 $spacing-xs;
+
+  box {
+    .nav-icon {
+      @include material-icon;
+      opacity: 0.7;
+    }
+
+    .nav-label {
+      font-size: calc(#{$font} * 0.9);
+      font-weight: 500;
+      opacity: 0.7;
+    }
+  }
+
+  &.button {
+    background: $enabled-bg;
+
+    .nav-icon,
+    .nav-label {
+      opacity: 1;
+    }
+  }
+
+  &.button-disabled {
+    background-color: $disabled-bg;
+
+    &:hover {
+      background-color: $disabled-hover-bg;
+    }
+  }
+}

@@ -5,6 +5,8 @@
 @use "./modules/settings.scss";
 @use "./modules/weather.scss";
 @use "./modules/widgets.scss";
+@use "./modules/hardware.scss";
+
 
 .sidebar {
   @include window;

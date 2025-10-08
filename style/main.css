@@ -13,7 +13,7 @@
 * {
   all: unset;
   font-family: FiraCode Nerd Font;
-  color: rgb(249, 220, 212);
+  color: rgb(249, 220, 213);
   text-shadow: 0 2px 3px rgba(30, 16, 12, 0.2);
 }
 
@@ -39,7 +39,7 @@ scale trough {
 }
 scale highlight,
 scale progress {
-  background: rgba(249, 220, 212, 0.75);
+  background: rgba(249, 220, 213, 0.75);
   border-radius: 0.5rem;
   margin: 0 calc(0px - 0.5rem / 2);
   min-height: 0.5rem;
@@ -54,14 +54,16 @@ popover {
 popover modelbutton {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 212, 0.1);
+  border: 1px solid rgba(249, 220, 213, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border-radius: 0;
-  padding: 0.4rem 0.7rem;
 }
 popover modelbutton:hover {
   background: rgba(71, 53, 48, 0.99);
+}
+popover modelbutton {
+  border-radius: 0;
+  padding: 0.4rem 0.7rem;
 }
 popover modelbutton:first-child {
   border-radius: 8px 8px 0 0;
@@ -88,7 +90,7 @@ popover modelbutton:only-child {
 .button-disabled {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 212, 0.1);
+  border: 1px solid rgba(249, 220, 213, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
 }
@@ -104,12 +106,6 @@ popover modelbutton:only-child {
 .Bar {
   border-radius: calc(8px * 4);
   font-size: 1.1rem;
-  /* OS Icon */
-  /* Hyperland */
-  /* music */
-  /* tray */
-  /* hw-monitor */
-  /* System menu */
 }
 .Bar cava {
   opacity: 0.1;
@@ -118,14 +114,19 @@ popover modelbutton:only-child {
 .Bar .module {
   margin: 0 0.4rem;
 }
+.Bar {
+  /* OS Icon */
+}
 .Bar .OsIcon {
   -gtk-icon-size: 2rem;
   margin-left: 0.8rem;
-  margin-right: -0.5rem;
   color: rgb(220, 193, 185);
 }
+.Bar {
+  /* Hyperland */
+}
 .Bar .Workspaces {
-  margin: 0.4rem 0.8rem;
+  margin: 0.4rem 0;
 }
 .Bar .Workspaces button {
   background: rgba(0, 0, 0, 0.3);
@@ -148,12 +149,12 @@ popover modelbutton:only-child {
   box-shadow: inset -2px -2px 2px rgb(169.6369565217, 93.0831521739, 66.2380434783);
 }
 .Bar .Workspaces .monitor1 {
-  background: rgb(177.5, 142, 95);
-  box-shadow: inset -2px -2px 2px rgb(137.6842105263, 107.1355263158, 66.6907894737);
+  background: rgb(177.5, 142, 95.5);
+  box-shadow: inset -2px -2px 2px rgb(137.7958860759, 107.1265822785, 66.9541139241);
 }
 .Bar .Workspaces .monitor1:hover {
-  background: rgb(208.5, 173.6, 130.2);
-  box-shadow: inset -2px -2px 2px rgb(185.0690017513, 133.3149299475, 68.9559982487);
+  background: rgb(208.5, 173.6, 130.9);
+  box-shadow: inset -2px -2px 2px rgb(185.1679660023, 133.0941383353, 69.3820339977);
 }
 .Bar .Workspaces .monitor2 {
   background: rgb(145.8, 109.4, 83.9);
@@ -170,6 +171,9 @@ popover modelbutton:only-child {
 .Bar .Workspaces .monitor3:hover {
   background: rgb(148.6, 106.15, 76.65);
   box-shadow: inset -2px -2px 2px rgb(111.45, 79.6125, 57.4875);
+}
+.Bar {
+  /* music */
 }
 .Bar .Media > box {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
@@ -191,6 +195,9 @@ popover modelbutton:only-child {
   min-height: 2rem;
   margin: 0.1rem 0.4rem;
 }
+.Bar {
+  /* tray */
+}
 .Bar .SysTray {
   background: none;
 }
@@ -205,6 +212,9 @@ popover modelbutton:only-child {
 }
 .Bar .SysTray.active {
   background: rgba(71, 53, 48, 0.6);
+}
+.Bar {
+  /* hw-monitor */
 }
 .Bar .bar-hw-ram-box {
   margin-right: 0.4rem;
@@ -247,6 +257,9 @@ popover modelbutton:only-child {
 .Bar .bar-hw-cpu-box button label {
   margin: 1px 0px 0px 1px;
   font-size: 1.3rem;
+}
+.Bar {
+  /* System menu */
 }
 .Bar .system-menu-toggler box {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
@@ -330,14 +343,16 @@ box.picker box.search entry menu separator {
 box.picker box.search entry menu menuitem {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 212, 0.1);
+  border: 1px solid rgba(249, 220, 213, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border-radius: 0;
-  padding: 0.4rem 0.7rem;
 }
 box.picker box.search entry menu menuitem:hover {
   background: rgba(71, 53, 48, 0.99);
+}
+box.picker box.search entry menu menuitem {
+  border-radius: 0;
+  padding: 0.4rem 0.7rem;
 }
 box.picker box.search entry menu menuitem:first-child {
   border-radius: 8px 8px 0 0;
@@ -355,12 +370,12 @@ box.picker box.results-list {
   margin: 0.4rem;
   padding: 0.4rem;
 }
-box.picker box.results-list .app-button {
-  padding: 0.4rem;
-}
 box.picker box.results-list .app-button .action-icon {
   font-family: "Material Symbols Outlined";
   font-size: 24px;
+}
+box.picker box.results-list .app-button {
+  padding: 0.4rem;
 }
 box.picker box.results-list .app-button image {
   -gtk-icon-size: 3rem;
@@ -372,28 +387,30 @@ box.picker box.results-list .app-button label.name {
   font-size: 1.1rem;
 }
 box.picker box.results-list .app-button label.description {
-  color: rgba(249, 220, 212, 0.8);
+  color: rgba(249, 220, 213, 0.8);
 }
-box.picker box.results-list .app-button:focus, box.picker box.results-list .app-button:hover {
+box.picker box.results-list .app-button:focus, box.picker box.results-list .app-button:hover, box.picker box.results-list .app-button.selected {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(255, 181, 158, 0.2);
   border: 1px solid rgba(255, 181, 158, 0.3);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
+}
+box.picker box.results-list .app-button:focus:hover, box.picker box.results-list .app-button:hover:hover, box.picker box.results-list .app-button.selected:hover {
+  background: rgba(255, 181, 158, 0.3);
+}
+box.picker box.results-list .app-button:focus, box.picker box.results-list .app-button:hover, box.picker box.results-list .app-button.selected {
   background-color: rgba(255, 181, 158, 0.3);
   border: transparent;
 }
-box.picker box.results-list .app-button:focus:hover, box.picker box.results-list .app-button:hover:hover {
-  background: rgba(255, 181, 158, 0.3);
+box.picker box.results-list .action-button .action-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 24px;
 }
 box.picker box.results-list .action-button {
   margin-bottom: 0;
   border-radius: 5rem;
   padding: 0 0.6rem;
-}
-box.picker box.results-list .action-button .action-icon {
-  font-family: "Material Symbols Outlined";
-  font-size: 24px;
 }
 box.picker box.results-list .action-button:focus, box.picker box.results-list .action-button:hover {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
@@ -401,13 +418,15 @@ box.picker box.results-list .action-button:focus, box.picker box.results-list .a
   border: 1px solid rgba(255, 181, 158, 0.3);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
+}
+box.picker box.results-list .action-button:focus:hover, box.picker box.results-list .action-button:hover:hover {
+  background: rgba(255, 181, 158, 0.3);
+}
+box.picker box.results-list .action-button:focus, box.picker box.results-list .action-button:hover {
   background-color: rgba(255, 181, 158, 0.3);
   border: transparent;
   border-radius: 5rem;
   padding: 0 0.6rem;
-}
-box.picker box.results-list .action-button:focus:hover, box.picker box.results-list .action-button:hover:hover {
-  background: rgba(255, 181, 158, 0.3);
 }
 box.picker box.results-grid {
   border-radius: calc(16px - 0.4rem - 2px);
@@ -415,6 +434,39 @@ box.picker box.results-grid {
   background: rgba(71, 53, 48, 0.6);
   margin: 0.4rem;
   padding: 0.4rem;
+}
+box.picker box.results-grid .wallpaper-thumbnail {
+  border-radius: calc(16px - 0.4rem - 2px);
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  padding: 0.5rem;
+  background-color: transparent;
+  border: 1px solid transparent;
+}
+box.picker box.results-grid .wallpaper-thumbnail:hover, box.picker box.results-grid .wallpaper-thumbnail:focus, box.picker box.results-grid .wallpaper-thumbnail.selected {
+  background-color: rgba(249, 220, 213, 0.1);
+  border-color: rgba(249, 220, 213, 0.3);
+}
+box.picker box.results-grid .wallpaper-thumbnail box.wallpaper-preview-container {
+  border-radius: calc(16px - 0.4rem - 2px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  min-width: 140px;
+  min-height: 100px;
+  background-color: rgba(249, 220, 213, 0.1);
+}
+box.picker box.results-grid .wallpaper-thumbnail .wallpaper-picture {
+  border-radius: calc(16px - 0.4rem - 2px);
+}
+box.picker box.results-grid .wallpaper-thumbnail box.wallpaper-placeholder {
+  border-radius: calc(16px - 0.4rem - 2px);
+  background-color: rgba(255, 255, 255, 0.1);
+  min-width: 140px;
+  min-height: 100px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+box.picker box.results-grid .wallpaper-thumbnail .wallpaper-name {
+  color: rgba(249, 220, 213, 0.9);
+  margin-top: 0.25rem;
+  font-weight: 500;
 }
 box.picker box.results-grid box.wallpaper-content {
   padding: 0.5rem;
@@ -427,10 +479,10 @@ box.picker box.not-found {
 }
 box.picker box.not-found image {
   -gtk-icon-size: 6rem;
-  color: rgba(249, 220, 212, 0.7);
+  color: rgba(249, 220, 213, 0.7);
 }
 box.picker box.not-found label {
-  color: rgba(249, 220, 212, 0.9);
+  color: rgba(249, 220, 213, 0.9);
   font-size: 1.2em;
 }
 
@@ -454,40 +506,6 @@ box.picker box.not-found label {
   transition: all 0.2s ease;
 }
 
-button.wallpaper-thumbnail {
-  border-radius: calc(16px - 0.4rem - 2px);
-  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  padding: 0.5rem;
-  background-color: transparent;
-  border: 1px solid transparent;
-}
-button.wallpaper-thumbnail:hover, button.wallpaper-thumbnail:focus {
-  background-color: rgba(249, 220, 212, 0.1);
-  border-color: rgba(249, 220, 212, 0.3);
-}
-button.wallpaper-thumbnail box.wallpaper-preview-container {
-  border-radius: calc(16px - 0.4rem - 2px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  min-width: 140px;
-  min-height: 100px;
-  background-color: rgba(249, 220, 212, 0.1);
-}
-button.wallpaper-thumbnail picture.wallpaper-picture {
-  border-radius: calc(16px - 0.4rem - 2px);
-}
-button.wallpaper-thumbnail box.wallpaper-placeholder {
-  border-radius: calc(16px - 0.4rem - 2px);
-  background-color: rgba(255, 255, 255, 0.1);
-  min-width: 140px;
-  min-height: 100px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-button.wallpaper-thumbnail label.wallpaper-name {
-  color: rgba(249, 220, 212, 0.9);
-  margin-top: 0.25rem;
-  font-weight: 500;
-}
-
 .action-bar {
   padding: 0.4rem;
 }
@@ -505,13 +523,56 @@ button.wallpaper-thumbnail label.wallpaper-name {
   border: 1px solid rgba(255, 181, 158, 0.3);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
+}
+.action-bar .action-button:focus:hover, .action-bar .action-button:hover:hover {
+  background: rgba(255, 181, 158, 0.3);
+}
+.action-bar .action-button:focus, .action-bar .action-button:hover {
   background-color: rgba(255, 181, 158, 0.3);
   border: transparent;
   border-radius: 5rem;
   padding: 0.2rem 0.4rem;
 }
-.action-bar .action-button:focus:hover, .action-bar .action-button:hover:hover {
+
+.command-suggestions {
+  border-radius: calc(16px - 0.4rem - 2px);
+  box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
+  margin: 0.4rem;
+  padding: 0.4rem;
+}
+.command-suggestions .command-item {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  padding: 0.4rem;
+}
+.command-suggestions .command-item .command-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 3rem;
+  color: rgba(249, 220, 213, 0.8);
+  margin-right: 0.3rem;
+  margin-left: 0.3rem;
+}
+.command-suggestions .command-item .command-name {
+  font-weight: bold;
+  color: rgb(255, 181, 158);
+  font-size: 1.1rem;
+}
+.command-suggestions .command-item .command-description {
+  color: rgba(249, 220, 213, 0.8);
+}
+.command-suggestions .command-item:hover, .command-suggestions .command-item:focus {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+  border-radius: calc(8px * 1.97);
+  padding: 0.4rem;
+}
+.command-suggestions .command-item:hover:hover, .command-suggestions .command-item:focus:hover {
   background: rgba(255, 181, 158, 0.3);
+}
+.command-suggestions .command-item:hover, .command-suggestions .command-item:focus {
+  background-color: rgba(255, 181, 158, 0.3);
+  border: transparent;
 }
 
 /* variables & mixins */
@@ -535,14 +596,16 @@ box.logout-background .logout-menu button {
   padding: 0.4rem;
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 212, 0.1);
+  border: 1px solid rgba(249, 220, 213, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  margin: 1rem;
 }
 box.logout-background .logout-menu button:hover {
   background: rgba(71, 53, 48, 0.99);
+}
+box.logout-background .logout-menu button {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 1rem;
 }
 box.logout-background .logout-menu button:focus {
   background: rgba(255, 181, 158, 0.3);
@@ -635,18 +698,18 @@ box.logout-background .logout-menu button label {
 .notification .header .app-name {
   font-size: 0.9rem;
   font-weight: bold;
-  color: rgba(249, 220, 212, 0.7);
+  color: rgba(249, 220, 213, 0.7);
 }
 .notification .header .time {
   font-size: 0.9rem;
   font-weight: bold;
-  color: rgba(249, 220, 212, 0.7);
+  color: rgba(249, 220, 213, 0.7);
 }
 .notification .header .dismiss-button {
   margin: -0.5rem 0rem;
 }
 .notification separator {
-  background-color: rgba(249, 220, 212, 0.5);
+  background-color: rgba(249, 220, 213, 0.5);
   min-height: 1px;
 }
 .notification .content {
@@ -670,12 +733,12 @@ box.logout-background .logout-menu button label {
   margin-right: 0.5rem;
   font-size: 1.1rem;
   font-weight: 500;
-  color: rgb(249, 220, 212);
+  color: rgb(249, 220, 213);
 }
 .notification .content .body {
   margin-right: 0.5rem;
   font-size: 0.95rem;
-  color: rgba(249, 220, 212, 0.8);
+  color: rgba(249, 220, 213, 0.8);
   margin-top: 0.75rem;
 }
 .notification .actions {
@@ -726,7 +789,7 @@ box.logout-background .logout-menu button label {
 }
 .osd levelbar block.filled {
   border-radius: 1.5rem;
-  background-color: rgb(249, 220, 212);
+  background-color: rgb(249, 220, 213);
 }
 
 /* variables & mixins */
@@ -793,7 +856,7 @@ box.logout-background .logout-menu button label {
 }
 .system-menu .sliders block filled {
   border-radius: 1.5rem;
-  background-color: rgb(249, 220, 212);
+  background-color: rgb(249, 220, 213);
 }
 
 .arrow-indicator {
@@ -818,15 +881,17 @@ box.logout-background .logout-menu button label {
 .network-item {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 212, 0.1);
+  border: 1px solid rgba(249, 220, 213, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border-radius: calc(16px - 0.4rem - 2px);
-  margin: 0.25rem 0.4rem 0.4rem 0.4rem;
-  padding: 0.75rem;
 }
 .network-item:hover {
   background: rgba(71, 53, 48, 0.99);
+}
+.network-item {
+  border-radius: calc(16px - 0.4rem - 2px);
+  margin: 0.25rem 0.4rem 0.4rem 0.4rem;
+  padding: 0.75rem;
 }
 .network-item image:first-child {
   margin-right: 0.4rem;
@@ -844,12 +909,14 @@ box.logout-background .logout-menu button label {
   border: 1px solid rgba(255, 181, 158, 0.3);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border-radius: calc(16px - 0.4rem - 2px);
-  margin: 0.25rem 0.4rem 0.4rem 0.4rem;
-  padding: 0.75rem;
 }
 .network-item-active:hover {
   background: rgba(255, 181, 158, 0.3);
+}
+.network-item-active {
+  border-radius: calc(16px - 0.4rem - 2px);
+  margin: 0.25rem 0.4rem 0.4rem 0.4rem;
+  padding: 0.75rem;
 }
 .network-item-active.bt-item {
   padding: 1rem 0.75rem;
@@ -880,15 +947,19 @@ box.logout-background .logout-menu button label {
   border: 1px solid rgba(0, 0, 0, 0.1);
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 212, 0.1);
+  border: 1px solid rgba(249, 220, 213, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  margin: 0.4rem;
 }
 .refresh-button:hover,
 .disconnect-button:hover,
 .settings-button:hover {
   background: rgba(71, 53, 48, 0.99);
+}
+.refresh-button,
+.disconnect-button,
+.settings-button {
+  margin: 0.4rem;
 }
 
 .disconnect-button {
@@ -933,14 +1004,16 @@ image {
 .password-search entry menu menuitem {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 212, 0.1);
+  border: 1px solid rgba(249, 220, 213, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border-radius: 0;
-  padding: 0.4rem 0.7rem;
 }
 .password-search entry menu menuitem:hover {
   background: rgba(71, 53, 48, 0.99);
+}
+.password-search entry menu menuitem {
+  border-radius: 0;
+  padding: 0.4rem 0.7rem;
 }
 .password-search entry menu menuitem:first-child {
   border-radius: 8px 8px 0 0;
@@ -960,15 +1033,17 @@ image {
 .saved-network {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 212, 0.1);
+  border: 1px solid rgba(249, 220, 213, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border-radius: calc(16px - 0.4rem - 2px);
-  margin: 0.4rem 0.4rem 0.4rem 0.75rem;
-  padding: 0.25rem;
 }
 .saved-network:hover {
   background: rgba(71, 53, 48, 0.99);
+}
+.saved-network {
+  border-radius: calc(16px - 0.4rem - 2px);
+  margin: 0.4rem 0.4rem 0.4rem 0.75rem;
+  padding: 0.25rem;
 }
 .saved-network > label {
   margin-left: 0.4rem;
@@ -1024,15 +1099,17 @@ image {
 .quick-actions-widget .actions-grid .action-button {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 212, 0.1);
+  border: 1px solid rgba(249, 220, 213, 0.1);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  background: transparent;
-  border-radius: 1.65rem;
-  margin: 0 0.4rem;
 }
 .quick-actions-widget .actions-grid .action-button:hover {
   background: rgba(71, 53, 48, 0.99);
+}
+.quick-actions-widget .actions-grid .action-button {
+  background: transparent;
+  border-radius: 1.65rem;
+  margin: 0 0.4rem;
 }
 .quick-actions-widget .actions-grid .action-button:hover {
   background: rgba(255, 181, 158, 0.2);
@@ -1086,17 +1163,18 @@ image {
   margin: 0 0.4rem;
 }
 .stacked-settings-widget .settings-header image {
-  color: rgb(249, 220, 212);
+  color: rgb(249, 220, 213);
   margin-right: 0.4rem;
 }
-.stacked-settings-widget .settings-header .settings-title {
+.stacked-settings-widget .settings-header .settings-title,
+.stacked-settings-widget .settings-header .hw-header-title {
   margin-top: 0.75rem;
   font-size: 1.1rem;
   font-weight: 700;
-  color: rgb(249, 220, 212);
+  color: rgb(249, 220, 213);
 }
 .stacked-settings-widget separator {
-  background-color: rgba(249, 220, 212, 0.2);
+  background-color: rgba(249, 220, 213, 0.2);
   margin: 0.4rem 0;
   min-height: 1px;
 }
@@ -1105,16 +1183,31 @@ image {
 }
 .stacked-settings-widget .settings-nav .nav-button {
   border-radius: 16px;
-  padding: 0.4rem;
+  padding: 0.25rem;
   margin: 0 0.25rem;
 }
-.stacked-settings-widget .settings-nav .nav-button .nav-icon {
+.stacked-settings-widget .settings-nav .nav-button box .nav-icon {
   font-family: "Material Symbols Outlined";
   font-size: 24px;
+  opacity: 0.7;
 }
-.stacked-settings-widget .settings-nav .nav-button .nav-label {
+.stacked-settings-widget .settings-nav .nav-button box .nav-label {
   font-size: calc(1.1rem * 0.9);
   font-weight: 500;
+  opacity: 0.7;
+}
+.stacked-settings-widget .settings-nav .nav-button.button {
+  background: rgba(255, 181, 158, 0.2);
+}
+.stacked-settings-widget .settings-nav .nav-button.button .nav-icon,
+.stacked-settings-widget .settings-nav .nav-button.button .nav-label {
+  opacity: 1;
+}
+.stacked-settings-widget .settings-nav .nav-button.button-disabled {
+  background-color: transparent;
+}
+.stacked-settings-widget .settings-nav .nav-button.button-disabled:hover {
+  background-color: rgba(71, 53, 48, 0.99);
 }
 .stacked-settings-widget .settings-nav .button-disabled {
   background-color: transparent;
@@ -1128,7 +1221,7 @@ image {
 .stacked-settings-widget .settings-stack .subsection-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: rgb(249, 220, 212);
+  color: rgb(249, 220, 213);
   margin: 0.4rem 0 0.25rem 0;
 }
 .stacked-settings-widget .settings-scroll scrollbar {
@@ -1139,12 +1232,12 @@ image {
   margin-left: 4px;
 }
 .stacked-settings-widget .settings-scroll scrollbar trough {
-  background: rgba(249, 220, 212, 0.1);
+  background: rgba(249, 220, 213, 0.1);
   border-radius: calc(8px * 1);
   min-width: 8px;
 }
 .stacked-settings-widget .settings-scroll scrollbar slider {
-  background: rgba(249, 220, 212, 0.4);
+  background: rgba(249, 220, 213, 0.4);
   border-radius: calc(8px * 1);
   min-width: 8px;
   transition: all 100ms ease;
@@ -1157,26 +1250,26 @@ image {
 }
 .stacked-settings-widget .option-row {
   background: rgba(37.2857142857, 19.8857142857, 14.9142857143, 0.5);
-  border: 1px solid rgba(249, 220, 212, 0.1);
+  border: 1px solid rgba(249, 220, 213, 0.1);
   border-radius: calc(8px * 2);
   padding: 0.4rem 0.75rem;
   margin: 0.25rem 0;
 }
 .stacked-settings-widget .option-row .option-label {
   font-size: 1.1rem;
-  color: rgb(249, 220, 212);
+  color: rgb(249, 220, 213);
   margin-right: 0.4rem;
 }
 .stacked-settings-widget .option-row .option-switch {
   border-radius: 5rem;
   padding: 0.1rem;
-  background-color: rgba(249, 220, 212, 0.1);
+  background-color: rgba(249, 220, 213, 0.1);
 }
 .stacked-settings-widget .option-row .option-switch slider {
   border-radius: 1.5rem;
   transition: all 200ms ease;
   margin: 0.2rem;
-  background-color: rgba(249, 220, 212, 0.3);
+  background-color: rgba(249, 220, 213, 0.3);
 }
 .stacked-settings-widget .option-row .option-switch:checked {
   background-color: rgba(255, 181, 158, 0.2);
@@ -1193,20 +1286,17 @@ image {
   border: 1px solid rgba(255, 181, 158, 0.3);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
-  border-radius: calc(8px * 1.5);
-  padding: 0.25rem 0.4rem;
-  border-color: rgba(249, 220, 212, 0.1);
 }
 .stacked-settings-widget .option-row .option-dropdown button:hover {
   background: rgba(255, 181, 158, 0.3);
 }
-.stacked-settings-widget .option-row .option-dropdown button:hover {
-  border-color: rgba(249, 220, 212, 0.3);
+.stacked-settings-widget .option-row .option-dropdown button {
+  border-radius: calc(8px * 1.5);
+  padding: 0.25rem 0.4rem;
+  border-color: rgba(249, 220, 213, 0.1);
 }
-.stacked-settings-widget separator {
-  background-color: rgba(249, 220, 212, 0.15);
-  margin: 0.75rem 0;
-  min-height: 1px;
+.stacked-settings-widget .option-row .option-dropdown button:hover {
+  border-color: rgba(249, 220, 213, 0.3);
 }
 
 /* variables & mixins */
@@ -1225,10 +1315,7 @@ image {
 .weather-widget .current-weather .current-icon {
   font-family: "Material Symbols Outlined";
   font-size: 100px;
-  min-width: 72px;
-  min-height: 72px;
-  color: rgb(249, 220, 212);
-  margin-bottom: 0.5rem;
+  color: rgb(249, 220, 213);
 }
 .weather-widget .current-weather .weather-temp {
   font-size: 1.1rem;
@@ -1262,12 +1349,12 @@ image {
   font-family: "Material Symbols Outlined";
   font-size: 32px;
   margin: 0.3rem 0;
-  color: rgb(249, 220, 212);
+  color: rgb(249, 220, 213);
 }
 .weather-widget .forecast-row .forecast-item .forecast-temp {
   font-size: 1.1rem;
   font-weight: 500;
-  color: rgb(249, 220, 212);
+  color: rgb(249, 220, 213);
 }
 
 /* variables & mixins */
@@ -1283,7 +1370,6 @@ image {
   padding: 0.75rem;
   margin: 0.75rem;
   /* Generic "header/content" row */
-  /* Generic "items row" for children */
 }
 .base-widget .header-row {
   margin-bottom: 0.4rem;
@@ -1291,7 +1377,7 @@ image {
 .base-widget .header-row .header-icon {
   min-width: 72px;
   min-height: 72px;
-  color: rgb(249, 220, 212);
+  color: rgb(249, 220, 213);
   margin-bottom: 0.5rem;
 }
 .base-widget .header-row .header-title {
@@ -1308,6 +1394,9 @@ image {
   font-size: 1.1rem;
   color: rgb(163, 139, 133);
 }
+.base-widget {
+  /* Generic "items row" for children */
+}
 .base-widget .items-row {
   margin-top: 0.4rem;
 }
@@ -1320,12 +1409,260 @@ image {
 }
 .base-widget .items-row .item .item-icon {
   margin: 0.3rem 0;
-  color: rgb(249, 220, 212);
+  color: rgb(249, 220, 213);
 }
 .base-widget .items-row .item .item-value {
   font-size: 1.1rem;
   font-weight: 500;
-  color: rgb(249, 220, 212);
+  color: rgb(249, 220, 213);
+}
+
+/* variables & mixins */
+/* general styles */
+.hardware-monitor-widget {
+  border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
+  background: rgba(30, 16, 12, 0.5);
+  margin: 5px 10px 15px;
+  padding: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: calc(8px * 3);
+  padding: 0.75rem;
+  margin: 0.75rem;
+}
+.hardware-monitor-widget .hw-header {
+  margin: 0 0.4rem;
+}
+.hardware-monitor-widget .hw-header image {
+  color: rgb(249, 220, 213);
+  margin-right: 0.4rem;
+}
+.hardware-monitor-widget .hw-header .settings-title,
+.hardware-monitor-widget .hw-header .hw-header-title {
+  margin-top: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: rgb(249, 220, 213);
+}
+.hardware-monitor-widget separator {
+  background-color: rgba(249, 220, 213, 0.15);
+  margin: 0.4rem 0;
+  min-height: 1px;
+}
+.hardware-monitor-widget .hw-nav {
+  margin: 0.4rem 0;
+}
+.hardware-monitor-widget .hw-nav .nav-button {
+  border-radius: 16px;
+  padding: 0.25rem;
+  margin: 0 0.25rem;
+}
+.hardware-monitor-widget .hw-nav .nav-button box .nav-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 24px;
+  opacity: 0.7;
+}
+.hardware-monitor-widget .hw-nav .nav-button box .nav-label {
+  font-size: calc(1.1rem * 0.9);
+  font-weight: 500;
+  opacity: 0.7;
+}
+.hardware-monitor-widget .hw-nav .nav-button.button {
+  background: rgba(255, 181, 158, 0.2);
+}
+.hardware-monitor-widget .hw-nav .nav-button.button .nav-icon,
+.hardware-monitor-widget .hw-nav .nav-button.button .nav-label {
+  opacity: 1;
+}
+.hardware-monitor-widget .hw-nav .nav-button.button-disabled {
+  background-color: transparent;
+}
+.hardware-monitor-widget .hw-nav .nav-button.button-disabled:hover {
+  background-color: rgba(71, 53, 48, 0.99);
+}
+.hardware-monitor-widget .hw-content {
+  padding: 0.75rem 0;
+}
+.hardware-monitor-widget .hw-content .hw-scroll scrollbar {
+  background: rgba(22.7142857143, 12.1142857143, 9.0857142857, 0.5);
+  border-radius: calc(8px * 1);
+}
+.hardware-monitor-widget .hw-content .hw-scroll scrollbar.vertical {
+  margin-left: 4px;
+}
+.hardware-monitor-widget .hw-content .hw-scroll scrollbar trough {
+  background: rgba(249, 220, 213, 0.1);
+  border-radius: calc(8px * 1);
+  min-width: 8px;
+}
+.hardware-monitor-widget .hw-content .hw-scroll scrollbar slider {
+  background: rgba(249, 220, 213, 0.4);
+  border-radius: calc(8px * 1);
+  min-width: 8px;
+  transition: all 100ms ease;
+}
+.hardware-monitor-widget .hw-content .hw-scroll scrollbar slider:hover {
+  background: rgba(255, 181, 158, 0.7);
+}
+.hardware-monitor-widget .hw-content .hw-scroll scrollbar slider:active {
+  background: rgb(255, 181, 158);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-main-content {
+  padding: 0 0.75rem;
+}
+.hardware-monitor-widget .hw-content .hw-stack .circular-progress-bar-widget circularprogress progress {
+  color: rgb(213.52, 131.7, 104.28);
+}
+.hardware-monitor-widget .hw-content .hw-stack .circular-progress-bar-widget circularprogress radius {
+  color: rgba(30, 16, 12, 0.5);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-main-circle {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  min-width: 8rem;
+  min-height: 8rem;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-main-circle:active {
+  transform: scale(0.8);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-main-circle .hw-main-label {
+  font-size: calc(1.1rem * 1.5);
+  font-weight: 700;
+  color: rgb(249, 220, 213);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-vertical-metric {
+  border-radius: 8px;
+  min-width: 5.5rem;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-vertical-metric .vertical-metric-label {
+  font-size: calc(1.1rem * 0.7);
+  font-weight: 600;
+  color: rgb(163, 139, 133);
+  letter-spacing: 0.05em;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-vertical-metric .vertical-metric-bar {
+  min-height: 6.5rem;
+  min-width: 0.6rem;
+  margin: 0.25rem 0;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-vertical-metric .vertical-metric-bar trough {
+  background: rgba(249, 220, 213, 0.1);
+  border-radius: 8px;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-vertical-metric .vertical-metric-bar block.filled {
+  border-radius: 8px;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-vertical-metric .vertical-metric-detail {
+  font-size: calc(1.1rem * 0.75);
+  font-family: monospace;
+  font-weight: 500;
+  color: rgb(249, 220, 213);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-vertical-display {
+  border-radius: 8px;
+  min-width: 5.5rem;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-vertical-display .vertical-display-label {
+  font-size: calc(1.1rem * 0.7);
+  font-weight: 600;
+  color: rgb(163, 139, 133);
+  letter-spacing: 0.05em;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-vertical-display .vertical-display-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 32px;
+  min-height: 6.5rem;
+  color: rgb(249, 220, 213);
+  opacity: 0.8;
+  margin: 0.25rem 0;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-vertical-display .vertical-display-detail {
+  font-size: calc(1.1rem * 0.75);
+  font-family: monospace;
+  font-weight: 500;
+  color: rgb(249, 220, 213);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-disk-list {
+  margin: 0 0.75rem;
+  padding: 0.4rem;
+  border-radius: 8px;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-disk-list .disk-list-title {
+  font-size: calc(1.1rem * 0.85);
+  font-weight: 600;
+  color: rgb(163, 139, 133);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-disk-list .hw-disk-bar {
+  padding: 0.25rem;
+  border-radius: calc(8px * 0.75);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-disk-list .hw-disk-bar .disk-bar-mount {
+  font-size: calc(1.1rem * 0.8);
+  font-family: monospace;
+  font-weight: 500;
+  color: rgb(249, 220, 213);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-disk-list .hw-disk-bar .disk-bar-detail {
+  font-size: calc(1.1rem * 0.75);
+  font-family: monospace;
+  font-weight: 500;
+  color: rgb(163, 139, 133);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-disk-list .hw-disk-bar .disk-bar-level {
+  min-width: 0;
+  min-height: 0.6rem;
+  margin: 0.25rem 0;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-disk-list .hw-disk-bar .disk-bar-level trough {
+  background: rgba(249, 220, 213, 0.1);
+  border-radius: 8px;
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-disk-list .hw-disk-bar .disk-bar-level block.filled {
+  border-radius: 8px;
+  background: rgb(241, 187, 152);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-disk-list .hw-disk-bar .disk-bar-level {
+  border-radius: calc(8px * 0.5);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-disk-list .hw-disk-bar .disk-bar-level trough {
+  border-radius: calc(8px * 0.5);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-disk-list .hw-disk-bar .disk-bar-level block.filled {
+  border-radius: calc(8px * 0.5);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-page-cpu circularprogress progress {
+  color: rgb(194.38, 146.16, 83.56);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-page-cpu circularprogress radius {
+  color: rgba(249, 220, 213, 0.1);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-page-cpu block.filled {
+  background: rgb(194.38, 146.16, 83.56);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-page-memory circularprogress progress {
+  color: rgb(213.52, 131.7, 104.28);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-page-memory circularprogress radius {
+  color: rgba(249, 220, 213, 0.1);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-page-memory block.filled {
+  background: rgb(213.52, 131.7, 104.28);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-page-gpu circularprogress progress {
+  color: rgb(255, 181, 158);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-page-gpu circularprogress radius {
+  color: rgba(249, 220, 213, 0.1);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-page-gpu block.filled {
+  background: rgb(255, 181, 158);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-page-disk circularprogress progress {
+  color: rgb(241, 187, 152);
+}
+.hardware-monitor-widget .hw-content .hw-stack .hw-page-disk circularprogress radius {
+  color: rgba(249, 220, 213, 0.1);
 }
 
 .sidebar {
@@ -1347,7 +1684,7 @@ image {
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 .sidebar separator {
-  background-color: rgba(249, 220, 212, 0.2);
+  background-color: rgba(249, 220, 213, 0.2);
   margin: 0.5rem 0;
   min-height: 1px;
 }

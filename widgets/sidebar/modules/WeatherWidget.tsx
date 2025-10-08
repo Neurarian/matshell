@@ -56,7 +56,6 @@ export default function WeatherWidget() {
     <box
       class="weather-widget"
       orientation={Gtk.Orientation.VERTICAL}
-      spacing={6}
     >
       <With value={WeatherService.weather}>
         {(data) => {
@@ -89,13 +88,11 @@ export default function WeatherWidget() {
               <box
                 class="current-weather"
                 orientation={Gtk.Orientation.HORIZONTAL}
-                spacing={16}
                 valign={Gtk.Align.CENTER}
               >
                 <box
                   orientation={Gtk.Orientation.VERTICAL}
                   halign={Gtk.Align.START}
-                  spacing={2}
                 >
                   <label label={currentIcon} class="current-icon" />
                   <label

@@ -8,6 +8,7 @@ import MatshellSettingsWidget from "./modules/MatshellSettingsWidget";
 import QuickActionsWidget from "./modules/QuickActionWidget";
 import TemplateWidget from "./modules/BaseTemplateWidget";
 import options from "options";
+import HardwareMonitorWidget from "./modules/HardwareWidget/main";
 
 /** ---------- Sidebar Window ---------- **/
 export default function Sidebar(
@@ -38,14 +39,15 @@ export default function Sidebar(
         orientation={Gtk.Orientation.VERTICAL}
         hexpand={false}
         vexpand={true}
-        spacing={12}
+        spacing={6}
       >
         {/* Built-in widgets */}
         <ClockWidget />
         <Gtk.Separator />
         <WeatherWidget />
         <MatshellSettingsWidget />
-        <box vexpand/>
+        <HardwareMonitorWidget />
+        <box vexpand />
         <QuickActionsWidget />
         {/*
         <TemplateWidget />

@@ -102,8 +102,8 @@ export default function MatshellSettingsWidget() {
       <box
         class="settings-nav"
         orientation={Gtk.Orientation.HORIZONTAL}
-        spacing={2}
         homogeneous
+        spacing={2}
       >
         {pages.map((page) => (
           <button
@@ -125,103 +125,104 @@ export default function MatshellSettingsWidget() {
       </box>
 
       {/* Scrollable Content Stack */}
-      <scrolledwindow
-        minContentHeight={150}
-        hscrollbarPolicy={Gtk.PolicyType.NEVER}
-        vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
-        cssClasses={["settings-scroll"]}
+      <stack
+        cssClasses={["settings-stack"]}
+        transitionType={Gtk.StackTransitionType.SLIDE_LEFT_RIGHT}
+        transitionDuration={200}
+        $={(stack) => {
+          const unsubscribe = currentPage.subscribe(() => {
+            stack.visibleChildName = currentPage.get();
+          });
+          onCleanup(unsubscribe);
+        }}
       >
-        <stack
-          cssClasses={["settings-stack"]}
-          transitionType={Gtk.StackTransitionType.SLIDE_LEFT_RIGHT}
-          transitionDuration={200}
-          $={(stack) => {
-            const unsubscribe = currentPage.subscribe(() => {
-              stack.visibleChildName = currentPage.get();
-            });
-            onCleanup(unsubscribe);
-          }}
+        {/* Bar Settings */}
+        <box $type="named" name="bar">
+          <scrolledwindow
+            minContentHeight={140}
+            hscrollbarPolicy={Gtk.PolicyType.NEVER}
+            vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
+            cssClasses={["settings-scroll"]}
+          >
+            <box orientation={Gtk.Orientation.VERTICAL} spacing={5}>
+              <OptionSelect
+                option="bar.position"
+                label="Position"
+                choices={BAR_POSITION_OPTIONS}
+              />
+              <OptionSelect
+                option="bar.style"
+                label="Style"
+                choices={BAR_STYLE_OPTIONS}
+              />
+              <OptionSelect
+                option="bar.modules.os-icon.type"
+                label="OS Icon"
+                choices={OS_OPTIONS}
+              />
+              <OptionToggle
+                option="bar.modules.os-icon.show"
+                label="Show OS Icon"
+              />
+            </box>
+          </scrolledwindow>
+        </box>
+
+        {/* Audio Settings */}
+        <box $type="named" name="audio">
+          <scrolledwindow
+            minContentHeight={140}
+            hscrollbarPolicy={Gtk.PolicyType.NEVER}
+            vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
+            cssClasses={["settings-scroll"]}
+          >
+            <box orientation={Gtk.Orientation.VERTICAL} spacing={5}>
+              <label label="Bar Visualizer" cssClasses={["subsection-title"]} />
+              <OptionToggle option="bar.modules.cava.show" label="Enable" />
+              <OptionSelect
+                option="bar.modules.cava.style"
+                label="Cava Style"
+                choices={CAVA_STYLE_OPTIONS}
+              />
+              <OptionToggle
+                option="bar.modules.media.cava.show"
+                label="Enable Cover Cava"
+              />
+              <Gtk.Separator />
+              <label
+                label="Music Player Visualizer"
+                cssClasses={["subsection-title"]}
+              />
+              <OptionToggle
+                option="musicPlayer.modules.cava.show"
+                label="Enable"
+              />
+              <OptionSelect
+                option="musicPlayer.modules.cava.style"
+                label="Style"
+                choices={CAVA_STYLE_OPTIONS}
+              />
+            </box>
+          </scrolledwindow>
+        </box>
+
+        {/* System Settings */}
+        <box
+          $type="named"
+          name="system"
+          orientation={Gtk.Orientation.VERTICAL}
+          spacing={5}
         >
-          {/* Bar Settings */}
-          <box
-            $type="named"
-            name="bar"
-            orientation={Gtk.Orientation.VERTICAL}
-            spacing={5}
-          >
-            <OptionSelect
-              option="bar.position"
-              label="Position"
-              choices={BAR_POSITION_OPTIONS}
-            />
-            <OptionSelect
-              option="bar.style"
-              label="Style"
-              choices={BAR_STYLE_OPTIONS}
-            />
-            <OptionSelect
-              option="bar.modules.os-icon.type"
-              label="OS Icon"
-              choices={OS_OPTIONS}
-            />
-            <OptionToggle
-              option="bar.modules.os-icon.show"
-              label="Show OS Icon"
-            />
-          </box>
-
-          {/* Audio Settings */}
-          <box
-            $type="named"
-            name="audio"
-            orientation={Gtk.Orientation.VERTICAL}
-            spacing={5}
-          >
-            <label label="Bar Visualizer" cssClasses={["subsection-title"]} />
-            <OptionToggle option="bar.modules.cava.show" label="Enable" />
-            <OptionSelect
-              option="bar.modules.cava.style"
-              label="Cava Style"
-              choices={CAVA_STYLE_OPTIONS}
-            />
-            <OptionToggle
-              option="bar.modules.media.cava.show"
-              label="Enable Cover Cava"
-            />
-            <Gtk.Separator />
-            <label
-              label="Music Player Visualizer"
-              cssClasses={["subsection-title"]}
-            />
-            <OptionToggle
-              option="musicPlayer.modules.cava.show"
-              label="Enable"
-            />
-            <OptionSelect
-              option="musicPlayer.modules.cava.style"
-              label="Style"
-              choices={CAVA_STYLE_OPTIONS}
-            />
-          </box>
-
-          {/* System Settings */}
-          <box
-            $type="named"
-            name="system"
-            orientation={Gtk.Orientation.VERTICAL}
-            spacing={5}
-          >
-            <OptionToggle
-              option="system-menu.modules.wifi-advanced.enable"
-              label="WiFi Adv. Settings"
-            />
-            <OptionToggle
-              option="system-menu.modules.bluetooth-advanced.enable"
-              label="BT Adv. Settings"
-            />
-          </box>
-        </stack>
-      </scrolledwindow>
+          <OptionToggle
+            option="system-menu.modules.wifi-advanced.enable"
+            label="WiFi Adv. Settings"
+          />
+          <OptionToggle
+            option="system-menu.modules.bluetooth-advanced.enable"
+            label="BT Adv. Settings"
+          />
+        </box>
+      </stack>
     </box>
   );
 }

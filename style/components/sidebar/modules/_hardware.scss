@@ -1,0 +1,164 @@
+@use "../../../layouts" as *;
+@use "../../../abstracts" as *;
+@use "sass:color";
+
+.hardware-monitor-widget {
+  @include widget-container;
+
+  .hw-header {
+    @include widget-header;
+  }
+
+  separator {
+    @include separator;
+  }
+
+  .hw-nav {
+    margin: $spacing-sm 0;
+
+    .nav-button {
+      @include nav-button;
+    }
+  }
+
+  .hw-content {
+    padding: $spacing-md 0;
+
+    .hw-scroll {
+      @include scrollbar(vertical);
+    }
+
+    .hw-stack {
+      .hw-main-content {
+        padding: 0 $spacing-md;
+      }
+
+      .circular-progress-bar-widget {
+        @include hw-circular-progress-theme(
+          $ramProc,
+          color.adjust($procBg, $alpha: -0.5)
+        );
+      }
+
+      .hw-main-circle {
+        @include animate;
+        min-width: 8rem;
+        min-height: 8rem;
+
+        &:active {
+          transform: scale(0.8);
+        }
+
+        .hw-main-label {
+          font-size: calc(#{$font} * 1.5);
+          font-weight: 700;
+          color: $fg;
+        }
+      }
+
+      .hw-vertical-metric {
+        @include vertical-metric-container;
+
+        .vertical-metric-label {
+          @include metric-label;
+        }
+
+        .vertical-metric-bar {
+          @include progress-bar(vertical);
+        }
+
+        .vertical-metric-detail {
+          @include metric-detail;
+        }
+      }
+
+      .hw-vertical-display {
+        @include vertical-metric-container;
+
+        .vertical-display-label {
+          @include metric-label;
+        }
+
+        .vertical-display-icon {
+          @include material-icon(32px);
+          min-height: 6.5rem;
+          color: $fg;
+          opacity: 0.8;
+          margin: $spacing-xs 0;
+        }
+
+        .vertical-display-detail {
+          @include metric-detail;
+        }
+      }
+
+      .hw-disk-list {
+        margin: 0 $spacing-md;
+        padding: $spacing-sm;
+        border-radius: $round;
+
+        .disk-list-title {
+          @include metric-label(0.85);
+          margin-bottom: $spacing-xs;
+        }
+
+        .hw-disk-bar {
+          padding: $spacing-xs;
+          border-radius: calc(#{$round} * 0.75);
+
+          .disk-bar-mount {
+            @include metric-detail(0.8);
+          }
+
+          .disk-bar-detail {
+            @include metric-detail(0.75, 500, $outline);
+          }
+
+          .disk-bar-level {
+            @include progress-bar(horizontal, $secondary, 0, 0.6rem);
+            border-radius: calc(#{$round} * 0.5);
+
+            trough {
+              border-radius: calc(#{$round} * 0.5);
+            }
+
+            block.filled {
+              border-radius: calc(#{$round} * 0.5);
+            }
+          }
+        }
+      }
+
+      .hw-page-cpu {
+        @include hw-circular-progress-theme($cpuProc);
+
+        circularprogress progress {
+        }
+
+        block.filled {
+          background: $cpuProc;
+        }
+      }
+
+      .hw-page-memory {
+        @include hw-circular-progress-theme($ramProc);
+
+        block.filled {
+          background: $ramProc;
+        }
+      }
+
+      .hw-page-gpu {
+        @include hw-circular-progress-theme($primary);
+
+        block.filled {
+          background: $primary;
+        }
+      }
+
+      .hw-page-disk {
+        @include hw-circular-progress-theme($secondary);
+      }
+    }
+  }
+}

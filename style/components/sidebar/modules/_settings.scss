@@ -6,44 +6,20 @@
   @include widget-container;
 
   .settings-header {
-    margin: 0 $spacing-sm;
-
-    image {
-      color: $fg;
-      margin-right: $spacing-sm;
-    }
-
-    .settings-title {
-      margin-top: $spacing-md;
-      font-size: $font;
-      font-weight: 700;
-      color: $fg;
-    }
+    @include widget-header;
   }
 
   separator {
-    background-color: color.adjust($fg, $alpha: -0.8);
-    margin: $spacing-sm 0;
-    min-height: 1px;
+    @include separator(-0.8);
   }
 
   .settings-nav {
     margin: $spacing-sm 0;
 
     .nav-button {
-      border-radius: $round2;
-      padding: $spacing-sm;
-      margin: 0 $spacing-xs;
-
-      .nav-icon {
-        @include material-icon;
-      }
-
-      .nav-label {
-        font-size: calc(#{$font} * 0.9);
-        font-weight: 500;
-      }
+      @include nav-button;
     }
+
     .button-disabled {
       background-color: transparent;
       &:hover {
@@ -64,56 +40,11 @@
   }
 
   .settings-scroll {
-    scrollbar {
-      background: color.adjust($barBg, $lightness: if($darkmode, -2%, 2%));
-      border-radius: calc(#{$round} * 1);
-
-      &.vertical {
-        margin-left: 4px;
-      }
-
-      trough {
-        background: color.adjust($fg, $alpha: -0.9);
-        border-radius: calc(#{$round} * 1);
-        min-width: 8px;
-      }
-
-      slider {
-        background: color.adjust($fg, $alpha: -0.6);
-        border-radius: calc(#{$round} * 1);
-        min-width: 8px;
-        transition: all 100ms ease;
-
-        @if not $darkmode {
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-        }
-
-        &:hover {
-          background: color.adjust($primary, $alpha: -0.3);
-
-          @if not $darkmode {
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-          }
-        }
-
-        &:active {
-          background: $primary;
-        }
-      }
-    }
+    @include scrollbar(vertical);
   }
 
-  // Option components styling
   .option-row {
-    background: color.adjust($barBg, $lightness: if($darkmode, 2%, -2%));
-    border: 1px solid color.adjust($fg, $alpha: -0.9);
-    border-radius: calc(#{$round} * 2);
-    padding: $spacing-sm $spacing-md;
-    margin: $spacing-xs 0;
-
-    @if not $darkmode {
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    }
+    @include option-row;
 
     .option-label {
       font-size: $font;
@@ -122,34 +53,7 @@
     }
 
     .option-switch {
-      border-radius: 5rem;
-      padding: 0.1rem;
-      background-color: color.adjust($fg, $alpha: -0.9);
-
-      @if not $darkmode {
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
-      }
-
-      slider {
-        border-radius: 1.5rem;
-        transition: all 200ms ease;
-        margin: 0.2rem;
-
-        @if $darkmode {
-          background-color: color.adjust($fg, $alpha: -0.7);
-        } @else {
-          background-color: $buttonDisabled;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-        }
-      }
-
-      &:checked {
-        background-color: $buttonEnabled;
-
-        slider {
-          background-color: color.adjust($primary, $alpha: -0.3);
-        }
-      }
+      @include toggle-switch;
     }
 
     .option-dropdown {
@@ -160,16 +64,11 @@
         border-radius: calc(#{$round} * 1.5);
         padding: $spacing-xs $spacing-sm;
         border-color: color.adjust($fg, $alpha: -0.9);
+
         &:hover {
           border-color: color.adjust($fg, $alpha: -0.7);
         }
       }
     }
-  }
-
-  separator {
-    background-color: color.adjust($fg, $alpha: -0.85);
-    margin: $spacing-md 0;
-    min-height: 1px;
   }
 }

@@ -11,6 +11,8 @@
 
 ![Neurarian_Matshell_round-2](https://github.com/user-attachments/assets/f3a2cbf8-6f62-4047-938f-68a4a01d8cd3)
 
+<img width="1921" height="1081" alt="2025-10-08T22:47:28,720648044+02:00" src="https://github.com/user-attachments/assets/0e00e729-094d-4341-b3ff-6773b7fa973c" />
+
 </div>
 
 Matshell is a Material Design inspired desktop shell built with [AGS/Astal](https://github.com/Aylur/astal) for [Hyprland](https://github.com/hyprwm/Hyprland). This project draws heavy inspiration from [fufexan's](https://github.com/fufexan/dotfiles) AGSv1 config, with design influences from [saimoomedits](https://github.com/saimoomedits/eww-widgets), tailored for both multi-monitor desktop setups and laptops.
@@ -223,7 +225,7 @@ This project wouldn't be possible without:
 - [saimoomedits' eww-widgets](https://github.com/saimoomedits/eww-widgets) for design influence
 - [end-4's dots-hyprland](https://github.com/end-4/dots-hyprland) for some inspiration on the color generation
 
-## Showcase
+## More Showcases
 
 ### Video Demo Desktop
 

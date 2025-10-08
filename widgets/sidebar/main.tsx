@@ -39,7 +39,6 @@ export default function Sidebar(
         orientation={Gtk.Orientation.VERTICAL}
         hexpand={false}
         vexpand={true}
-        spacing={6}
       >
         {/* Built-in widgets */}
         <ClockWidget />

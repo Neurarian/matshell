@@ -37,6 +37,7 @@ const options = await (async () => {
         {},
         { useCache: true },
       ),
+      "sidebar.quick-actions.enable":defineOption(true),
       "system-menu.modules.bluetooth-advanced.enable": defineOption(true),
       "system-menu.modules.wifi-advanced.enable": defineOption(true),
       "wallpaper.dir": defineOption(

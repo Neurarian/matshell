@@ -220,7 +220,7 @@ export default function HardwareMonitorWidget() {
               >
                 {config.diskList ? (
                   <scrolledwindow
-                    minContentHeight={130}
+                    minContentHeight={120}
                     hscrollbarPolicy={Gtk.PolicyType.NEVER}
                     vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
                     cssClasses={["hw-scroll"]}

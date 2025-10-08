@@ -48,7 +48,8 @@ export default function QuickActionsWidget() {
     {
       label: "Browser",
       icon: "Captive_Portal",
-      action: () => execAsync(String(options["app.browser"].get())).catch(console.error),
+      action: () =>
+        execAsync(String(options["app.browser"].get())).catch(console.error),
     },
   ];
 
@@ -57,6 +58,7 @@ export default function QuickActionsWidget() {
       class="quick-actions-widget"
       orientation={Gtk.Orientation.VERTICAL}
       spacing={6}
+      visible={options["sidebar.quick-actions.enable"]}
     >
       <box
         class="actions-grid"

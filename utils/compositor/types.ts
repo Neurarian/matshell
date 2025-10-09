@@ -45,6 +45,7 @@ export interface CompositorAdapter {
 
   // Actions
   focusWorkspace(id: string | number): void;
+  focusClient?(address: string): void;
   // GDK Monitor matching
   matchMonitor(compositorMonitor: Monitor): Gdk.Monitor | null;
 }

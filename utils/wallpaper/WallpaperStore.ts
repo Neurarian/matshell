@@ -62,7 +62,7 @@ export class WallpaperStore extends GObject.Object {
     // Setup accessors from options
     this.wallpaperDir = options["wallpaper.dir"]((wd) => String(wd));
     this.currentWallpaper = options["wallpaper.current"]((w) => String(w));
-    this.maxThemeCacheSize = options["wallpaper.theme-cache-size"]((s) =>
+    this.maxThemeCacheSize = options["wallpaper.theme.cache-size"]((s) =>
       Number(s),
     );
 
@@ -122,7 +122,7 @@ export class WallpaperStore extends GObject.Object {
 
   private loadThemeCache(): void {
     try {
-      const persistentCache = options["wallpaper.theme-cache"].get() as Record<
+      const persistentCache = options["wallpaper.theme.cache"].get() as Record<
         string,
         any
       >;
@@ -143,7 +143,7 @@ export class WallpaperStore extends GObject.Object {
         for (const [path, entry] of this.themeCache) {
           persistentCache[path] = entry;
         }
-        options["wallpaper.theme-cache"].value = persistentCache as any;
+        options["wallpaper.theme.cache"].value = persistentCache as any;
       } catch (error) {
         console.error("Failed to save theme cache:", error);
       }
@@ -646,7 +646,7 @@ export class WallpaperStore extends GObject.Object {
 
   clearThemeCache(): void {
     this.themeCache.clear();
-    options["wallpaper.theme-cache"].value = {};
+    options["wallpaper.theme.cache"].value = {};
     console.log("Theme cache cleared");
   }
 

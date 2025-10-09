@@ -8,6 +8,7 @@ import { PowerProfileBox } from "./modules/PowerProfileBox.tsx";
 import { BatteryBox } from "./modules/BatteryBox.tsx";
 import { NotificationBox } from "./modules/notification-center/main.tsx";
 import options from "options.ts";
+import { gdkmonitor } from "utils/monitors.ts";
 
 export default function SystemMenu() {
   const powerprofiles = PowerProfiles.get_default();
@@ -32,6 +33,7 @@ export default function SystemMenu() {
       })}
       keymode={Astal.Keymode.ON_DEMAND}
       visible={visible}
+      gdkmonitor={gdkmonitor}
     >
       <box
         cssClasses={["system-menu"]}

@@ -3,6 +3,7 @@ import { Gtk } from "ags/gtk4";
 import app from "ags/gtk4/app";
 import { execAsync } from "ags/process";
 import options from "options";
+import { compositor } from "utils/compositor/detector";
 
 interface ActionItem {
   label: string;
@@ -58,7 +59,9 @@ export default function QuickActionsWidget() {
       class="quick-actions-widget"
       orientation={Gtk.Orientation.VERTICAL}
       spacing={6}
-      visible={options["sidebar.quick-actions.enable"]}
+      visible={compositor.focusedMonitor((monitor) =>
+        monitor ? monitor.height > 1080 : false,
+      )}
     >
       <box
         class="actions-grid"

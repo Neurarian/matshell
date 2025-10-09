@@ -8,6 +8,7 @@ import { Cover } from "./modules/Cover";
 import { Info } from "./modules/Info";
 import { CavaDraw } from "./modules/cava";
 import options from "options.ts";
+import { gdkmonitor } from "utils/monitors";
 
 function MusicBox({ player }: { player: Mpris.Player }) {
   const [blurredCover, setBlurredCover] = createState(player.cover_art || "");
@@ -49,14 +50,14 @@ function MusicBox({ player }: { player: Mpris.Player }) {
         cssClasses={["cava-container"]}
         $type="overlay"
         canTarget={false}
-        visible={options["musicPlayer.modules.cava.show"]((value) =>
+        visible={options["music-player.modules.cava.enable"]((value) =>
           Boolean(value),
         )}
       >
         <CavaDraw
           hexpand
           vexpand
-          style={options["musicPlayer.modules.cava.style"]((value) =>
+          style={options["music-player.modules.cava.style"]((value) =>
             String(value),
           )}
         />
@@ -96,6 +97,7 @@ export default function MusicPlayer() {
       })}
       keymode={Astal.Keymode.ON_DEMAND}
       visible={visible}
+      gdkmonitor={gdkmonitor}
     >
       <box>
         <With value={createBinding(mpris, "players")}>

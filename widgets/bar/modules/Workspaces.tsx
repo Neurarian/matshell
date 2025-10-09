@@ -2,6 +2,7 @@
 import { For, createComputed, Accessor } from "ags";
 import { compositor } from "utils/compositor/detector";
 import { Gdk } from "ags/gtk4";
+import { Workspace } from "utils/compositor/types";
 
 const monitorIndexMap = compositor.monitors((monitors) => {
   return new Map(monitors.map((m, index) => [m.name, index]));
@@ -9,7 +10,7 @@ const monitorIndexMap = compositor.monitors((monitors) => {
 
 interface WorkspaceButtonData {
   id: number;
-  workspace: any;
+  workspace: Workspace | undefined;
   visible: boolean;
   monitorIndex: number | undefined;
 }

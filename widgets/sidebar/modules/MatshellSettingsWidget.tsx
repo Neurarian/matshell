@@ -161,7 +161,7 @@ export default function MatshellSettingsWidget() {
                 choices={OS_OPTIONS}
               />
               <OptionToggle
-                option="bar.modules.os-icon.show"
+                option="bar.modules.os-icon.enable"
                 label="Show OS Icon"
               />
             </box>
@@ -178,14 +178,14 @@ export default function MatshellSettingsWidget() {
           >
             <box orientation={Gtk.Orientation.VERTICAL} spacing={5}>
               <label label="Bar Visualizer" cssClasses={["subsection-title"]} />
-              <OptionToggle option="bar.modules.cava.show" label="Enable" />
+              <OptionToggle option="bar.modules.cava.enable" label="Enable" />
               <OptionSelect
                 option="bar.modules.cava.style"
                 label="Cava Style"
                 choices={CAVA_STYLE_OPTIONS}
               />
               <OptionToggle
-                option="bar.modules.media.cava.show"
+                option="bar.modules.media.cava.enable"
                 label="Enable Cover Cava"
               />
               <Gtk.Separator />
@@ -194,11 +194,11 @@ export default function MatshellSettingsWidget() {
                 cssClasses={["subsection-title"]}
               />
               <OptionToggle
-                option="musicPlayer.modules.cava.show"
+                option="music-player.modules.cava.enable"
                 label="Enable"
               />
               <OptionSelect
-                option="musicPlayer.modules.cava.style"
+                option="music-player.modules.cava.style"
                 label="Style"
                 choices={CAVA_STYLE_OPTIONS}
               />

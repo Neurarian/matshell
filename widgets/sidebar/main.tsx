@@ -9,6 +9,7 @@ import QuickActionsWidget from "./modules/QuickActionWidget";
 import TemplateWidget from "./modules/BaseTemplateWidget";
 import options from "options";
 import HardwareMonitorWidget from "./modules/HardwareWidget/main";
+import { gdkmonitor } from "utils/monitors";
 
 /** ---------- Sidebar Window ---------- **/
 export default function Sidebar(
@@ -34,26 +35,34 @@ export default function Sidebar(
       application={app}
       visible={visible}
       widthRequest={320}
+      gdkmonitor={gdkmonitor}
     >
-      <box
-        orientation={Gtk.Orientation.VERTICAL}
-        hexpand={false}
-        vexpand={true}
+      <scrolledwindow
+        minContentHeight={100}
+        hscrollbarPolicy={Gtk.PolicyType.NEVER}
+        vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
+        cssClasses={["sidebar-scroll"]}
       >
-        {/* Built-in widgets */}
-        <ClockWidget />
-        <Gtk.Separator />
-        <WeatherWidget />
-        <MatshellSettingsWidget />
-        <HardwareMonitorWidget />
-        <box vexpand />
-        <QuickActionsWidget />
-        {/*
+        <box
+          orientation={Gtk.Orientation.VERTICAL}
+          hexpand={false}
+          vexpand={true}
+        >
+          {/* Built-in widgets */}
+          <ClockWidget />
+          <Gtk.Separator />
+          <WeatherWidget />
+          <MatshellSettingsWidget />
+          <HardwareMonitorWidget />
+          <box vexpand />
+          <QuickActionsWidget />
+          {/*
         <TemplateWidget />
         */}
-        {/* Extra widgets */}
-        {children}
-      </box>
+          {/* Extra widgets */}
+          {children}
+        </box>
+      </scrolledwindow>
     </window>
   );
 }

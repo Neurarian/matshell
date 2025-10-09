@@ -1,7 +1,7 @@
 import { Gdk } from "ags/gtk4";
 import app from "ags/gtk4/app";
 import GObject, { register } from "ags/gobject";
-import { createBinding, Accessor } from "ags";
+import { createBinding, createConnection, Accessor } from "ags";
 import { CompositorAdapter, Monitor, Workspace, Client } from "./types";
 
 // Lazy import
@@ -121,12 +121,9 @@ export class HyprlandAdapter
       };
     });
 
-    this.clients = createBinding(
-      this.hyprland,
-      "clients",
-    )((clients: any[]): Client[] => {
+    const getClientsList = (): Client[] => {
       const focused = this.hyprland.get_focused_client();
-      return clients.map((client) => ({
+      return this.hyprland.get_clients().map((client: any) => ({
         address: client.get_address(),
         title: client.get_title(),
         class: client.get_class(),
@@ -136,7 +133,14 @@ export class HyprlandAdapter
         fullscreen: client.get_fullscreen() !== 0,
         focused: client === focused,
       }));
-    });
+    };
+
+    this.clients = createConnection(
+      getClientsList(),
+      [this.hyprland, "client-added", getClientsList],
+      [this.hyprland, "client-moved", getClientsList],
+      [this.hyprland, "client-removed", getClientsList],
+    );
   }
 
   isAvailable(): boolean {
@@ -149,6 +153,14 @@ export class HyprlandAdapter
 
   focusWorkspace(id: string | number): void {
     this.hyprland.dispatch("workspace", String(id));
+  }
+
+  focusClient(address: string): void {
+    try {
+      this.hyprland.dispatch("focuswindow", `address:0x${address}`);
+    } catch (e) {
+      console.error("Failed to focus client:", e);
+    }
   }
 
   matchMonitor(compositorMonitor: Monitor): Gdk.Monitor | null {

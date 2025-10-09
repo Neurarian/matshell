@@ -5,6 +5,7 @@ import { compositor } from "utils/compositor/detector";
 import { SysTray, hasTrayItems } from "./modules/SysTray.tsx";
 import Separator from "./modules/Separator.tsx";
 import { HyprlandWorkspaces, RiverWorkspaces } from "./modules/Workspaces.tsx";
+import { Clients } from "./modules/Clients.tsx";
 import Mem from "./modules/Mem.tsx";
 import Cpu from "./modules/Cpu.tsx";
 import { CavaDraw } from "widgets/music/modules/cava";
@@ -40,16 +41,28 @@ function Bar({ gdkmonitor, ...props }: any) {
   );
 
   const showCavaExpanded = createComputed(
-    [options["bar.modules.cava.show"], options["bar.style"]],
+    [options["bar.modules.cava.enable"], options["bar.style"]],
     (cavaEnabled, barStyle) => {
       return cavaEnabled && ["expanded", "corners"].includes(String(barStyle));
     },
   );
 
   const showCavaFloating = createComputed(
-    [options["bar.modules.cava.show"], options["bar.style"]],
+    [options["bar.modules.cava.enable"], options["bar.style"]],
     (cavaEnabled, barStyle) => {
       return cavaEnabled && barStyle === "floating";
+    },
+  );
+
+  const showClients = createComputed(
+    [options["bar.modules.clients.enable"], compositor.clients],
+    (clientsEnabled, allClients) => {
+      if (!clientsEnabled) return false;
+      const monitorName = gdkmonitor?.get_connector() || null;
+      const monitorClients = monitorName
+        ? allClients.filter((c) => c.monitor === monitorName)
+        : allClients;
+      return monitorClients.length > 0;
     },
   );
 
@@ -96,7 +109,7 @@ function Bar({ gdkmonitor, ...props }: any) {
         <centerbox cssClasses={["centerbox"]}>
           <box hexpand halign={Gtk.Align.START} $type="start">
             <box
-              visible={options["bar.modules.os-icon.show"]((value) =>
+              visible={options["bar.modules.os-icon.enable"]((value) =>
                 Boolean(value),
               )}
             >
@@ -105,7 +118,13 @@ function Bar({ gdkmonitor, ...props }: any) {
             {compositor.name === "river" ? (
               <RiverWorkspaces gdkmonitor={gdkmonitor} />
             ) : (
-              <HyprlandWorkspaces />
+              <>
+                <HyprlandWorkspaces />
+                <box visible={showClients}>
+                  <Separator />
+                  <Clients gdkmonitor={gdkmonitor} />
+                </box>
+              </>
             )}
           </box>
           <box

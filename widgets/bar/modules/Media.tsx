@@ -21,7 +21,7 @@ function Cover({ player }) {
         cssClasses={["cava-container"]}
         $type="overlay"
         canTarget={false}
-        visible={options["bar.modules.media.cava.show"]((s) => Boolean(s))}
+        visible={options["bar.modules.media.cava.enable"]((s) => Boolean(s))}
       >
         <CavaDraw vexpand hexpand style={"circular"} />
       </box>

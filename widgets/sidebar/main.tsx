@@ -37,12 +37,6 @@ export default function Sidebar(
       widthRequest={320}
       gdkmonitor={gdkmonitor}
     >
-      <scrolledwindow
-        minContentHeight={100}
-        hscrollbarPolicy={Gtk.PolicyType.NEVER}
-        vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
-        cssClasses={["sidebar-scroll"]}
-      >
         <box
           orientation={Gtk.Orientation.VERTICAL}
           hexpand={false}
@@ -62,7 +56,6 @@ export default function Sidebar(
           {/* Extra widgets */}
           {children}
         </box>
-      </scrolledwindow>
     </window>
   );
 }

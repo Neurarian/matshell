@@ -247,7 +247,7 @@ https://github.com/user-attachments/assets/7a7851e3-9ebc-4f52-8b0f-e9a062122d9e
 <p align="center">
 <b>Full bar mode & cava in bar</b>
 
-<img width="3439" height="1440" alt="20251009_194519" src="https://github.com/user-attachments/assets/3d4133fc-d3f5-46bb-b4e4-07d69e26ff4b" />
+<img width="3439" height="1440" alt="20251010_003407" src="https://github.com/user-attachments/assets/64dd646d-c3c0-4190-b5da-5c7e9503e905" />
 
 ### 🌞 Light Theme
 

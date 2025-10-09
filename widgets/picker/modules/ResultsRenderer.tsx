@@ -5,6 +5,7 @@ import { WallpaperItem } from "utils/picker/types";
 import { ItemButton } from "./ItemButton";
 import { WallpaperGrid } from "./WallpaperGrid";
 import { CommandSuggestions } from "./CommandSuggestions";
+import { ThemeControls } from "./ThemeControls";
 
 interface ResultsRendererProps {
   picker: PickerCoordinator;
@@ -136,9 +137,7 @@ function ActionBar({ picker }: { picker: PickerCoordinator }) {
           />
         </button>
       )}
-
-      <box hexpand />
-
+      <ThemeControls picker={picker} />
       {config?.features?.random && (
         <button
           cssClasses={["action-button"]}

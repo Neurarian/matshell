@@ -22,12 +22,17 @@ export class WallpaperStore extends GObject.Object {
   @property(String) currentWallpaperPath: string = "";
   @property(Boolean) includeHidden: boolean = false;
   @property(Number) maxItems: number = 12;
+  @property(Object) manualMode: ThemeProperties["mode"] = "auto";
+  @property(String) manualScheme: ThemeProperties["scheme"] = "auto";
 
   @signal([Array], GObject.TYPE_NONE, { default: false })
   wallpapersChanged(wallpapers: WallpaperItem[]): undefined {}
 
   @signal([String], GObject.TYPE_NONE, { default: false })
   wallpaperSet(path: string): undefined {}
+
+  @signal([String, String], GObject.TYPE_NONE, { default: false })
+  themeSettingsChanged(mode: string, scheme: string): undefined {}
 
   private files: Gio.File[] = [];
   private fuse!: Fuse;
@@ -405,7 +410,29 @@ export class WallpaperStore extends GObject.Object {
   // Theme Processing
   private async applyWallpaperTheme(imagePath: string): Promise<void> {
     try {
-      const analysis = await this.analyzeImageColors(imagePath);
+      let analysis: ThemeProperties;
+
+      const needsAutoMode = this.manualMode === "auto";
+      const needsAutoScheme = this.manualScheme === "auto";
+      const needsAnalysis = needsAutoMode || needsAutoScheme;
+
+      if (!needsAnalysis) {
+        analysis = {
+          tone: 0, // Dummy values
+          chroma: 0,
+          mode: this.manualMode,
+          scheme: this.manualScheme,
+        };
+      } else {
+        const autoAnalysis = await this.analyzeImageColors(imagePath);
+
+        analysis = {
+          tone: autoAnalysis.tone,
+          chroma: autoAnalysis.chroma,
+          mode: needsAutoMode ? autoAnalysis.mode : this.manualMode,
+          scheme: needsAutoScheme ? autoAnalysis.scheme : this.manualScheme,
+        };
+      }
 
       await Promise.all([
         this.applyMatugen(imagePath, analysis),
@@ -585,6 +612,28 @@ export class WallpaperStore extends GObject.Object {
     } catch (error) {
       console.error("Failed to run matugen:", error);
       throw error;
+    }
+  }
+
+  setManualMode(mode: ThemeProperties["mode"]): void {
+    if (this.manualMode !== mode) {
+      this.manualMode = mode;
+      this.emit("theme-settings-changed", mode, this.manualScheme);
+
+      if (this.currentWallpaperPath) {
+        this.scheduleThemeUpdate(this.currentWallpaperPath);
+      }
+    }
+  }
+
+  setManualScheme(scheme: ThemeProperties["scheme"]): void {
+    if (this.manualScheme !== scheme) {
+      this.manualScheme = scheme;
+      this.emit("theme-settings-changed", this.manualMode, scheme);
+
+      if (this.currentWallpaperPath) {
+        this.scheduleThemeUpdate(this.currentWallpaperPath);
+      }
     }
   }
 

@@ -46,33 +46,30 @@ scale progress {
 }
 
 /* popovers */
-popover {
-  background: rgb(30, 16, 12);
-  border-radius: 8px;
-  font-size: 1.1rem;
+popover.background {
+  background: transparent;
 }
-popover modelbutton {
+popover.background > contents {
+  background-color: rgba(71, 53, 48, 0.9);
+  border-radius: 8px;
+  padding: 0.25rem;
+  border: 1px solid rgba(249, 220, 213, 0.15);
+}
+popover.background modelbutton,
+popover.background row {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 213, 0.1);
-  border-radius: calc(8px * 1.97);
-  padding: 0.4rem;
+  border-radius: calc(8px * 0.75);
+  padding: 0.25rem 0.4rem;
+  margin: 2px 0;
 }
-popover modelbutton:hover {
-  background: rgba(71, 53, 48, 0.99);
+popover.background modelbutton:hover,
+popover.background row:hover {
+  background-color: rgba(255, 181, 158, 0.2);
 }
-popover modelbutton {
-  border-radius: 0;
-  padding: 0.4rem 0.7rem;
-}
-popover modelbutton:first-child {
-  border-radius: 8px 8px 0 0;
-}
-popover modelbutton:last-child {
-  border-radius: 0 0 8px 8px;
-}
-popover modelbutton:only-child {
-  border-radius: 8px;
+popover.background modelbutton:selected, popover.background modelbutton:active,
+popover.background row:selected,
+popover.background row:active {
+  background-color: rgba(255, 181, 158, 0.2);
 }
 
 /* buttons */
@@ -96,6 +93,59 @@ popover modelbutton:only-child {
 }
 .button-disabled:hover {
   background: rgba(71, 53, 48, 0.99);
+}
+
+/* buttons */
+.button {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+  border-radius: calc(8px * 1.97);
+  padding: 0.4rem;
+}
+.button:hover {
+  background: rgba(255, 181, 158, 0.3);
+}
+
+.button-disabled {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  background: rgba(71, 53, 48, 0.6);
+  border: 1px solid rgba(249, 220, 213, 0.1);
+  border-radius: calc(8px * 1.97);
+  padding: 0.4rem;
+}
+.button-disabled:hover {
+  background: rgba(71, 53, 48, 0.99);
+}
+
+/* dropdowns */
+.dropdown button {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+  border-radius: calc(8px * 1.97);
+  padding: 0.4rem;
+}
+.dropdown button:hover {
+  background: rgba(255, 181, 158, 0.3);
+}
+.dropdown button {
+  border-radius: 1.1rem;
+  padding: 0.4rem 0.4rem;
+  border: 1px solid rgba(249, 220, 213, 0.1);
+  background-color: rgba(71, 53, 48, 0.6);
+  transition: all 200ms ease;
+}
+.dropdown button:hover {
+  border-color: rgba(249, 220, 213, 0.3);
+  background-color: rgba(71, 53, 48, 0.6);
+}
+.dropdown button:active {
+  background-color: rgba(255, 181, 158, 0.2);
+}
+.dropdown button label {
+  margin-top: 0.1rem;
+  margin-left: 1.35rem;
 }
 
 /* modules & windows */
@@ -529,6 +579,11 @@ box.picker box.not-found label {
 }
 
 .action-bar {
+  border-radius: calc(16px - 0.4rem - 2px);
+  box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
+  margin: 0.4rem;
+  padding: 0.4rem;
   padding: 0.4rem;
 }
 .action-bar .action-icon {
@@ -550,10 +605,21 @@ box.picker box.not-found label {
   background: rgba(255, 181, 158, 0.3);
 }
 .action-bar .action-button:focus, .action-bar .action-button:hover {
-  background-color: rgba(255, 181, 158, 0.3);
+  background-color: rgba(255, 181, 158, 0.2);
   border: transparent;
   border-radius: 5rem;
   padding: 0.2rem 0.4rem;
+}
+
+.theme-controls {
+  margin: 0.25rem 0.75rem;
+}
+.theme-controls .option-label {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: rgb(249, 220, 213);
+  opacity: 0.85;
+  margin-right: 0.25rem;
 }
 
 .command-suggestions {

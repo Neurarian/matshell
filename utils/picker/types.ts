@@ -38,7 +38,7 @@ export interface ProviderConfig {
   };
 }
 
-export interface ISearchProvider<T> {
+export interface ISearchProvider<T = PickerItem> {
   readonly command: string;
   readonly config: ProviderConfig;
   search(query: string): Promise<void>;
@@ -46,7 +46,7 @@ export interface ISearchProvider<T> {
   dispose?(): void;
   refresh?(): Promise<void>;
   random?(): Promise<void>;
-  delete?(item:T): Promise<void>;
+  delete?(item: T): Promise<void>;
   wipe?(): Promise<void>;
   getThumbnail?(imagePath: string): Promise<Gdk.Texture | null>;
 }

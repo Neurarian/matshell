@@ -3,7 +3,7 @@ import { PickerItem, ISearchProvider } from "./types";
 import { FrecencyManager } from "./frecency/manager.ts";
 import { ProviderConfig } from "./types";
 
-export type SearchProvider<T = PickerItem> = BaseProvider & ISearchProvider<T>;
+export type SearchProvider = BaseProvider & ISearchProvider;
 
 @register({ GTypeName: "BaseProvider" })
 export class BaseProvider extends GObject.Object {

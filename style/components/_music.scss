@@ -4,7 +4,7 @@
 .music.window {
   @include window;
   background: none;
-  padding: 0;
+  padding: 0rem;
   margin-top: $spacing-md;
 
   .cover {

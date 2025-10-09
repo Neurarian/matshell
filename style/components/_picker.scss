@@ -168,6 +168,7 @@ box.picker {
 }
 
 .action-bar {
+  @include window-box;
   padding: $spacing-sm;
   .action-icon {
     @include material-icon;
@@ -179,11 +180,23 @@ box.picker {
     &:focus,
     &:hover {
       @include button-active;
-      background-color: $buttonEnabledHover;
+      background-color: $buttonEnabled;
       border: transparent;
       border-radius: 5rem;
       padding: 0.2rem 0.4rem;
     }
+  }
+}
+
+.theme-controls {
+  margin: $spacing-xs $spacing-md;
+
+  .option-label {
+    font-size: $font;
+    font-weight: 500;
+    color: $fg;
+    opacity: 0.85;
+    margin-right: $spacing-xs;
   }
 }
 
@@ -219,3 +232,4 @@ box.picker {
     }
   }
 }
+

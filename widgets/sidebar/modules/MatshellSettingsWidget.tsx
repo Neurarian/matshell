@@ -1,6 +1,7 @@
 // widgets/sidebar/modules/MatshellSettingsWidget.tsx
 import { Gtk } from "ags/gtk4";
 import { createState, onCleanup } from "ags";
+import { CenteredDropDown } from "widgets/common/CenteredDropDown";
 import {
   OptionSelectProps,
   OptionToggleProps,
@@ -20,32 +21,13 @@ function OptionSelect({ option, label, choices = [] }: OptionSelectProps) {
         hexpand={true}
         cssClasses={["option-label"]}
       />
-      <Gtk.ComboBoxText
-        cssClasses={["option-dropdown"]}
-        onChanged={(self) => {
-          const selectedIndex = self.get_active();
-          const selectedChoice = choices[selectedIndex];
-          options[option].value = selectedChoice.value;
+      <CenteredDropDown
+        options={choices}
+        selected={String(options[option].get())}
+        onSelected={(id) => {
+          options[option].value = id;
         }}
-        $={(self) => {
-          // Populate items
-          choices.forEach((choice) => {
-            self.append_text(choice.label);
-          });
-
-          // Find current value and set active index
-          const currentValue = String(options[option].get());
-          const initialIndex = choices.findIndex(
-            (choice) => choice.value === currentValue,
-          );
-
-          if (initialIndex !== -1) {
-            self.set_active(initialIndex);
-          } else {
-            self.set_active(0);
-            options[option].value = choices[0].value;
-          }
-        }}
+        cssClasses={["dropdown"]}
       />
     </box>
   );

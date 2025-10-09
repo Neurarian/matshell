@@ -1,4 +1,5 @@
 @use "../abstracts" as *;
+@use "sass:color";
 
 tooltip.background,
 tooltip > box {
@@ -31,23 +32,31 @@ scale {
 }
 
 /* popovers */
-popover {
-  background: $tooltipBg;
-  border-radius: $round;
-  font-size: $font;
-  modelbutton {
-    @include button;
-    border-radius: 0;
-    padding: 0.4rem 0.7rem;
+popover.background {
+  background: transparent;
 
-    &:first-child {
-      border-radius: $round $round 0 0;
+  > contents {
+    @include light-mode-shadow;
+    background-color: color.adjust($surface, $alpha: 0.3);
+    border-radius: $round;
+    padding: $spacing-xs;
+    border: 1px solid color.adjust($fg, $alpha: -0.85);
+  }
+
+  modelbutton,
+  row {
+    @include animate;
+    border-radius: calc(#{$round} * 0.75);
+    padding: $spacing-xs $spacing-sm;
+    margin: 2px 0;
+
+    &:hover {
+      background-color: $buttonEnabled;
     }
-    &:last-child {
-      border-radius: 0 0 $round $round;
-    }
-    &:only-child {
-      border-radius: $round;
+
+    &:selected,
+    &:active {
+      background-color: $buttonEnabled;
     }
   }
 }
@@ -59,4 +68,40 @@ popover {
 
 .button-disabled {
   @include button;
+}
+
+/* buttons */
+.button {
+  @include button-active;
+}
+
+.button-disabled {
+  @include button;
+}
+
+/* dropdowns */
+.dropdown {
+  button {
+    @include button-active;
+    border-radius: 1.1rem;
+    padding: $spacing-sm $spacing-sm;
+    border: 1px solid color.adjust($fg, $alpha: -0.9);
+    background-color: $surface;
+    transition: all 200ms ease;
+
+    &:hover {
+      border-color: color.adjust($fg, $alpha: -0.7);
+      background-color: $surface;
+    }
+
+    &:active {
+      background-color: $buttonEnabled;
+    }
+    label {
+      // centering in the dropdown still isn't perfect
+      // hacky & ugly but works
+      margin-top: 0.1rem;
+      margin-left: 1.35rem;
+    }
+  }
 }

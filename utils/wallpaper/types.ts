@@ -6,11 +6,33 @@ export interface CachedThumbnail {
   lastAccessed: number;
 }
 
+export const THEME_MODE_OPTIONS = [
+  { value: "auto", label: "Auto" },
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+] as const;
+
+export const THEME_SCHEME_OPTIONS = [
+  { value: "auto", label: "Auto" },
+  { value: "scheme-tonal-spot", label: "Tonal Spot" },
+  { value: "scheme-vibrant", label: "Vibrant" },
+  { value: "scheme-neutral", label: "Neutral" },
+  { value: "scheme-expressive", label: "Expressive" },
+  { value: "scheme-monochrome", label: "Monochrome" },
+  { value: "scheme-fidelity", label: "Fidelity" },
+  { value: "scheme-content", label: "Content" },
+  { value: "scheme-rainbow", label: "Rainbow" },
+  { value: "scheme-fruit-salad", label: "Fruit Salad" },
+] as const;
+
+export type ThemeMode = (typeof THEME_MODE_OPTIONS)[number]["value"];
+export type ThemeScheme = (typeof THEME_SCHEME_OPTIONS)[number]["value"];
+
 export interface ThemeProperties {
   tone: number;
   chroma: number;
-  mode: "light" | "dark";
-  scheme: "scheme-neutral" | "scheme-vibrant";
+  mode: ThemeMode;
+  scheme: ThemeScheme;
 }
 
 export interface CachedThemeEntry extends ThemeProperties {

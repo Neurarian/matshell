@@ -161,6 +161,10 @@ export default function MatshellSettingsWidget() {
                 choices={OS_OPTIONS}
               />
               <OptionToggle
+                option="bar.modules.clients.enable"
+                label="Enable Hypr Clients"
+              />
+              <OptionToggle
                 option="bar.modules.os-icon.enable"
                 label="Show OS Icon"
               />

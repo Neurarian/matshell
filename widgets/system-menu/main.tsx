@@ -6,7 +6,6 @@ import { Sliders } from "./modules/Sliders.tsx";
 import { Toggles } from "./modules/Toggles.tsx";
 import { PowerProfileBox } from "./modules/PowerProfileBox.tsx";
 import { BatteryBox } from "./modules/BatteryBox.tsx";
-import { NotificationBox } from "./modules/notification-center/main.tsx";
 import options from "options.ts";
 import { gdkmonitor } from "utils/monitors.ts";
 
@@ -44,7 +43,6 @@ export default function SystemMenu() {
         {hasProfiles && <PowerProfileBox />}
         <Sliders />
         <BatteryBox />
-        <NotificationBox />
       </box>
     </window>
   );

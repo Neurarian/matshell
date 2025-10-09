@@ -25,13 +25,13 @@
     color: $os;
   }
 
-  /* Hyperland */
+  /* Hyperland & River */
   .Workspaces {
     margin: 0.4rem 0;
 
     button {
       background: rgba(0, 0, 0, 0.3);
-      border-radius: 0.7rem;
+      border-radius: $round2;
       margin: 0.6rem 0.35rem;
       min-width: 1.5rem;
       min-height: 1.5rem;
@@ -57,6 +57,44 @@
 
     .monitor3 {
       @include hypr-workspace-style($fourthMon, $fourthMonHover);
+    }
+  }
+
+  .Clients {
+    margin: 0.4rem 0;
+
+    .client-button {
+      @include animate;
+      background: transparent;
+      border-radius: $round2;
+      padding: $spacing-xs;
+
+      &:hover {
+        background: color.adjust($fg, $alpha: -0.9);
+      }
+
+      &.focused {
+        .client-icon {
+          -gtk-icon-size: 1.4rem;
+        }
+      }
+
+      &:not(.focused) {
+        opacity: 0.6;
+
+        .client-icon {
+          -gtk-icon-size: $font;
+          margin: 0 0.5rem;
+        }
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+
+      .client-icon {
+        @include animate;
+      }
     }
   }
 
@@ -88,7 +126,6 @@
 
   /* tray */
   .SysTray {
-    background: none;
     image {
       -gtk-icon-size: $font;
     }
@@ -99,10 +136,6 @@
 
     &:not(:last-child) {
       margin-right: -0.3rem;
-    }
-
-    &.active {
-      background: $surface;
     }
   }
 

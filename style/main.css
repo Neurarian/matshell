@@ -123,14 +123,14 @@ popover modelbutton:only-child {
   color: rgb(220, 193, 185);
 }
 .Bar {
-  /* Hyperland */
+  /* Hyperland & River */
 }
 .Bar .Workspaces {
   margin: 0.4rem 0;
 }
 .Bar .Workspaces button {
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 0.7rem;
+  border-radius: 16px;
   margin: 0.6rem 0.35rem;
   min-width: 1.5rem;
   min-height: 1.5rem;
@@ -172,6 +172,34 @@ popover modelbutton:only-child {
   background: rgb(148.6, 106.15, 76.65);
   box-shadow: inset -2px -2px 2px rgb(111.45, 79.6125, 57.4875);
 }
+.Bar .Clients {
+  margin: 0.4rem 0;
+}
+.Bar .Clients .client-button {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  background: transparent;
+  border-radius: 16px;
+  padding: 0.25rem;
+}
+.Bar .Clients .client-button:hover {
+  background: rgba(249, 220, 213, 0.1);
+}
+.Bar .Clients .client-button.focused .client-icon {
+  -gtk-icon-size: 1.4rem;
+}
+.Bar .Clients .client-button:not(.focused) {
+  opacity: 0.6;
+}
+.Bar .Clients .client-button:not(.focused) .client-icon {
+  -gtk-icon-size: 1.1rem;
+  margin: 0 0.5rem;
+}
+.Bar .Clients .client-button:not(.focused):hover {
+  opacity: 0.8;
+}
+.Bar .Clients .client-button .client-icon {
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+}
 .Bar {
   /* music */
 }
@@ -198,9 +226,6 @@ popover modelbutton:only-child {
 .Bar {
   /* tray */
 }
-.Bar .SysTray {
-  background: none;
-}
 .Bar .SysTray image {
   -gtk-icon-size: 1.1rem;
 }
@@ -209,9 +234,6 @@ popover modelbutton:only-child {
 }
 .Bar .SysTray:not(:last-child) {
   margin-right: -0.3rem;
-}
-.Bar .SysTray.active {
-  background: rgba(71, 53, 48, 0.6);
 }
 .Bar {
   /* hw-monitor */

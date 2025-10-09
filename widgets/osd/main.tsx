@@ -15,6 +15,7 @@ export default function OnScreenDisplay() {
       visible={visible}
       name="osd"
       layer={Astal.Layer.OVERLAY}
+      exclusivity={Astal.Exclusivity.IGNORE}
       gdkmonitor={gdkmonitor}
       anchor={options["bar.position"]((pos) => {
         switch (pos) {

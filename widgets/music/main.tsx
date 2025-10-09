@@ -1,7 +1,12 @@
 import app from "ags/gtk4/app";
 import { Astal, Gtk } from "ags/gtk4";
 import Mpris from "gi://AstalMpris";
-import { createBinding, createState, With, onCleanup } from "ags";
+import {
+  createBinding,
+  createState,
+  With,
+  onCleanup,
+} from "ags";
 import Gio from "gi://Gio?version=2.0";
 import { findPlayer, generateBackground } from "utils/mpris";
 import { Cover } from "./modules/Cover";
@@ -79,12 +84,28 @@ export default function MusicPlayer() {
   const mpris = Mpris.get_default();
   const { TOP, BOTTOM } = Astal.WindowAnchor;
   const [visible, _setVisible] = createState(false);
+
+  const topMargin = options["bar.position"]((pos) => {
+    if (pos === "top") {
+      return 45;
+    }
+    return 0;
+  });
+
+  const bottomMargin = options["bar.position"]((pos) => {
+    if (pos === "bottom") {
+      return 45;
+    }
+    return 0;
+  });
+
   return (
     <window
       name="music-player"
       cssClasses={["music", "window"]}
       application={app}
       layer={Astal.Layer.OVERLAY}
+      exclusivity={Astal.Exclusivity.IGNORE}
       anchor={options["bar.position"]((pos) => {
         switch (pos) {
           case "top":
@@ -98,6 +119,8 @@ export default function MusicPlayer() {
       keymode={Astal.Keymode.ON_DEMAND}
       visible={visible}
       gdkmonitor={gdkmonitor}
+      marginTop={topMargin}
+      marginBottom={bottomMargin}
     >
       <box>
         <With value={createBinding(mpris, "players")}>

@@ -20,8 +20,6 @@ function isThemeProvider(
 ): provider is ISearchProvider & WallpaperProvider {
   return (
     provider !== undefined &&
-    "setThemeMode" in provider &&
-    "setThemeScheme" in provider &&
     "ThemeMode" in provider &&
     "ThemeScheme" in provider
   );

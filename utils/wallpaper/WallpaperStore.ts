@@ -1,26 +1,33 @@
+// wallpaper/WallpaperStore.ts
 import GObject from "ags/gobject";
 import Gio from "gi://Gio";
-import GLib from "gi://GLib";
 import { Gdk } from "ags/gtk4";
 import { Accessor } from "ags";
-import { Process, subprocess, execAsync } from "ags/process";
 import { timeout, Timer } from "ags/time";
 import { register, property, signal } from "ags/gobject";
 import { getThumbnailManager, ThumbnailManager } from ".";
+import { FileSystemScanner } from "./FileSystemScanner";
+import { WallpaperSetter } from "./WallpaperSetter";
+import { ThemeAnalyzer } from "./ThemeAnalyzer";
+import { ThemeApplicator } from "./ThemeApplicator";
+import { LRUCache } from "./LRUCache";
 import options from "options";
 import Fuse from "../fuse.js";
 import type { WallpaperItem } from "utils/picker/types.ts";
-import type {
-  CachedThemeEntry,
-  CachedThumbnail,
-  ThemeProperties,
-} from "./types.ts";
+import type { CachedThemeEntry, ThemeProperties } from "./types.ts";
+import { monitorFile } from "ags/file.ts";
+
+interface WallpaperSettings {
+  directory: Accessor<string>;
+  current: Accessor<string>;
+  maxCacheSize: Accessor<number>;
+  includeHidden: boolean;
+}
 
 @register({ GTypeName: "WallpaperStore" })
 export class WallpaperStore extends GObject.Object {
   @property(Array) wallpapers: WallpaperItem[] = [];
   @property(String) currentWallpaperPath: string = "";
-  @property(Boolean) includeHidden: boolean = false;
   @property(Number) maxItems: number = 12;
   @property(Object) manualMode: ThemeProperties["mode"] = "auto";
   @property(String) manualScheme: ThemeProperties["scheme"] = "auto";
@@ -36,235 +43,149 @@ export class WallpaperStore extends GObject.Object {
 
   private files: Gio.File[] = [];
   private fuse!: Fuse;
-
-  // Configuration accessors
-  private wallpaperDir: Accessor<string>;
-  private currentWallpaper: Accessor<string>;
-  private maxThemeCacheSize: Accessor<number>;
-
+  private settings: WallpaperSettings;
   private unsubscribers: (() => void)[] = [];
-
-  // Caching
-  private thumbnailCache = new Map<string, CachedThumbnail>();
-  private themeCache = new Map<string, CachedThemeEntry>();
-  private thumbnailCleanupInterval: any;
-
-  // Debounce fast theme changes
   private themeDebounceTimer: Timer | null = null;
   private readonly THEME_DEBOUNCE_DELAY = 100;
+  private dirMonitor: Gio.FileMonitor | null = null;
+  private reloadDebounceTimer: Timer | null = null;
+  private readonly RELOAD_DEBOUNCE_DELAY = 1000;
 
-  // Thumbnail generation
+  private fileScanner: FileSystemScanner;
+  private wallpaperSetter: WallpaperSetter;
+  private themeAnalyzer: ThemeAnalyzer;
+  private themeApplicator: ThemeApplicator;
+  private themeCache: LRUCache<CachedThemeEntry>;
   private thumbnailManager: ThumbnailManager;
-
-  private swwwDaemon: Process | null = null;
 
   constructor(params: { includeHidden?: boolean } = {}) {
     super();
 
+    // Option accesssor configuration
+    this.settings = {
+      directory: options["wallpaper.dir"]((wd) => String(wd)),
+      current: options["wallpaper.current"]((w) => String(w)),
+      maxCacheSize: options["wallpaper.theme.cache-size"]((s) => Number(s)),
+      includeHidden: params.includeHidden ?? false,
+    };
+
+    this.fileScanner = new FileSystemScanner();
+    this.wallpaperSetter = new WallpaperSetter();
+    this.themeAnalyzer = new ThemeAnalyzer();
+    this.themeApplicator = new ThemeApplicator();
+    this.themeCache = new LRUCache(this.settings.maxCacheSize.get());
     this.thumbnailManager = getThumbnailManager();
-    this.includeHidden = params.includeHidden ?? false;
 
-    // Setup accessors from options
-    this.wallpaperDir = options["wallpaper.dir"]((wd) => String(wd));
-    this.currentWallpaper = options["wallpaper.current"]((w) => String(w));
-    this.maxThemeCacheSize = options["wallpaper.theme.cache-size"]((s) =>
-      Number(s),
-    );
-
-    // Connect to option changes
     this.setupWatchers();
-
-    // Init
     this.loadThemeCache();
     this.loadWallpapers();
-    this.initSwww();
   }
 
   private setupWatchers(): void {
-    const dirUnsubscribe = this.wallpaperDir.subscribe(() => {
+    const dirUnsubscribe = this.settings.directory.subscribe(() => {
       this.loadWallpapers();
+      this.setupDirectoryMonitor();
     });
-    this.unsubscribers.push(dirUnsubscribe);
+
+    const cacheSizeUnsubscribe = this.settings.maxCacheSize.subscribe(() => {
+      const newSize = this.settings.maxCacheSize.get();
+      this.themeCache.updateMaxSize(newSize);
+    });
+
+    this.unsubscribers.push(dirUnsubscribe, cacheSizeUnsubscribe);
+    this.setupDirectoryMonitor();
+  }
+  private setupDirectoryMonitor(): void {
+    // Clean up old monitor
+    if (this.dirMonitor) {
+      this.dirMonitor.cancel();
+      this.dirMonitor = null;
+    }
+
+    const dirPath = this.settings.directory.get();
+
+    try {
+      this.dirMonitor = monitorFile(
+        dirPath,
+        (file: string, event: Gio.FileMonitorEvent) => {
+          // Only react to relevant events
+          if (
+            event === Gio.FileMonitorEvent.CREATED ||
+            event === Gio.FileMonitorEvent.DELETED ||
+            event === Gio.FileMonitorEvent.MOVED_IN ||
+            event === Gio.FileMonitorEvent.MOVED_OUT
+          ) {
+            this.scheduleWallpaperReload();
+          }
+        },
+      );
+      console.log(`Monitoring wallpaper directory: ${dirPath}`);
+    } catch (error) {
+      console.warn("Failed to setup directory monitor:", error);
+    }
   }
 
-  private async initSwww(): Promise<void> {
-    const swww = GLib.find_program_in_path("swww");
+  async setWallpaper(file: Gio.File): Promise<void> {
+    const imagePath = file.get_path();
+    if (!imagePath) {
+      throw new Error("Could not get file path for wallpaper");
+    }
 
-    if (!swww) {
-      console.log("swww not found, will use hyprpaper fallback");
+    const currentWallpaper = this.settings.current.get();
+    if (currentWallpaper === imagePath) return;
+
+    const result = await this.wallpaperSetter.setWallpaper(imagePath);
+
+    if (!result.success) {
+      throw result.error || new Error("Failed to set wallpaper");
+    }
+
+    options["wallpaper.current"].value = imagePath;
+    this.currentWallpaperPath = imagePath;
+
+    this.emit("wallpaper-set", imagePath);
+    this.scheduleThemeUpdate(imagePath);
+  }
+
+  async setRandomWallpaper(): Promise<void> {
+    if (this.wallpapers.length === 0) {
+      throw new Error("No wallpapers available for random selection");
+    }
+
+    // Don't use current one
+    const filteredWallpapers = this.wallpapers.filter(
+      (item) => item.path !== this.settings.current.get(),
+    );
+
+    if (filteredWallpapers.length === 0) {
+      console.log("Only one wallpaper available, keeping current");
       return;
     }
 
-    try {
-      if (await this.isSwwwRunning()) {
-        console.log("swww daemon already running");
-        return;
-      }
+    const randomIndex = Math.floor(Math.random() * filteredWallpapers.length);
+    const randomWallpaper = filteredWallpapers[randomIndex];
 
-      this.swwwDaemon = subprocess(
-        ["swww-daemon"],
-        (stdout: string) => {
-          if (stdout.trim()) console.debug("swww-daemon:", stdout.trim());
-        },
-        (stderr: string) => {
-          if (stderr.trim()) console.debug("swww-daemon:", stderr.trim());
-        },
-      );
-    } catch (error) {
-      console.warn("Failed to start swww daemon:", error);
-      console.log("Will use hyprpaper fallback");
-    }
+    await this.setWallpaper(randomWallpaper.file);
   }
 
-  private async isSwwwRunning(): Promise<boolean> {
-    try {
-      await execAsync(["swww", "query"]);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  private loadThemeCache(): void {
-    try {
-      const persistentCache = options["wallpaper.theme.cache"].get() as Record<
-        string,
-        any
-      >;
-      for (const [path, entry] of Object.entries(persistentCache)) {
-        if (typeof entry === "object" && entry.timestamp) {
-          this.themeCache.set(path, entry as CachedThemeEntry);
-        }
-      }
-    } catch (error) {
-      console.warn("Failed to load theme cache:", error);
-    }
-  }
-
-  private saveThemeCache(): void {
-    setTimeout(() => {
-      try {
-        const persistentCache: Record<string, CachedThemeEntry> = {};
-        for (const [path, entry] of this.themeCache) {
-          persistentCache[path] = entry;
-        }
-        options["wallpaper.theme.cache"].value = persistentCache as any;
-      } catch (error) {
-        console.error("Failed to save theme cache:", error);
-      }
-    }, 0);
-  }
-
-  // Wallpaper Loading & Scanning
-  private loadWallpapers(): void {
-    try {
-      const dirPath = this.wallpaperDir.get();
-      if (!GLib.file_test(dirPath, GLib.FileTest.EXISTS)) {
-        console.warn(`Wallpaper directory does not exist: ${dirPath}`);
-        this.updateWallpapers([], []);
-        return;
-      }
-
-      this.files = this.ls(dirPath, {
-        level: 2,
-        includeHidden: this.includeHidden,
-      }).filter((file) => {
-        const info = file.query_info(
-          Gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
-          Gio.FileQueryInfoFlags.NONE,
-          null,
-        );
-        return info.get_content_type()?.startsWith("image/") ?? false;
-      });
-
-      const items = this.files.map((file) => {
-        const path = file.get_path();
-        return {
-          id: path || file.get_uri(),
-          name: file.get_basename() || "Unknown",
-          description: "Image",
-          iconName: "image-x-generic",
-          path: path ?? undefined,
-          file: file,
-        };
-      });
-
-      this.updateWallpapers(this.files, items);
-      console.log(`Loaded ${this.files.length} wallpapers from ${dirPath}`);
-    } catch (error) {
-      console.error("Failed to load wallpapers:", error);
-      this.updateWallpapers([], []);
-    }
-  }
-
-  private updateWallpapers(files: Gio.File[], items: WallpaperItem[]): void {
-    this.files = files;
-    this.wallpapers = items;
-    this.updateFuse();
-    this.emit("wallpapers-changed", items);
-  }
-
-  private ls(
-    dir: string,
-    props?: { level?: number; includeHidden?: boolean },
-  ): Gio.File[] {
-    const { level = 0, includeHidden = false } = props ?? {};
-    if (!GLib.file_test(dir, GLib.FileTest.IS_DIR)) {
-      return [];
+  // Automatic with debounce on e.g. bulk download
+  private scheduleWallpaperReload(): void {
+    if (this.reloadDebounceTimer) {
+      this.reloadDebounceTimer.cancel();
     }
 
-    const files: Gio.File[] = [];
-    try {
-      const enumerator = Gio.File.new_for_path(dir).enumerate_children(
-        "standard::name,standard::type",
-        Gio.FileQueryInfoFlags.NONE,
-        null,
-      );
-
-      for (const info of enumerator) {
-        const file = enumerator.get_child(info);
-        const basename = file.get_basename();
-
-        if (basename?.startsWith(".") && !includeHidden) {
-          continue;
-        }
-
-        const type = file.query_file_type(Gio.FileQueryInfoFlags.NONE, null);
-        if (type === Gio.FileType.DIRECTORY && level > 0) {
-          files.push(
-            ...this.ls(file.get_path()!, {
-              includeHidden,
-              level: level - 1,
-            }),
-          );
-        } else {
-          files.push(file);
-        }
-      }
-    } catch (error) {
-      console.error(`Failed to list directory ${dir}:`, error);
-    }
-
-    return files;
-  }
-
-  private updateFuse(): void {
-    this.fuse = new Fuse(this.wallpapers, {
-      keys: ["name"],
-      includeScore: true,
-      threshold: 0.6,
-      location: 0,
-      distance: 100,
-      minMatchCharLength: 1,
-      ignoreLocation: true,
-      ignoreFieldNorm: false,
-      useExtendedSearch: false,
-      shouldSort: true,
-      isCaseSensitive: false,
+    this.reloadDebounceTimer = timeout(this.RELOAD_DEBOUNCE_DELAY, () => {
+      console.log("Reloading wallpapers due to filesystem changes");
+      this.loadWallpapers();
+      this.reloadDebounceTimer = null;
     });
   }
 
-  // Public API Methods
+  // Manual
+  async refresh(): Promise<void> {
+    this.loadWallpapers();
+  }
+
   search(text: string): WallpaperItem[] {
     if (!text || text.trim().length === 0) {
       return [];
@@ -272,347 +193,6 @@ export class WallpaperStore extends GObject.Object {
 
     const results = this.fuse.search(text, { limit: this.maxItems });
     return results.map((result) => result.item);
-  }
-
-  async setRandomWallpaper(): Promise<void> {
-    if (this.wallpapers.length === 0) {
-      console.warn("No wallpapers available for random selection");
-      return;
-    }
-
-    const currentWallpaperPath = this.currentWallpaper.get();
-    const availableWallpapers = this.wallpapers.filter(
-      (item) => item.path !== currentWallpaperPath,
-    );
-
-    const wallpapers =
-      availableWallpapers.length > 0 ? availableWallpapers : this.wallpapers;
-    const randomIndex = Math.floor(Math.random() * wallpapers.length);
-    const randomWallpaper = wallpapers[randomIndex];
-
-    await this.setWallpaper(randomWallpaper.file);
-  }
-
-  async refresh(): Promise<void> {
-    this.loadWallpapers();
-  }
-
-  // Wallpaper Setting & Theme Application
-  async setWallpaper(file: Gio.File): Promise<void> {
-    const imagePath = file.get_path();
-    if (!imagePath) {
-      console.error("Could not get file path for wallpaper");
-      return;
-    }
-
-    const currentWallpaper = this.currentWallpaper.get();
-    if (currentWallpaper === imagePath) {
-      return;
-    }
-
-    // Update current wallpaper immediately
-    options["wallpaper.current"].value = imagePath;
-    this.currentWallpaperPath = imagePath;
-
-    try {
-      // Try swww first (universal)
-      if (await this.setWallpaperSwww(imagePath)) {
-        console.log("Wallpaper set with swww");
-      } else {
-        // Fallback to hyprpaper
-        console.log("Falling back to hyprpaper");
-        await this.setWallpaperHyprctl(imagePath);
-      }
-
-      this.scheduleThemeUpdate(imagePath);
-      this.emit("wallpaper-set", imagePath);
-    } catch (error) {
-      console.error("Wallpaper setting failed:", error);
-      options["wallpaper.current"].value = currentWallpaper;
-      this.currentWallpaperPath = currentWallpaper;
-    }
-  }
-  private async setWallpaperSwww(imagePath: string): Promise<boolean> {
-    const swww = GLib.find_program_in_path("swww");
-    if (!swww) return false;
-
-    try {
-      if (!(await this.isSwwwRunning())) {
-        console.log("swww daemon not running, attempting to start...");
-        await this.initSwww();
-      }
-
-      await execAsync([
-        "swww",
-        "img",
-        imagePath,
-        "--transition-type",
-        "fade",
-        "--transition-duration",
-        "1",
-        "--transition-fps",
-        "60",
-      ]);
-
-      return true;
-    } catch (error) {
-      console.error("swww failed:", error);
-      return false;
-    }
-  }
-
-  private async setWallpaperHyprctl(imagePath: string): Promise<void> {
-    const hyprctl = GLib.find_program_in_path("hyprctl");
-    if (!hyprctl) {
-      throw new Error("hyprctl not found");
-    }
-
-    console.log(`Setting wallpaper with hyprpaper: ${imagePath}`);
-
-    // Unload and get monitors in parallel
-    const unloadPromise = execAsync([hyprctl, "hyprpaper", "unload", "all"]);
-    const monitorPromise = execAsync([hyprctl, "monitors", "-j"]);
-
-    const [, monitorOutput] = await Promise.all([
-      unloadPromise,
-      monitorPromise,
-    ]);
-
-    // Preload after unload completes
-    await execAsync([hyprctl, "hyprpaper", "preload", imagePath]);
-
-    const monitors = JSON.parse(monitorOutput);
-
-    await Promise.all(
-      monitors.map((monitor: any) =>
-        execAsync([
-          hyprctl,
-          "hyprpaper",
-          "wallpaper",
-          `${monitor.name},${imagePath}`,
-        ]),
-      ),
-    );
-  }
-  private scheduleThemeUpdate(imagePath: string): void {
-    if (this.themeDebounceTimer) {
-      this.themeDebounceTimer.cancel();
-    }
-
-    this.themeDebounceTimer = timeout(this.THEME_DEBOUNCE_DELAY, () => {
-      this.applyWallpaperTheme(imagePath).catch((error) => {
-        console.error("Theme application failed:", error);
-      });
-      this.themeDebounceTimer = null;
-    });
-  }
-
-  // Theme Processing
-  private async applyWallpaperTheme(imagePath: string): Promise<void> {
-    try {
-      let analysis: ThemeProperties;
-
-      const needsAutoMode = this.manualMode === "auto";
-      const needsAutoScheme = this.manualScheme === "auto";
-      const needsAnalysis = needsAutoMode || needsAutoScheme;
-
-      if (!needsAnalysis) {
-        analysis = {
-          tone: 0, // Dummy values
-          chroma: 0,
-          mode: this.manualMode,
-          scheme: this.manualScheme,
-        };
-      } else {
-        const autoAnalysis = await this.analyzeImageColors(imagePath);
-
-        analysis = {
-          tone: autoAnalysis.tone,
-          chroma: autoAnalysis.chroma,
-          mode: needsAutoMode ? autoAnalysis.mode : this.manualMode,
-          scheme: needsAutoScheme ? autoAnalysis.scheme : this.manualScheme,
-        };
-      }
-
-      await Promise.all([
-        this.applyMatugen(imagePath, analysis),
-        this.writeThemeVariables(analysis),
-      ]);
-
-      setTimeout(() => this.sendThemeNotification(imagePath, analysis), 0);
-    } catch (error) {
-      console.error("Failed to apply wallpaper theme:", error);
-    }
-  }
-
-  private async analyzeImageColors(
-    imagePath: string,
-  ): Promise<ThemeProperties> {
-    // Check cache first
-    const cached = this.themeCache.get(imagePath);
-    if (cached) {
-      return {
-        tone: cached.tone,
-        chroma: cached.chroma,
-        mode: cached.mode,
-        scheme: cached.scheme,
-      };
-    }
-
-    let analysis: ThemeProperties;
-
-    // Try image-hct first (fastest)
-    const imageHct = GLib.find_program_in_path("image-hct");
-    if (imageHct) {
-      try {
-        const output = await execAsync(
-          `bash -c '${imageHct} "${imagePath}" tone; ${imageHct} "${imagePath}" chroma'`,
-        );
-        const lines = output.trim().split("\n");
-        if (lines.length >= 2) {
-          const tone = parseInt(lines[0].trim());
-          const chroma = parseInt(lines[1].trim());
-          analysis = {
-            tone,
-            chroma,
-            mode: tone > 60 ? "light" : "dark",
-            scheme: chroma < 20 ? "scheme-neutral" : "scheme-vibrant",
-          };
-
-          this.cacheThemeAnalysis(imagePath, analysis);
-          return analysis;
-        }
-      } catch (error) {
-        console.warn("image-hct failed, trying ImageMagick fallback:", error);
-      }
-    }
-
-    // Try ImageMagick fallback
-    try {
-      const magickAnalysis = await this.analyzeWithImageMagick(imagePath);
-      if (magickAnalysis) {
-        this.cacheThemeAnalysis(imagePath, magickAnalysis);
-        return magickAnalysis;
-      }
-    } catch (error) {
-      console.error(
-        "ImageMagick failed, make sure to have either image-hct OR ImageMagick installed",
-        error,
-      );
-    }
-    // Fallback to default theme if all methods fail
-    return {
-      tone: 50,
-      chroma: 30,
-      mode: "dark",
-      scheme: "scheme-vibrant",
-    };
-  }
-
-  private async analyzeWithImageMagick(
-    imagePath: string,
-  ): Promise<ThemeProperties | null> {
-    const magick =
-      GLib.find_program_in_path("magick") ||
-      GLib.find_program_in_path("convert");
-    if (!magick) return null;
-
-    try {
-      const bashCommand = `bash -c '
-        BRIGHTNESS=$(${magick} "${imagePath}" -colorspace Gray -format "%[fx:mean]" info:)
-        COLOR=$(${magick} "${imagePath}" -scale 1x1! -format "%[pixel:u.p{0,0}]" info:)
-        echo "brightness:$BRIGHTNESS"
-        echo "color:$COLOR"
-      '`;
-
-      const output = await execAsync(bashCommand);
-      const lines = output.trim().split("\n");
-
-      let brightness = 50;
-      let isGrayscale = false;
-
-      for (const line of lines) {
-        if (line.startsWith("brightness:")) {
-          const value = parseFloat(line.substring(11));
-          if (!isNaN(value)) {
-            brightness = Math.round(value * 100);
-          }
-        } else if (line.startsWith("color:")) {
-          const colorValue = line.substring(6);
-          const colorMatch = colorValue.match(/srgb\((\d+),(\d+),(\d+)\)/);
-          if (colorMatch) {
-            const [, r, g, b] = colorMatch.map(Number);
-            const maxDiff = Math.max(
-              Math.abs(r - g),
-              Math.abs(r - b),
-              Math.abs(g - b),
-            );
-            isGrayscale = maxDiff < 20;
-          }
-        }
-      }
-
-      return {
-        tone: brightness,
-        chroma: isGrayscale ? 10 : 40,
-        mode: brightness > 50 ? "light" : "dark",
-        scheme: isGrayscale ? "scheme-neutral" : "scheme-vibrant",
-      };
-    } catch (error) {
-      console.warn("ImageMagick analysis failed:", error);
-      return null;
-    }
-  }
-
-  private cacheThemeAnalysis(
-    imagePath: string,
-    analysis: ThemeProperties,
-  ): void {
-    const entry: CachedThemeEntry = {
-      ...analysis,
-      timestamp: Date.now(),
-    };
-
-    this.themeCache.set(imagePath, entry);
-
-    if (this.themeCache.size > this.maxThemeCacheSize.get()) {
-      setTimeout(() => this.cleanupThemeCache(), 0);
-    }
-    this.saveThemeCache();
-  }
-
-  private cleanupThemeCache(): void {
-    const maxSize = this.maxThemeCacheSize.get();
-    if (this.themeCache.size <= maxSize) return;
-
-    const entries = Array.from(this.themeCache.entries()).sort(
-      (a, b) => a[1].timestamp - b[1].timestamp,
-    );
-
-    const toRemove = this.themeCache.size - maxSize;
-    for (let i = 0; i < toRemove; i++) {
-      this.themeCache.delete(entries[i][0]);
-    }
-  }
-
-  private async applyMatugen(
-    imagePath: string,
-    analysis: ThemeProperties,
-  ): Promise<void> {
-    const matugen = GLib.find_program_in_path("matugen");
-    if (!matugen) {
-      console.warn("matugen not found, skipping color theme generation");
-      return;
-    }
-
-    try {
-      await execAsync(
-        `${matugen} -t "${analysis.scheme}" -m "${analysis.mode}" image "${imagePath}"`,
-      );
-    } catch (error) {
-      console.error("Failed to run matugen:", error);
-      throw error;
-    }
   }
 
   setManualMode(mode: ThemeProperties["mode"]): void {
@@ -637,60 +217,8 @@ export class WallpaperStore extends GObject.Object {
     }
   }
 
-  private writeThemeVariables(analysis: ThemeProperties): void {
-    try {
-      const configDir = GLib.get_user_config_dir();
-      const scssFile = `${configDir}/ags/style/abstracts/_theme_variables_matugen.scss`;
-      const content = [
-        "",
-        "/* Theme mode and scheme variables */",
-        `$darkmode: ${analysis.mode === "dark"};`,
-        `$material-color-scheme: "${analysis.scheme}";`,
-        "",
-      ].join("\n");
-
-      const file = Gio.File.new_for_path(scssFile);
-      file.replace_contents(
-        new TextEncoder().encode(content),
-        null,
-        false,
-        Gio.FileCreateFlags.REPLACE_DESTINATION,
-        null,
-      );
-    } catch (error) {
-      console.error("Failed to write theme variables:", error);
-      throw error;
-    }
-  }
-
-  private sendThemeNotification(
-    imagePath: string,
-    analysis: ThemeProperties,
-  ): void {
-    try {
-      const notifySend = GLib.find_program_in_path("notify-send");
-      if (!notifySend) return;
-
-      const basename = GLib.path_get_basename(imagePath);
-      const message = `Theme: ${analysis.mode} ${analysis.scheme}`;
-
-      GLib.spawn_command_line_async(
-        `${notifySend} "Colors and Wallpaper updated" "Image: ${basename}\n${message}"`,
-      );
-    } catch (error) {
-      console.error("Failed to send notification:", error);
-    }
-  }
-
-  // Thumbnail Management
   async getThumbnail(imagePath: string): Promise<Gdk.Texture | null> {
     return this.thumbnailManager.getThumbnail(imagePath);
-  }
-
-  // Utility Methods
-  clearThumbnailCache(): void {
-    this.thumbnailCache.clear();
-    console.log("Thumbnail cache cleared");
   }
 
   clearThemeCache(): void {
@@ -699,12 +227,151 @@ export class WallpaperStore extends GObject.Object {
     console.log("Theme cache cleared");
   }
 
-  dispose(): void {
-    console.log("Disposing WallpaperStore");
+  private loadWallpapers(): void {
+    try {
+      const dirPath = this.settings.directory.get();
+      const files = this.fileScanner.scan(dirPath, {
+        includeHidden: this.settings.includeHidden,
+        maxDepth: 2,
+      });
 
+      const imageFiles = files.filter((file) =>
+        this.fileScanner.isImageFile(file),
+      );
+
+      const items: WallpaperItem[] = imageFiles.map((file) => {
+        const path = file.get_path();
+        return {
+          id: path || file.get_uri(),
+          name: file.get_basename() || "Unknown",
+          description: "Image",
+          iconName: "image-x-generic",
+          path: path ?? undefined,
+          file: file,
+        };
+      });
+
+      this.files = imageFiles;
+      this.wallpapers = items;
+      this.updateFuse();
+      this.emit("wallpapers-changed", items);
+
+      console.log(`Loaded ${imageFiles.length} wallpapers from ${dirPath}`);
+    } catch (error) {
+      console.error("Failed to load wallpapers:", error);
+      this.files = [];
+      this.wallpapers = [];
+      this.emit("wallpapers-changed", []);
+    }
+  }
+
+  private updateFuse(): void {
+    this.fuse = new Fuse(this.wallpapers, {
+      keys: ["name"],
+      includeScore: true,
+      threshold: 0.6,
+      location: 0,
+      distance: 100,
+      minMatchCharLength: 1,
+      ignoreLocation: true,
+      ignoreFieldNorm: false,
+      useExtendedSearch: false,
+      shouldSort: true,
+      isCaseSensitive: false,
+    });
+  }
+
+  private scheduleThemeUpdate(imagePath: string): void {
+    if (this.themeDebounceTimer) {
+      this.themeDebounceTimer.cancel();
+    }
+
+    this.themeDebounceTimer = timeout(this.THEME_DEBOUNCE_DELAY, () => {
+      this.applyWallpaperTheme(imagePath).catch((error) => {
+        console.error("Theme application failed:", error);
+      });
+      this.themeDebounceTimer = null;
+    });
+  }
+
+  private async applyWallpaperTheme(imagePath: string): Promise<void> {
+    try {
+      let analysis: ThemeProperties;
+
+      const needsAutoMode = this.manualMode === "auto";
+      const needsAutoScheme = this.manualScheme === "auto";
+
+      if (!needsAutoMode && !needsAutoScheme) {
+        analysis = {
+          tone: 0,
+          chroma: 0,
+          mode: this.manualMode,
+          scheme: this.manualScheme,
+        };
+      } else {
+        // Check cache first
+        const cached = this.themeCache.get(imagePath);
+
+        if (cached) {
+          analysis = {
+            tone: cached.tone,
+            chroma: cached.chroma,
+            mode: needsAutoMode ? cached.mode : this.manualMode,
+            scheme: needsAutoScheme ? cached.scheme : this.manualScheme,
+          };
+        } else {
+          const autoAnalysis = await this.themeAnalyzer.analyzeImage(imagePath);
+
+          this.themeCache.set(imagePath, {
+            ...autoAnalysis,
+            timestamp: Date.now(),
+          });
+          this.saveThemeCache();
+
+          analysis = {
+            tone: autoAnalysis.tone,
+            chroma: autoAnalysis.chroma,
+            mode: needsAutoMode ? autoAnalysis.mode : this.manualMode,
+            scheme: needsAutoScheme ? autoAnalysis.scheme : this.manualScheme,
+          };
+        }
+      }
+
+      await this.themeApplicator.applyTheme(imagePath, analysis);
+    } catch (error) {
+      console.error("Failed to apply wallpaper theme:", error);
+    }
+  }
+
+  private loadThemeCache(): void {
+    const persistentCache = options["wallpaper.theme.cache"].get();
+    this.themeCache.fromJSON(persistentCache);
+  }
+
+  private saveThemeCache(): void {
+    setTimeout(() => {
+      try {
+        options["wallpaper.theme.cache"].value = this.themeCache.toJSON();
+      } catch (error) {
+        console.error("Failed to save theme cache:", error);
+      }
+    }, 0);
+  }
+
+  dispose(): void {
     if (this.themeDebounceTimer) {
       this.themeDebounceTimer.cancel();
       this.themeDebounceTimer = null;
+    }
+
+    if (this.reloadDebounceTimer) {
+      this.reloadDebounceTimer.cancel();
+      this.reloadDebounceTimer = null;
+    }
+
+    if (this.dirMonitor) {
+      this.dirMonitor.cancel();
+      this.dirMonitor = null;
     }
 
     this.unsubscribers.forEach((unsubscribe) => {
@@ -716,22 +383,7 @@ export class WallpaperStore extends GObject.Object {
     });
     this.unsubscribers = [];
 
-    if (this.thumbnailCleanupInterval) {
-      clearInterval(this.thumbnailCleanupInterval);
-      this.thumbnailCleanupInterval = undefined;
-    }
-
-    // Stop swww daemon if we started it
-    if (this.swwwDaemon) {
-      try {
-        this.swwwDaemon.kill();
-        console.log("swww daemon stopped");
-      } catch (error) {
-        console.error("Failed to stop swww daemon:", error);
-      }
-    }
-
-    this.clearThumbnailCache();
-    this.clearThemeCache();
+    this.wallpaperSetter.dispose();
+    this.themeCache.clear();
   }
 }

@@ -31,7 +31,8 @@
 
     button {
       background: rgba(0, 0, 0, 0.3);
-      border-radius: $round2;
+      //higher radius values cause ugly artifacts sometimes
+      border-radius: 0.71rem;
       margin: 0.6rem 0.35rem;
       min-width: 1.5rem;
       min-height: 1.5rem;

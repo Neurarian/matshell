@@ -18,10 +18,6 @@ export const PasswordDialog = () => {
   const handleCancel = () => {
     setShowPasswordDialog(false);
     setErrorMessage("");
-    const window = app.get_window("system-menu");
-    if (window) {
-      window.set_default_size(-1, -1);
-    }
   };
 
   return (

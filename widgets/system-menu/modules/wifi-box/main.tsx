@@ -86,13 +86,7 @@ export const WiFiBox = () => {
         transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
         transitionDuration={300}
         revealChild={isExpanded}
-        onNotifyChildRevealed={(revealer) => {
-          const window = app.get_window("system-menu");
-          if (window && !revealer.childRevealed) {
-            window.set_default_size(-1, -1);
-          }
-        }}
-        $={(self) => {
+        $={() => {
           const unsubscribeExpanded = isExpanded.subscribe(() => {
             const expanded = isExpanded.get();
 

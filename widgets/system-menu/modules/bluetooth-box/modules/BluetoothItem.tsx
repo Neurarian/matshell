@@ -30,12 +30,6 @@ export const BluetoothItem = ({ device }) => {
         revealChild={itemButtonsRevealed}
         transitionDuration={200}
         transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
-        onNotifyChildRevealed={(revealer) => {
-          const window = app.get_window("system-menu");
-          if (window && !revealer.childRevealed) {
-            window.set_default_size(-1, -1);
-          }
-        }}
         $={(_self) => {
           const unsubscribeParent = isExpanded.subscribe(() => {
             if (!isExpanded.get()) setItemButtonsRevealed(false);

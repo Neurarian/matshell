@@ -1,7 +1,7 @@
 import { Astal, Gtk } from "ags/gtk4";
 import app from "ags/gtk4/app";
 import PowerProfiles from "gi://AstalPowerProfiles";
-import { createState } from "ags";
+import { createState, onCleanup } from "ags";
 import { Sliders } from "./modules/Sliders.tsx";
 import { Toggles } from "./modules/Toggles.tsx";
 import { PowerProfileBox } from "./modules/PowerProfileBox.tsx";
@@ -31,6 +31,11 @@ export default function SystemMenu() {
         }
       })}
       keymode={Astal.Keymode.ON_DEMAND}
+      // Fixes gtk4-layer-shell bug
+      // https://github.com/Aylur/astal/issues/258
+      $={(self) => {
+        self.set_default_size(1, 1);
+      }}
       visible={visible}
       gdkmonitor={gdkmonitor}
     >

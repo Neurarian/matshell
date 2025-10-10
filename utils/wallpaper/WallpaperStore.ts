@@ -1,4 +1,3 @@
-// wallpaper/WallpaperStore.ts
 import GObject from "ags/gobject";
 import Gio from "gi://Gio";
 import { Gdk } from "ags/gtk4";

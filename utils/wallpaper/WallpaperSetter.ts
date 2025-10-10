@@ -142,7 +142,6 @@ export class WallpaperSetter {
   async setWallpaper(imagePath: string): Promise<WallpaperSetResult> {
     for (const strategy of this.strategies) {
       if (await strategy.canSet()) {
-        console.log(`Trying ${strategy.name}...`);
         const result = await strategy.setWallpaper(imagePath);
 
         if (result.success) {

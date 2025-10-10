@@ -62,10 +62,35 @@ export class LRUCache<T> {
     return result;
   }
 
-  fromJSON(data: Record<string, CacheEntry<T>>): void {
+  fromJSON(data: unknown): void {
     this.cache.clear();
-    for (const [key, entry] of Object.entries(data)) {
-      this.cache.set(key, entry);
+
+    if (!data || typeof data !== "object") {
+      console.warn("Invalid cache data, skipping load");
+      return;
     }
+
+    const record = data as Record<string, unknown>;
+
+    for (const [key, value] of Object.entries(record)) {
+      if (this.isValidEntry(value)) {
+        this.cache.set(key, value as CacheEntry<T>);
+      } else {
+        console.warn(`Skipping invalid cache entry: ${key}`);
+      }
+    }
+  }
+
+  private isValidEntry(value: unknown): value is CacheEntry<T> {
+    if (!value || typeof value !== "object") {
+      return false;
+    }
+
+    const entry = value as any;
+    return (
+      "value" in entry &&
+      "timestamp" in entry &&
+      typeof entry.timestamp === "number"
+    );
   }
 }

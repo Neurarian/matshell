@@ -14,8 +14,7 @@ export class ThemeApplicator {
       this.writeThemeVariables(analysis),
     ]);
 
-    // Fire-and-forget notification
-    this.sendNotificationSafely(imagePath, analysis).catch((error) => {
+    this.sendNotification(imagePath, analysis).catch((error) => {
       console.warn("Failed to send theme notification:", error);
     });
   }
@@ -60,7 +59,7 @@ export class ThemeApplicator {
     }
   }
 
-  private async sendNotificationSafely(
+  private async sendNotification(
     imagePath: string,
     analysis: ThemeProperties,
   ): Promise<void> {

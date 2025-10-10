@@ -13,7 +13,7 @@ import { LRUCache } from "./LRUCache";
 import options from "options";
 import Fuse from "../fuse.js";
 import type { WallpaperItem } from "utils/picker/types.ts";
-import type { CachedThemeEntry, ThemeProperties } from "./types.ts";
+import type { ThemeProperties } from "./types.ts";
 import { monitorFile } from "ags/file.ts";
 
 interface WallpaperSettings {
@@ -40,7 +40,6 @@ export class WallpaperStore extends GObject.Object {
   @signal([String, String], GObject.TYPE_NONE, { default: false })
   themeSettingsChanged(mode: string, scheme: string): undefined {}
 
-  private files: Gio.File[] = [];
   private fuse!: Fuse;
   private settings: WallpaperSettings;
   private unsubscribers: (() => void)[] = [];
@@ -54,7 +53,7 @@ export class WallpaperStore extends GObject.Object {
   private wallpaperSetter: WallpaperSetter;
   private themeAnalyzer: ThemeAnalyzer;
   private themeApplicator: ThemeApplicator;
-  private themeCache: LRUCache<CachedThemeEntry>;
+  private themeCache: LRUCache<ThemeProperties>;
   private thumbnailManager: ThumbnailManager;
 
   constructor(params: { includeHidden?: boolean } = {}) {
@@ -250,7 +249,6 @@ export class WallpaperStore extends GObject.Object {
         };
       });
 
-      this.files = imageFiles;
       this.wallpapers = items;
       this.updateFuse();
       this.emit("wallpapers-changed", items);
@@ -258,7 +256,6 @@ export class WallpaperStore extends GObject.Object {
       console.log(`Loaded ${imageFiles.length} wallpapers from ${dirPath}`);
     } catch (error) {
       console.error("Failed to load wallpapers:", error);
-      this.files = [];
       this.wallpapers = [];
       this.emit("wallpapers-changed", []);
     }
@@ -321,10 +318,7 @@ export class WallpaperStore extends GObject.Object {
         } else {
           const autoAnalysis = await this.themeAnalyzer.analyzeImage(imagePath);
 
-          this.themeCache.set(imagePath, {
-            ...autoAnalysis,
-            timestamp: Date.now(),
-          });
+          this.themeCache.set(imagePath, autoAnalysis);
           this.saveThemeCache();
 
           analysis = {

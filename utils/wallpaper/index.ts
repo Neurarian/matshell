@@ -9,7 +9,6 @@ export { ThumbnailManager } from "./ThumbnailManager";
 export type {
   CachedThumbnail,
   ThemeProperties,
-  CachedThemeEntry,
   ThumbnailRequest,
 } from "./types";
 

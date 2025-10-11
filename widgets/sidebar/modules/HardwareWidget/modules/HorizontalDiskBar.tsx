@@ -1,5 +1,6 @@
 import { Gtk } from "ags/gtk4";
 import { Accessor } from "ags";
+import Pango from "gi://Pango?version=1.0";
 
 export function HorizontalDiskBar({
   mountPoint,
@@ -15,15 +16,15 @@ export function HorizontalDiskBar({
   // Truncate mount point if it's too long
   const truncatePath = (path: string, maxLength: number = 20): string => {
     if (path.length <= maxLength) return path;
-    
-    // For paths like /home/user/something, show /home/.../something
-    const parts = path.split('/').filter(p => p);
+
+    // For paths like /home/user/something, show /home/…/something
+    const parts = path.split("/").filter((p) => p);
     if (parts.length > 2) {
-      return `/${parts[0]}/.../${parts[parts.length - 1]}`;
+      return `/${parts[0]}/…/${parts[parts.length - 1]}`;
     }
-    
-    // Otherwise just truncate with ellipsis
-    return path.substring(0, maxLength - 3) + '...';
+
+    // Ellipse via Pango
+    return path;
   };
 
   return (
@@ -35,6 +36,7 @@ export function HorizontalDiskBar({
       <box orientation={Gtk.Orientation.HORIZONTAL} spacing={8}>
         <label
           label={truncatePath(mountPoint)}
+          ellipsize={Pango.EllipsizeMode.END}
           cssClasses={["disk-bar-mount"]}
           halign={Gtk.Align.START}
           hexpand

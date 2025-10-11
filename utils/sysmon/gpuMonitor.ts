@@ -4,11 +4,11 @@ import Gio from "gi://Gio";
 import { execAsync } from "ags/process";
 import {
   HardwareMonitor,
-  MonitorConfig,
   ByteFormatter,
   safeDivide,
   safeReadFile,
 } from "./base";
+import { MonitorConfig } from ".";
 
 @register()
 export class BaseGpuMonitor extends HardwareMonitor {
@@ -157,9 +157,15 @@ export class GpuMonitorFactory {
       monitor = new NvidiaGpuMonitor();
       monitor.detected = true;
     } else {
-      console.warn("No supported GPU detected");
-      monitor = new BaseGpuMonitor();
-      monitor.detected = false;
+      const amdMonitor = this.tryCreateAmdMonitor();
+      if (amdMonitor) {
+        monitor = amdMonitor;
+        monitor.detected = true;
+      } else {
+        console.warn("No supported GPU detected");
+        monitor = new BaseGpuMonitor();
+        monitor.detected = false;
+      }
     }
 
     monitor.initialize();

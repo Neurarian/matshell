@@ -2,10 +2,10 @@ import { register, property } from "ags/gobject";
 import GTop from "gi://GTop";
 import {
   HardwareMonitor,
-  MonitorConfig,
   ByteFormatter,
   safeDivide,
 } from "./base";
+import { MonitorConfig } from ".";
 
 @register({ GTypeName: "MemoryMonitor" })
 export class MemoryMonitor extends HardwareMonitor {

@@ -2,14 +2,6 @@ import GObject, { register } from "ags/gobject";
 import GLib from "gi://GLib?version=2.0";
 import { readFileAsync } from "ags/file";
 
-// Config
-export const MonitorConfig = {
-  UPDATE_INTERVAL: 1000,
-  DISK_UPDATE_INTERVAL: 5000,
-  HIGH_CPU_THRESHOLD: 0.9,
-  HIGH_MEMORY_THRESHOLD: 0.85,
-  THRESHOLD_DEBOUNCE_MS: 3000,
-} as const;
 
 /**
  * Base class for all hardware monitors

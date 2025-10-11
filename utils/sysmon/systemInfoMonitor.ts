@@ -1,6 +1,7 @@
 import { register, property } from "ags/gobject";
 import GTop from "gi://GTop";
-import { HardwareMonitor, MonitorConfig } from "./base";
+import { HardwareMonitor } from "./base";
+import { MonitorConfig } from ".";
 
 @register({ GTypeName: "SystemInfoMonitor" })
 export class SystemInfoMonitor extends HardwareMonitor {

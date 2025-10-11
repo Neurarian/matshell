@@ -4,10 +4,10 @@ import Gio from "gi://Gio";
 import GLib from "gi://GLib?version=2.0";
 import {
   HardwareMonitor,
-  MonitorConfig,
   ByteFormatter,
   safeReadFile,
 } from "./base";
+import { MonitorConfig } from ".";
 
 @register({ GTypeName: "NetworkMonitor" })
 export class NetworkMonitor extends HardwareMonitor {

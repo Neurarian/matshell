@@ -3,11 +3,11 @@ import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio";
 import {
   HardwareMonitor,
-  MonitorConfig,
   ByteFormatter,
   safeDivide,
   safeReadFile,
 } from "./base";
+import { MonitorConfig } from ".";
 
 export interface DiskInfo {
   mountPoint: string;

@@ -1,0 +1,320 @@
+@use "../../../layouts" as *;
+@use "../../../abstracts" as *;
+@use "sass:color";
+
+.timer-widget {
+  @include widget-container;
+  padding: $spacing-md;
+  border-radius: calc(#{$round} * 2);
+  background-color: color.adjust($barBg, $lightness: if($darkmode, 1%, -1%));
+
+  @if not $darkmode {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  // Widget header - consistent with other widgets
+  .widget-header {
+    margin: 0 $spacing-sm $spacing-sm $spacing-sm;
+    align-items: center;
+
+    .header-icon {
+      @include material-icon(24px);
+      color: $primary;
+      margin-right: $spacing-xs;
+    }
+
+    .header-title {
+      font-size: calc(#{$font} * 1.1);
+      font-weight: 700;
+      color: $fg;
+    }
+  }
+
+  // Add timer button
+  .timer-add-button {
+    @include button;
+    background: $buttonEnabled;
+    border-radius: $round2;
+    padding: $spacing-sm $spacing-md;
+    margin: 0;
+    border: 1px solid color.adjust($primary, $alpha: -0.3);
+
+    @if not $darkmode {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    &:hover {
+      background: color.adjust($buttonEnabled, $lightness: if($darkmode, 5%, -5%));
+
+      @if not $darkmode {
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    .timer-add-icon {
+      @include material-icon(20px);
+      color: $primary;
+    }
+  }
+
+  // Timer dialog
+  .timer-dialog {
+    background: color.adjust($barBg, $lightness: if($darkmode, 3%, -3%));
+    border: 1px solid color.adjust($fg, $alpha: -0.85);
+    border-radius: calc(#{$round} * 2);
+    padding: $spacing-md;
+    margin: 0;
+
+    @if not $darkmode {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dialog-title {
+      font-size: calc(#{$font} * 1.05);
+      font-weight: 600;
+      color: $fg;
+      margin-bottom: $spacing-sm;
+    }
+
+    // Time picker
+    .time-picker-container {
+      margin: $spacing-sm 0;
+    }
+
+    .time-picker-label {
+      font-size: calc(#{$font} * 0.85);
+      font-weight: 500;
+      color: color.adjust($fg, $alpha: -0.4);
+      text-transform: lowercase;
+      margin-bottom: $spacing-xs;
+    }
+
+    .time-picker-scroll {
+      background: color.adjust($barBg, $lightness: if($darkmode, -2%, 2%));
+      border: 1px solid color.adjust($fg, $alpha: -0.9);
+      border-radius: calc(#{$round} * 1.5);
+
+      @if not $darkmode {
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      scrollbar {
+        background: transparent;
+        border-radius: calc(#{$round} * 1);
+        min-width: 4px;
+
+        trough {
+          background: color.adjust($fg, $alpha: -0.95);
+          border-radius: calc(#{$round} * 1);
+          min-width: 4px;
+        }
+
+        slider {
+          background: color.adjust($fg, $alpha: -0.7);
+          border-radius: calc(#{$round} * 1);
+          min-width: 4px;
+          transition: all 100ms ease;
+
+          &:hover {
+            background: color.adjust($primary, $alpha: -0.5);
+          }
+        }
+      }
+    }
+
+    .time-picker-item {
+      @include button;
+      background: transparent;
+      border: none;
+      padding: $spacing-xs $spacing-sm;
+      font-family: "JetBrainsMono Nerd Font", monospace;
+      font-size: calc(#{$font} * 1.1);
+      color: color.adjust($fg, $alpha: -0.4);
+      transition: all 150ms ease;
+
+      &:hover {
+        background: color.adjust($fg, $alpha: -0.95);
+        color: $fg;
+      }
+    }
+
+    .time-picker-item-active {
+      background: $buttonEnabled;
+      color: $primary;
+      font-weight: 700;
+      font-size: calc(#{$font} * 1.3);
+
+      @if not $darkmode {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      &:hover {
+        background: $buttonEnabled;
+      }
+    }
+
+    .dialog-button {
+      @include button;
+      border-radius: calc(#{$round} * 1.5);
+      padding: $spacing-xs $spacing-sm;
+      font-size: calc(#{$font} * 0.9);
+
+      &-cancel {
+        background: transparent;
+        border: 1px solid color.adjust($fg, $alpha: -0.85);
+
+        &:hover {
+          background: $buttonDisabledHover;
+        }
+      }
+
+      &-confirm {
+        background: $buttonEnabled;
+        border: 1px solid color.adjust($primary, $alpha: -0.3);
+        color: $primary;
+        font-weight: 600;
+
+        &:hover {
+          background: color.adjust($buttonEnabled, $lightness: if($darkmode, 5%, -5%));
+        }
+      }
+    }
+  }
+
+  // Timer list
+  .timer-list {
+    margin-top: $spacing-xs;
+  }
+
+  // Empty state - consistent with other widgets
+  .timer-empty {
+    padding: $spacing-md 0;
+    text-align: center;
+
+    .empty-icon {
+      @include material-icon(64px);
+      color: color.adjust($fg, $alpha: -0.6);
+      margin-bottom: $spacing-sm;
+    }
+
+    .empty-text {
+      font-size: $font;
+      color: color.adjust($fg, $alpha: -0.4);
+    }
+  }
+
+  // Timer item
+  .timer-item {
+    background: color.adjust($barBg, $lightness: if($darkmode, 2%, -2%));
+    border: 1px solid color.adjust($fg, $alpha: -0.9);
+    border-radius: calc(#{$round} * 2);
+    padding: $spacing-sm $spacing-md;
+    margin: $spacing-xs 0;
+
+    @if not $darkmode {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .timer-time {
+      font-family: "JetBrainsMono Nerd Font", monospace;
+      font-size: calc(#{$font} * 1.5);
+      font-weight: 500;
+      color: color.adjust($fg, $alpha: -0.4);
+      transition: color 200ms ease;
+    }
+
+    .timer-active {
+      color: $primary;
+      font-weight: 700;
+    }
+
+    // Timer buttons
+    .timer-button {
+      @include button;
+      background: transparent;
+      border: 1px solid color.adjust($fg, $alpha: -0.85);
+      border-radius: calc(#{$round} * 1.5);
+      padding: $spacing-xs;
+      min-width: 36px;
+      min-height: 36px;
+
+      &:hover {
+        background: $buttonDisabledHover;
+      }
+
+      &-icon {
+        @include material-icon(18px);
+      }
+
+      &-start {
+        border-color: color.adjust($primary, $alpha: -0.5);
+
+        .timer-button-icon {
+          color: $primary;
+        }
+
+        &:hover {
+          background: color.adjust($buttonEnabled, $alpha: -0.7);
+        }
+      }
+
+      &-stop {
+        border-color: color.adjust($primary, $alpha: -0.5);
+
+        .timer-button-icon {
+          color: $primary;
+        }
+
+        &:hover {
+          background: color.adjust($primary, $alpha: -0.9);
+        }
+      }
+
+      &-reset {
+        &:hover {
+          background: $buttonDisabledHover;
+        }
+      }
+
+      &-delete {
+        border-color: color.adjust($error, $alpha: -0.7);
+
+        .timer-button-icon {
+          color: $error;
+        }
+
+        &:hover {
+          background: color.adjust($error, $alpha: -0.9);
+        }
+      }
+    }
+
+    // Progress bar
+    .timer-progress-container {
+      background: color.adjust($fg, $alpha: -0.95);
+      border-radius: calc(#{$round} * 1);
+      margin-top: $spacing-xs;
+
+      @if not $darkmode {
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .timer-progress-bar {
+      background: linear-gradient(90deg, $primary, color.adjust($primary, $lightness: 10%));
+      border-radius: calc(#{$round} * 1);
+      transition: width 1000ms linear;
+
+      @if not $darkmode {
+        box-shadow: 0 0 4px color.adjust($primary, $alpha: -0.5);
+      }
+    }
+  }
+
+  // Separators
+  separator {
+    background-color: color.adjust($fg, $alpha: -0.85);
+    margin: $spacing-md 0;
+    min-height: 1px;
+  }
+}

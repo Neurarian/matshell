@@ -6,7 +6,7 @@
 @use "./modules/weather.scss";
 @use "./modules/widgets.scss";
 @use "./modules/hardware.scss";
-
+@use "./modules/timer.scss";
 
 .sidebar {
   @include window;

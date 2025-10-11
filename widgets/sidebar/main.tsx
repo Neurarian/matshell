@@ -6,6 +6,7 @@ import ClockWidget from "./modules/ClockWidget";
 import WeatherWidget from "./modules/WeatherWidget";
 import MatshellSettingsWidget from "./modules/MatshellSettingsWidget";
 import QuickActionsWidget from "./modules/QuickActionWidget";
+import TimerWidget from "./modules/TimerWidget";
 import TemplateWidget from "./modules/BaseTemplateWidget";
 import options from "options";
 import HardwareMonitorWidget from "./modules/HardwareWidget/main";
@@ -46,6 +47,7 @@ export default function Sidebar(
           <ClockWidget />
           <Gtk.Separator />
           <WeatherWidget />
+          <TimerWidget />
           <MatshellSettingsWidget />
           <HardwareMonitorWidget />
           <box vexpand />

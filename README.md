@@ -2,7 +2,7 @@
 
 # Matshell
 
-### A GTK4 Material Design desktop shell powered by [AGS](https://github.com/Aylur/ags), [Astal](https://github.com/Aylur/astal), & [Gnim](https://github.com/aylur/gnim)
+### A GTK4 Material Design desktop shell powered by [AGS](https://github.com/Aylur/ags), [Astal](https://github.com/Aylur/astal), [Gnim](https://github.com/aylur/gnim), and [Matugen](https://github.com/InioX/matugen)
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/neurarian/matshell?style=for-the-badge&logo=gitlfs&logoColor=%23FFDBC9&labelColor=%2346362d&color=%23FFDBC9)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/neurarian/matshell?style=for-the-badge&logo=git&logoColor=%23FFB68D&labelColor=%2346362d&color=%23FFB68D)
@@ -19,7 +19,7 @@ ______________________________________________________________________
 
 </div>
 
-Matshell is a Material Design inspired desktop shell built with [AGS/Astal](https://github.com/Aylur/astal) for [Hyprland](https://github.com/hyprwm/Hyprland). This project draws heavy inspiration from [fufexan's](https://github.com/fufexan/dotfiles) AGSv1 config, with design influences from [saimoomedits](https://github.com/saimoomedits/eww-widgets), tailored for both multi-monitor desktop setups and laptops.
+Matshell is a GPU-accelerated Material Design inspired desktop shell built with [AGS/Astal](https://github.com/Aylur/astal) for [Hyprland](https://github.com/hyprwm/Hyprland). This project draws heavy inspiration from [fufexan's](https://github.com/fufexan/dotfiles) AGSv1 config, with design influences from [saimoomedits](https://github.com/saimoomedits/eww-widgets), tailored for both multi-monitor desktop setups and laptops.
 
 This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice sprinkled on top.
 
@@ -35,6 +35,7 @@ This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice
 - **Multimodal Fuzzy & Frecency Picker**: Apps, clipboard, wallpapers - all ranked by frequency + recency, loosely based on [gnofi](https://github.com/Aylur/gnofi).
 - **Nix Support**: Support for NixOS / Home-Manager with dedicated module
 - **Configurable**: Includes option menu to hot-reload styles and components
+- 
 
 <details>
   <summary>Show detailed components list</summary>

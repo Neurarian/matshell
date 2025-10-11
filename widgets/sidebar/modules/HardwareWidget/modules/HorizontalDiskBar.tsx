@@ -12,6 +12,20 @@ export function HorizontalDiskBar({
   used: string;
   total: string;
 }) {
+  // Truncate mount point if it's too long
+  const truncatePath = (path: string, maxLength: number = 20): string => {
+    if (path.length <= maxLength) return path;
+    
+    // For paths like /home/user/something, show /home/.../something
+    const parts = path.split('/').filter(p => p);
+    if (parts.length > 2) {
+      return `/${parts[0]}/.../${parts[parts.length - 1]}`;
+    }
+    
+    // Otherwise just truncate with ellipsis
+    return path.substring(0, maxLength - 3) + '...';
+  };
+
   return (
     <box
       cssClasses={["hw-disk-bar"]}
@@ -20,10 +34,11 @@ export function HorizontalDiskBar({
     >
       <box orientation={Gtk.Orientation.HORIZONTAL} spacing={8}>
         <label
-          label={mountPoint}
+          label={truncatePath(mountPoint)}
           cssClasses={["disk-bar-mount"]}
           halign={Gtk.Align.START}
           hexpand
+          tooltipText={mountPoint}
         />
         <label
           label={`${used} / ${total}`}
@@ -41,4 +56,3 @@ export function HorizontalDiskBar({
     </box>
   );
 }
-

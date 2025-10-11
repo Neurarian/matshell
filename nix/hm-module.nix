@@ -28,18 +28,18 @@ in {
           else self.packages.${pkgs.stdenv.hostPlatform.system}.matshell-hyprland;
         description = "The bundled matshell package to install.";
       };
-    };
 
-    autostart = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Whether to start matshell automatically.";
-    };
+      autostart = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Whether to start matshell automatically.";
+      };
 
-    matugenConfig = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Generate required matugen templates & config.";
+      matugenConfig = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Generate required matugen templates & config.";
+      };
     };
   };
 

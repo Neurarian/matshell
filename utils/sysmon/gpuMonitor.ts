@@ -152,20 +152,18 @@ export class GpuMonitorFactory {
   static create(): BaseGpuMonitor {
     let monitor: BaseGpuMonitor;
 
-    if (this.hasNvidiaGpu()) {
+    const amdMonitor = this.tryCreateAmdMonitor();
+    if (amdMonitor) {
+      monitor = amdMonitor;
+      monitor.detected = true;
+    } else if (this.hasNvidiaGpu()) {
       console.log("Monitoring Nvidia GPU (nvidia-smi)");
       monitor = new NvidiaGpuMonitor();
       monitor.detected = true;
     } else {
-      const amdMonitor = this.tryCreateAmdMonitor();
-      if (amdMonitor) {
-        monitor = amdMonitor;
-        monitor.detected = true;
-      } else {
-        console.warn("No supported GPU detected");
-        monitor = new BaseGpuMonitor();
-        monitor.detected = false;
-      }
+      console.warn("No supported GPU detected");
+      monitor = new BaseGpuMonitor();
+      monitor.detected = false;
     }
 
     monitor.initialize();

@@ -12,6 +12,7 @@ import {
 
 @register()
 export class BaseGpuMonitor extends HardwareMonitor {
+  @property(Boolean) detected = false;
   @property(Number) utilization = 0;
   @property(Number) utilizationPercent = 0;
   @property(Number) memoryUsed = 0;
@@ -154,15 +155,11 @@ export class GpuMonitorFactory {
     if (this.hasNvidiaGpu()) {
       console.log("Monitoring Nvidia GPU (nvidia-smi)");
       monitor = new NvidiaGpuMonitor();
-    }
-    else {
-      const amdMonitor = this.tryCreateAmdMonitor();
-      if (amdMonitor) {
-        monitor = amdMonitor;
-      } else {
-        console.warn("No supported GPU detected");
-        monitor = new BaseGpuMonitor();
-      }
+      monitor.detected = true;
+    } else {
+      console.warn("No supported GPU detected");
+      monitor = new BaseGpuMonitor();
+      monitor.detected = false;
     }
 
     monitor.initialize();

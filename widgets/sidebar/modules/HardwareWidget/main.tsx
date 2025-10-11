@@ -2,9 +2,15 @@ import { Gtk } from "ags/gtk4";
 import { createState, onCleanup, Accessor } from "ags";
 import { HardwarePage } from "./modules/HardwarePage";
 import { pageConfigs } from "./modules/pageConfigs";
+import SystemMonitor from "utils/sysmon";
 
 export default function HardwareMonitorWidget() {
   const [currentPage, setCurrentPage] = createState("cpu");
+  const sysmon = SystemMonitor.get_default();
+
+  const availablePages = pageConfigs.filter(
+    (page) => page.id !== "gpu" || sysmon.gpu.detected,
+  );
 
   return (
     <box
@@ -32,7 +38,7 @@ export default function HardwareMonitorWidget() {
         homogeneous
         spacing={2}
       >
-        {pageConfigs.map((page) => (
+        {availablePages.map((page) => (
           <button
             cssClasses={currentPage((current) =>
               current === page.id
@@ -60,7 +66,7 @@ export default function HardwareMonitorWidget() {
             onCleanup(unsubscribe);
           }}
         >
-          {pageConfigs.map((config) => {
+          {availablePages.map((config) => {
             const content = <HardwarePage {...config} />;
 
             return (

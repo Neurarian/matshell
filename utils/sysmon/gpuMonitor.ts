@@ -44,22 +44,25 @@ function parseNvidiaSmiOutput(output: string): {
   memTotal: number;
   temp: number;
 } | null {
-  const values = output
-    .trim()
-    .split(",")
-    .map((v) => v.trim());
+  const lines = output.trim().split("\n");
 
-  if (values.length < 4) {
-    return null;
+  for (const line of lines) {
+    const values = line.split(",").map((v) => v.trim());
+
+    if (values.length < 4) {
+      continue;
+    }
+
+    const [util, memUsed, memTotal, temp] = values.map(Number);
+
+    if (isNaN(util) || isNaN(memUsed) || isNaN(memTotal) || isNaN(temp)) {
+      continue;
+    }
+
+    return { util, memUsed, memTotal, temp };
   }
 
-  const [util, memUsed, memTotal, temp] = values.map(Number);
-
-  if (isNaN(util) || isNaN(memUsed) || isNaN(memTotal) || isNaN(temp)) {
-    return null;
-  }
-
-  return { util, memUsed, memTotal, temp };
+  return null;
 }
 
 @register({ GTypeName: "NvidiaGpuMonitor" })

@@ -1,4 +1,3 @@
-import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import { execAsync } from "ags/process";
 import type { ThemeProperties } from "./types";

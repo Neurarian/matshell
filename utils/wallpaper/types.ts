@@ -35,10 +35,6 @@ export interface ThemeProperties {
   scheme: ThemeScheme;
 }
 
-export interface CachedThemeEntry extends ThemeProperties {
-  timestamp: number;
-}
-
 export interface ThumbnailRequest {
   path: string;
   resolve: (texture: Gdk.Texture | null) => void;

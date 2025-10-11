@@ -45,6 +45,8 @@ export function ResultsRenderer({ picker }: ResultsRendererProps) {
                 return <ResultsContainer picker={picker} />;
               case "not-found":
                 return <NotFoundState query={picker.searchText} />;
+              case "empty":
+                return <EmptyState />;
               default:
                 return <box />;
             }
@@ -111,6 +113,21 @@ function NotFoundState({ query }: { query: string }) {
     >
       <image iconName="system-search-symbolic" />
       <label label={`No results found for "${query}"`} />
+    </box>
+  );
+}
+
+function EmptyState() {
+  return (
+    <box
+      halign={Gtk.Align.CENTER}
+      valign={Gtk.Align.CENTER}
+      cssClasses={["not-found"]}
+      orientation={Gtk.Orientation.VERTICAL}
+      spacing={12}
+    >
+      <image iconName="edit-find-symbolic" />
+      <label label="Search & select to populate your favorites based on frecency" />
     </box>
   );
 }

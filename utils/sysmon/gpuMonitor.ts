@@ -1,7 +1,7 @@
 import { register, property } from "ags/gobject";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio";
-import { execAsync } from "ags/process";
+import { exec, execAsync } from "ags/process";
 import {
   HardwareMonitor,
   ByteFormatter,
@@ -38,6 +38,30 @@ export class BaseGpuMonitor extends HardwareMonitor {
   }
 }
 
+function parseNvidiaSmiOutput(output: string): {
+  util: number;
+  memUsed: number;
+  memTotal: number;
+  temp: number;
+} | null {
+  const values = output
+    .trim()
+    .split(",")
+    .map((v) => v.trim());
+
+  if (values.length < 4) {
+    return null;
+  }
+
+  const [util, memUsed, memTotal, temp] = values.map(Number);
+
+  if (isNaN(util) || isNaN(memUsed) || isNaN(memTotal) || isNaN(temp)) {
+    return null;
+  }
+
+  return { util, memUsed, memTotal, temp };
+}
+
 @register({ GTypeName: "NvidiaGpuMonitor" })
 export class NvidiaGpuMonitor extends BaseGpuMonitor {
   async update(): Promise<void> {
@@ -46,28 +70,19 @@ export class NvidiaGpuMonitor extends BaseGpuMonitor {
         "nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv,noheader,nounits",
       );
 
-      const values = output
-        .trim()
-        .split(",")
-        .map((v) => v.trim());
-      if (values.length < 4) {
-        throw new Error("Unexpected nvidia-smi output format");
+      const parsed = parseNvidiaSmiOutput(output);
+      if (!parsed) {
+        throw new Error("Invalid nvidia-smi output");
       }
 
-      const [util, memUsed, memTotal, temp] = values.map(Number);
-
-      if (isNaN(util) || isNaN(memUsed) || isNaN(memTotal) || isNaN(temp)) {
-        throw new Error("Invalid numeric values from nvidia-smi");
-      }
-
-      this.utilization = util / 100;
-      this.memoryUsed = memUsed * 1024 * 1024;
-      this.memoryTotal = memTotal * 1024 * 1024;
-      this.temperature = temp;
+      this.utilization = parsed.util / 100;
+      this.memoryUsed = parsed.memUsed * 1024 * 1024;
+      this.memoryTotal = parsed.memTotal * 1024 * 1024;
+      this.temperature = parsed.temp;
 
       this.updateDerivedProperties();
     } catch (error) {
-      console.error("Nvidia GPU monitoring failed:", error);
+      console.error("Nvidia GPU monitoring encountered runtime error:", error);
     }
   }
 }
@@ -171,7 +186,26 @@ export class GpuMonitorFactory {
   }
 
   private static hasNvidiaGpu(): boolean {
-    return GLib.find_program_in_path("nvidia-smi") !== null;
+    if (GLib.find_program_in_path("nvidia-smi") === null) {
+      return false;
+    }
+
+    try {
+      const output = exec(
+        "nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv,noheader,nounits",
+      );
+
+      const parsed = parseNvidiaSmiOutput(output);
+      if (!parsed) {
+        console.log("nvidia-smi returned invalid output");
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Failed to validate nvidia-smi:", error);
+      return false;
+    }
   }
 
   private static tryCreateAmdMonitor(): AmdGpuMonitor | null {

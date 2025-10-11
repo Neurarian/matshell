@@ -121,12 +121,10 @@ function EmptyState() {
   return (
     <box
       halign={Gtk.Align.CENTER}
-      valign={Gtk.Align.CENTER}
       cssClasses={["not-found"]}
       orientation={Gtk.Orientation.VERTICAL}
-      spacing={12}
     >
-      <image iconName="edit-find-symbolic" />
+      <image iconName="system-search-symbolic" />
       <label label="Search & select to populate your favorites based on frecency" />
     </box>
   );

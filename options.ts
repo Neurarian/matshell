@@ -32,10 +32,6 @@ const options = await (async () => {
       "bar.modules.media.cava.enable": defineOption(true),
       "bar.modules.os-icon.type": defineOption("nix-symbolic"), // "nix-symbolic" or "arch-symbolic"
       "bar.modules.os-icon.enable": defineOption(true),
-      "hardware-monitor.notifications.enable": defineOption(true),
-      "hardware-monitor.thresholds.cpu-temp": defineOption(85),
-      "hardware-monitor.thresholds.gpu-temp": defineOption(85),
-      "hardware-monitor.thresholds.memory": defineOption(0.95),
       "music-player.modules.cava.enable": defineOption(true),
       "music-player.modules.cava.style": defineOption("catmull_rom"),
       "notification-center.max-notifications": defineOption(4),

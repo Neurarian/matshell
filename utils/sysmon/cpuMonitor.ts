@@ -2,8 +2,7 @@ import { register, property } from "ags/gobject";
 import GLib from "gi://GLib?version=2.0";
 import GTop from "gi://GTop";
 import Gio from "gi://Gio";
-import { HardwareMonitor, safeReadFile } from "./base";
-import { MonitorConfig } from ".";
+import { HardwareMonitor, MonitorConfig, safeReadFile } from "./base";
 
 @register({ GTypeName: "CpuMonitor" })
 export class CpuMonitor extends HardwareMonitor {

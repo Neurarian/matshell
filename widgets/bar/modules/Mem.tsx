@@ -1,7 +1,7 @@
 import { createBinding } from "ags";
 import Gsk from "gi://Gsk";
 import { execAsync } from "ags/process";
-import SystemMonitor from "utils/hwmonitor";
+import SystemMonitor from "utils/sysmon";
 import { CircularProgressBar } from "widgets/common/circularprogress";
 import options from "options";
 
@@ -11,7 +11,7 @@ export default function Mem() {
   return (
     <box cssClasses={["bar-hw-ram-box"]}>
       <CircularProgressBar
-        percentage={createBinding(sysmon, "memoryUtilization")}
+        percentage={createBinding(sysmon.memory, "utilization")}
         radiusFilled={true}
         inverted={true}
         startAt={-0.75}
@@ -29,7 +29,7 @@ export default function Mem() {
             }
           }}
           label={"memory_alt"}
-          tooltipText={createBinding(sysmon, "memoryUsed")}
+          tooltipText={createBinding(sysmon.memory, "used")}
         />
       </CircularProgressBar>
     </box>

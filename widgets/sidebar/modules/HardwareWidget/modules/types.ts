@@ -1,7 +1,5 @@
-import {
-  Accessor,
-} from "ags";
-import { DiskInfo } from "utils/hwmonitor";
+import { Accessor } from "ags";
+import { DiskInfo } from "utils/sysmon";
 
 export interface MetricConfig {
   type: "bar" | "display";

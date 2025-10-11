@@ -98,9 +98,11 @@ const weather = createPoll<WeatherData>(
     try {
       const cached = getCachedWeather();
       if (cached) {
+        print("using cached data");
         return cached;
       }
 
+      print("using api data");
       return await fetchWeather();
     } catch (err) {
       console.error(`[WeatherService] ❌ ${err}`);

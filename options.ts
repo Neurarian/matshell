@@ -4,6 +4,11 @@ import type { UsageEntry } from "utils/picker/frecency/types";
 import { initializeConfig, defineOption } from "./utils/config";
 import { CacheEntry } from "utils/wallpaper/LRUCache";
 import { ThemeProperties } from "utils/wallpaper";
+import {
+  DEFAULT_WIDGET_ORDER,
+  DEFAULT_ENABLED_WIDGETS,
+  SidebarWidgetId,
+} from "widgets/sidebar/types.ts";
 
 const options = initializeConfig(
   `${GLib.get_user_config_dir()}/ags/config.json`,
@@ -38,14 +43,14 @@ const options = initializeConfig(
       {},
       { useCache: true },
     ),
-      "picker.frecency-cache": defineOption<Record<string, UsageEntry>>(
-        {},
-        { useCache: true },
-      ),
-      "system-menu.modules.bluetooth-advanced.enable": defineOption(true),
-      "system-menu.modules.wifi-advanced.enable": defineOption(true),
-      "wallpaper.dir": defineOption(
-        `${GLib.get_home_dir()}/Pictures/wallpapers`,
+    "sidebar.widget-order": defineOption<SidebarWidgetId[]>(
+      DEFAULT_WIDGET_ORDER,
+      { useCache: true },
+    ),
+    "sidebar.enabled-widgets": defineOption<SidebarWidgetId[]>(
+      DEFAULT_ENABLED_WIDGETS,
+      { useCache: true },
+    ),
     "system-menu.modules.bluetooth-advanced.enable": defineOption(true),
     "system-menu.modules.wifi-advanced.enable": defineOption(true),
     "wallpaper.dir": defineOption(`${GLib.get_home_dir()}/Pictures/wallpapers`),

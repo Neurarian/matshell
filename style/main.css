@@ -95,29 +95,6 @@ popover.background row:active {
   background: rgba(71, 53, 48, 0.99);
 }
 
-/* buttons */
-.button {
-  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  background: rgba(255, 181, 158, 0.2);
-  border: 1px solid rgba(255, 181, 158, 0.3);
-  border-radius: calc(8px * 1.97);
-  padding: 0.4rem;
-}
-.button:hover {
-  background: rgba(255, 181, 158, 0.3);
-}
-
-.button-disabled {
-  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
-  background: rgba(71, 53, 48, 0.6);
-  border: 1px solid rgba(249, 220, 213, 0.1);
-  border-radius: calc(8px * 1.97);
-  padding: 0.4rem;
-}
-.button-disabled:hover {
-  background: rgba(71, 53, 48, 0.99);
-}
-
 /* dropdowns */
 .dropdown button {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
@@ -131,7 +108,8 @@ popover.background row:active {
 }
 .dropdown button {
   border-radius: 1.1rem;
-  padding: 0.4rem 0.4rem;
+  padding: 0.4rem;
+  margin: 0.5rem;
   border: 1px solid rgba(249, 220, 213, 0.1);
   background-color: rgba(71, 53, 48, 0.6);
   transition: all 200ms ease;
@@ -180,7 +158,7 @@ popover.background row:active {
 }
 .Bar .Workspaces button {
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 16px;
+  border-radius: 0.71rem;
   margin: 0.6rem 0.35rem;
   min-width: 1.5rem;
   min-height: 1.5rem;
@@ -236,6 +214,7 @@ popover.background row:active {
 }
 .Bar .Clients .client-button.focused .client-icon {
   -gtk-icon-size: 1.4rem;
+  color: rgb(169.6, 90.9, 62.4);
 }
 .Bar .Clients .client-button:not(.focused) {
   opacity: 0.6;
@@ -1236,6 +1215,105 @@ image {
 
 /* variables & mixins */
 /* general styles */
+.notes-widget {
+  border-radius: 16px;
+  box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
+  background: rgba(30, 16, 12, 0.5);
+  margin: 5px 10px 15px;
+  padding: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: calc(8px * 3);
+  padding: 0.75rem;
+  margin: 0.75rem;
+}
+.notes-widget .notes-header {
+  margin: 0 0.4rem;
+}
+.notes-widget .notes-header image {
+  color: rgb(249, 220, 213);
+  margin-right: 0.4rem;
+}
+.notes-widget .notes-header .header-title {
+  margin-top: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: rgb(249, 220, 213);
+}
+.notes-widget separator {
+  background-color: rgba(249, 220, 213, 0.15);
+  margin: 0.4rem 0;
+  min-height: 1px;
+}
+.notes-widget .notes-scroll scrollbar {
+  background: rgba(22.7142857143, 12.1142857143, 9.0857142857, 0.5);
+  border-radius: calc(8px * 1);
+}
+.notes-widget .notes-scroll scrollbar.vertical {
+  margin-left: 4px;
+}
+.notes-widget .notes-scroll scrollbar trough {
+  background: rgba(249, 220, 213, 0.1);
+  border-radius: calc(8px * 1);
+  min-width: 8px;
+}
+.notes-widget .notes-scroll scrollbar slider {
+  background: rgba(249, 220, 213, 0.4);
+  border-radius: calc(8px * 1);
+  min-width: 8px;
+  transition: all 100ms ease;
+}
+.notes-widget .notes-scroll scrollbar slider:hover {
+  background: rgba(255, 181, 158, 0.7);
+}
+.notes-widget .notes-scroll scrollbar slider:active {
+  background: rgb(255, 181, 158);
+}
+.notes-widget .notes-scroll .notes-textview {
+  border-radius: calc(16px - 0.4rem - 2px);
+  box-shadow: 0 1px 5px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(71, 53, 48, 0.6);
+  margin: 0.4rem;
+  padding: 0.4rem;
+  padding: 0.75rem;
+  font-family: monospace;
+  font-size: 1.1rem;
+  color: rgb(249, 220, 213);
+}
+.notes-widget .notes-scroll .notes-textview text {
+  background: transparent;
+}
+.notes-widget .notes-scroll .notes-textview text selection {
+  background-color: rgba(255, 181, 158, 0.2);
+  color: rgba(255, 181, 158, 0.3);
+}
+.notes-widget .notes-footer {
+  padding: 0 0.75rem;
+}
+.notes-widget .notes-footer .notes-char-count {
+  font-weight: 500;
+  font-size: calc(1.1rem * 0.75);
+  color: rgb(163, 139, 133);
+  opacity: 0.8;
+}
+.notes-widget .notes-footer .notes-clear-button {
+  border-radius: calc(16px - 0.4rem - 2px);
+  background: transparent;
+  padding: 0.25rem 0.4rem;
+}
+.notes-widget .notes-footer .notes-clear-button:hover {
+  background: rgba(255, 181, 158, 0.2);
+  border: 1px solid rgba(255, 181, 158, 0.3);
+}
+.notes-widget .notes-footer .notes-clear-button:active {
+  transform: scale(0.95);
+}
+.notes-widget .notes-footer .notes-clear-button label {
+  font-family: "Material Symbols Outlined";
+  font-size: 16px;
+}
+
+/* variables & mixins */
+/* general styles */
 .stacked-settings-widget {
   border-radius: 16px;
   box-shadow: 0 3px 5px 1px rgba(30, 16, 12, 0.1);
@@ -1254,8 +1332,7 @@ image {
   color: rgb(249, 220, 213);
   margin-right: 0.4rem;
 }
-.stacked-settings-widget .settings-header .settings-title,
-.stacked-settings-widget .settings-header .hw-header-title {
+.stacked-settings-widget .settings-header .header-title {
   margin-top: 0.75rem;
   font-size: 1.1rem;
   font-weight: 700;
@@ -1280,7 +1357,7 @@ image {
   opacity: 0.7;
 }
 .stacked-settings-widget .settings-nav .nav-button box .nav-label {
-  font-size: calc(1.1rem * 0.9);
+  font-size: calc(1.1rem * 0.85);
   font-weight: 500;
   opacity: 0.7;
 }
@@ -1312,6 +1389,11 @@ image {
   color: rgb(249, 220, 213);
   margin: 0.4rem 0 0.25rem 0;
 }
+.stacked-settings-widget .settings-stack .helper-text {
+  font-size: 0.85em;
+  opacity: 0.7;
+  margin-bottom: 0.4rem;
+}
 .stacked-settings-widget .settings-scroll scrollbar {
   background: rgba(22.7142857143, 12.1142857143, 9.0857142857, 0.5);
   border-radius: calc(8px * 1);
@@ -1337,26 +1419,26 @@ image {
   background: rgb(255, 181, 158);
 }
 .stacked-settings-widget .option-row {
+  border-radius: calc(16px - 0.4rem - 2px);
   background: rgba(37.2857142857, 19.8857142857, 14.9142857143, 0.5);
   border: 1px solid rgba(249, 220, 213, 0.1);
-  border-radius: calc(8px * 2);
-  padding: 0.4rem 0.75rem;
+  padding: 0 0.75rem;
   margin: 0.25rem 0;
 }
 .stacked-settings-widget .option-row .option-label {
-  font-size: 1.1rem;
   color: rgb(249, 220, 213);
   margin-right: 0.4rem;
 }
 .stacked-settings-widget .option-row .option-switch {
-  border-radius: 5rem;
-  padding: 0.1rem;
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  border-radius: 16px;
+  padding: 0.25rem;
   background-color: rgba(249, 220, 213, 0.1);
 }
 .stacked-settings-widget .option-row .option-switch slider {
-  border-radius: 1.5rem;
-  transition: all 200ms ease;
-  margin: 0.2rem;
+  transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  border-radius: 16px;
+  margin: 0 0.2rem;
   background-color: rgba(249, 220, 213, 0.3);
 }
 .stacked-settings-widget .option-row .option-switch:checked {
@@ -1365,26 +1447,67 @@ image {
 .stacked-settings-widget .option-row .option-switch:checked slider {
   background-color: rgba(255, 181, 158, 0.7);
 }
-.stacked-settings-widget .option-row .option-dropdown {
-  min-width: 140px;
+.stacked-settings-widget .option-row .option-switch {
+  margin: 0.4rem;
 }
-.stacked-settings-widget .option-row .option-dropdown button {
+.stacked-settings-widget .option-row .option-switch-placeholder {
+  padding: 0 0.75rem;
+  margin: 0.5rem;
+  border-radius: 5rem;
+  background-color: rgba(249, 220, 213, 0.1);
+}
+.stacked-settings-widget .option-row .option-switch-placeholder .placeholder-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 20px;
+  color: rgb(163, 139, 133);
+  opacity: 0.6;
+}
+.stacked-settings-widget .option-row.widget-item {
+  padding: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+.stacked-settings-widget .option-row.widget-item .option-switch {
+  margin: 0.5rem;
+}
+.stacked-settings-widget .option-row.widget-item .widget-info .widget-icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 20px;
+  color: rgba(255, 181, 158, 0.7);
+}
+.stacked-settings-widget .option-row.widget-item .widget-info .widget-name {
+  margin: 0;
+  color: rgb(249, 220, 213);
+}
+.stacked-settings-widget .option-row.widget-item .widget-info .widget-description {
+  font-size: 0.8em;
+  color: rgb(163, 139, 133);
+  opacity: 0.8;
+}
+.stacked-settings-widget .option-row.widget-item .widget-controls .reorder-button {
   transition: 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
   background: rgba(255, 181, 158, 0.2);
   border: 1px solid rgba(255, 181, 158, 0.3);
   border-radius: calc(8px * 1.97);
   padding: 0.4rem;
 }
-.stacked-settings-widget .option-row .option-dropdown button:hover {
+.stacked-settings-widget .option-row.widget-item .widget-controls .reorder-button:hover {
   background: rgba(255, 181, 158, 0.3);
 }
-.stacked-settings-widget .option-row .option-dropdown button {
-  border-radius: calc(8px * 1.5);
-  padding: 0.25rem 0.4rem;
-  border-color: rgba(249, 220, 213, 0.1);
+.stacked-settings-widget .option-row.widget-item .widget-controls .reorder-button {
+  padding: 0;
+  margin-right: 0.4rem;
+  border-radius: calc(8px * 0.75);
 }
-.stacked-settings-widget .option-row .option-dropdown button:hover {
-  border-color: rgba(249, 220, 213, 0.3);
+.stacked-settings-widget .option-row.widget-item .widget-controls .reorder-button .icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 14px;
+}
+.stacked-settings-widget .option-row.widget-item .widget-controls .reorder-button.button-disabled {
+  opacity: 0.3;
+  background: transparent;
+}
+.stacked-settings-widget .option-row.widget-item .widget-controls .reorder-button.button-disabled:hover {
+  background: transparent;
 }
 
 /* variables & mixins */
@@ -1525,8 +1648,7 @@ image {
   color: rgb(249, 220, 213);
   margin-right: 0.4rem;
 }
-.hardware-monitor-widget .hw-header .settings-title,
-.hardware-monitor-widget .hw-header .hw-header-title {
+.hardware-monitor-widget .hw-header .header-title {
   margin-top: 0.75rem;
   font-size: 1.1rem;
   font-weight: 700;
@@ -1551,7 +1673,7 @@ image {
   opacity: 0.7;
 }
 .hardware-monitor-widget .hw-nav .nav-button box .nav-label {
-  font-size: calc(1.1rem * 0.9);
+  font-size: calc(1.1rem * 0.85);
   font-weight: 500;
   opacity: 0.7;
 }

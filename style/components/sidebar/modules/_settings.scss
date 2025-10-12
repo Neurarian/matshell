@@ -37,6 +37,12 @@
       color: $fg;
       margin: $spacing-sm 0 $spacing-xs 0;
     }
+
+    .helper-text {
+      font-size: 0.85em;
+      opacity: 0.7;
+      margin-bottom: $spacing-sm;
+    }
   }
 
   .settings-scroll {
@@ -47,26 +53,77 @@
     @include option-row;
 
     .option-label {
-      font-size: $font;
       color: $fg;
       margin-right: $spacing-sm;
     }
 
     .option-switch {
       @include toggle-switch;
+      margin: 0.4rem;
+    }
+    .option-switch-placeholder {
+      @include light-mode-shadow;
+      padding: 0 $spacing-md;
+      margin: 0.5rem;
+      border-radius: 5rem;
+      background-color: color.adjust($fg, $alpha: -0.9);
+      @if not $darkmode {
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+
+      .placeholder-icon {
+        @include material-icon(20px);
+        color: $outline;
+        opacity: 0.6;
+      }
     }
 
-    .option-dropdown {
-      min-width: 140px;
+    // Widget Manager specific styling
+    &.widget-item {
+      padding: $spacing-xs;
+      margin-bottom: $spacing-xs;
 
-      button {
-        @include button-active;
-        border-radius: calc(#{$round} * 1.5);
-        padding: $spacing-xs $spacing-sm;
-        border-color: color.adjust($fg, $alpha: -0.9);
+      .option-switch {
+        margin: 0.5rem;
+      }
 
-        &:hover {
-          border-color: color.adjust($fg, $alpha: -0.7);
+      .widget-info {
+        .widget-icon {
+          @include material-icon(20px);
+          color: color.adjust($primary, $alpha: -0.3);
+        }
+
+        .widget-name {
+          margin: 0;
+          color: $fg;
+        }
+
+        .widget-description {
+          font-size: 0.8em;
+          color: $outline;
+          opacity: 0.8;
+        }
+      }
+
+      .widget-controls {
+        .reorder-button {
+          @include button-active;
+          padding: 0;
+          margin-right: $spacing-sm;
+          border-radius: calc(#{$round} * 0.75);
+
+          .icon {
+            @include material-icon(14px);
+          }
+
+          &.button-disabled {
+            opacity: 0.3;
+            background: transparent;
+
+            &:hover {
+              background: transparent;
+            }
+          }
         }
       }
     }

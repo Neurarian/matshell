@@ -70,21 +70,13 @@ popover.background {
   @include button;
 }
 
-/* buttons */
-.button {
-  @include button-active;
-}
-
-.button-disabled {
-  @include button;
-}
-
 /* dropdowns */
 .dropdown {
   button {
     @include button-active;
     border-radius: 1.1rem;
-    padding: $spacing-sm $spacing-sm;
+    padding: $spacing-sm;
+    margin: 0.5rem;
     border: 1px solid color.adjust($fg, $alpha: -0.9);
     background-color: $surface;
     transition: all 200ms ease;

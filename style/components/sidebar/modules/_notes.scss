@@ -1,0 +1,64 @@
+@use "../../../layouts" as *;
+@use "../../../abstracts" as *;
+@use "sass:color";
+
+.notes-widget {
+  @include widget-container;
+
+  .notes-header {
+    @include widget-header;
+  }
+
+  separator {
+    @include separator;
+  }
+
+  .notes-scroll {
+    @include scrollbar(vertical);
+
+    .notes-textview {
+      @include window-box;
+      padding: $spacing-md;
+      font-family: monospace;
+      font-size: $font;
+      color: $fg;
+
+      text {
+        background: transparent;
+
+        selection {
+          background-color: $buttonEnabled;
+          color: $buttonEnabledHover;
+        }
+      }
+    }
+  }
+
+  .notes-footer {
+    padding: 0 $spacing-md;
+
+    .notes-char-count {
+      font-weight: 500;
+      font-size: calc(#{$font} * 0.75);
+      color: $outline;
+      opacity: 0.8;
+    }
+    .notes-clear-button {
+      @include rounding;
+      background: transparent;
+      padding: $spacing-xs $spacing-sm;
+
+      &:hover {
+        background: $buttonEnabled;
+        border: 1px solid color.adjust($buttonEnabled, $alpha: 0.1);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+      label {
+        @include material-icon(16px);
+      }
+    }
+  }
+}

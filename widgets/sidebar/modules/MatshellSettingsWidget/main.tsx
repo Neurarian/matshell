@@ -1,4 +1,3 @@
-// widgets/sidebar/modules/MatshellSettingsWidget.tsx
 import { Gtk } from "ags/gtk4";
 import { createState, onCleanup } from "ags";
 import { CenteredDropDown } from "widgets/common/CenteredDropDown";
@@ -10,17 +9,12 @@ import {
   CAVA_STYLE_OPTIONS,
   OS_OPTIONS,
 } from "utils/config";
+import WidgetManagerPage from "./modules/WidgetManagerPage";
 import options from "options.ts";
 
 function OptionSelect({ option, label, choices = [] }: OptionSelectProps) {
   return (
     <box cssClasses={["option-row", "option-select"]}>
-      <label
-        label={label}
-        halign={Gtk.Align.START}
-        hexpand={true}
-        cssClasses={["option-label"]}
-      />
       <CenteredDropDown
         options={choices}
         selected={String(options[option].get())}
@@ -29,6 +23,12 @@ function OptionSelect({ option, label, choices = [] }: OptionSelectProps) {
         }}
         cssClasses={["dropdown"]}
       />
+      <label
+        label={label}
+        halign={Gtk.Align.END}
+        hexpand={true}
+        cssClasses={["option-label"]}
+      />
     </box>
   );
 }
@@ -36,12 +36,6 @@ function OptionSelect({ option, label, choices = [] }: OptionSelectProps) {
 function OptionToggle({ option, label }: OptionToggleProps) {
   return (
     <box cssClasses={["option-row", "option-toggle"]}>
-      <label
-        label={label}
-        halign={Gtk.Align.START}
-        hexpand={true}
-        cssClasses={["option-label"]}
-      />
       <switch
         cssClasses={["option-switch"]}
         active={options[option]((value) => Boolean(value))}
@@ -49,6 +43,12 @@ function OptionToggle({ option, label }: OptionToggleProps) {
           console.log(`Toggle ${option} changed to: ${self.active}`);
           options[option].value = self.active;
         }}
+      />
+      <label
+        label={label}
+        halign={Gtk.Align.END}
+        hexpand
+        cssClasses={["option-label"]}
       />
     </box>
   );
@@ -61,6 +61,7 @@ export default function MatshellSettingsWidget() {
     { id: "bar", label: "Bar", icon: "Bottom_Navigation" },
     { id: "audio", label: "Audio", icon: "Cadence" },
     { id: "system", label: "System", icon: "Settings_Applications" },
+    { id: "widgets", label: "Widgets", icon: "Widgets" },
   ];
 
   return (
@@ -75,7 +76,7 @@ export default function MatshellSettingsWidget() {
         orientation={Gtk.Orientation.HORIZONTAL}
         spacing={6}
       >
-        <label label="Matshell Settings" class="settings-title" hexpand />
+        <label label="Matshell Settings" class="header-title" hexpand />
       </box>
 
       <Gtk.Separator />
@@ -207,6 +208,9 @@ export default function MatshellSettingsWidget() {
             option="system-menu.modules.bluetooth-advanced.enable"
             label="BT Adv. Settings"
           />
+        </box>
+        <box $type="named" name="widgets">
+          <WidgetManagerPage />
         </box>
       </stack>
     </box>

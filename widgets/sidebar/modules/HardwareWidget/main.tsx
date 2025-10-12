@@ -26,7 +26,7 @@ export default function HardwareMonitorWidget() {
       >
         <label
           label="Hardware Monitor"
-          class="hw-header-title"
+          class="header-title"
           halign={Gtk.Align.CENTER}
           hexpand
         />

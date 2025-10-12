@@ -2,6 +2,7 @@
 @use "../variables" as *;
 @use "../theme_variables_matugen" as *;
 @use "./_typography.scss" as *;
+@use "./_base.scss" as *;
 
 // Hyprland workspace
 @mixin hypr-workspace-style($bg-color, $hover-color) {
@@ -53,10 +54,10 @@
 }
 
 @mixin option-row {
+  @include rounding;
   background: color.adjust($barBg, $lightness: if($darkmode, 2%, -2%));
   border: 1px solid color.adjust($fg, $alpha: -0.9);
-  border-radius: calc(#{$round} * 2);
-  padding: $spacing-sm $spacing-md;
+  padding: 0 $spacing-md;
   margin: $spacing-xs 0;
 
   @if not $darkmode {
@@ -65,8 +66,9 @@
 }
 
 @mixin toggle-switch {
-  border-radius: 5rem;
-  padding: 0.1rem;
+  @include animate;
+  border-radius: $round2;
+  padding: $spacing-xs;
   background-color: color.adjust($fg, $alpha: -0.9);
 
   @if not $darkmode {
@@ -74,9 +76,9 @@
   }
 
   slider {
-    border-radius: 1.5rem;
-    transition: all 200ms ease;
-    margin: 0.2rem;
+    @include animate;
+    border-radius: $round2;
+    margin: 0 0.2rem;
 
     @if $darkmode {
       background-color: color.adjust($fg, $alpha: -0.7);
@@ -169,7 +171,7 @@
     }
 
     .nav-label {
-      font-size: calc(#{$font} * 0.9);
+      font-size: calc(#{$font} * 0.85);
       font-weight: 500;
       opacity: 0.7;
     }

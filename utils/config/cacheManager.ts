@@ -1,4 +1,3 @@
-import { ConfigValue } from "./types.js";
 import { FileOperations } from "./io.js";
 
 export class CacheManager {
@@ -9,7 +8,8 @@ export class CacheManager {
     FileOperations.ensureDirectory(cacheDir);
   }
 
-  saveCachedValue(optionName: string, value: ConfigValue): void {
+  // serialize to JSON
+  saveCachedValue<T>(optionName: string, value: T): void {
     try {
       const cachePath = this.getCachePath();
       const cache = FileOperations.loadConfigFromFile(cachePath);
@@ -20,7 +20,8 @@ export class CacheManager {
     }
   }
 
-  loadCachedValue(optionName: string): ConfigValue | undefined {
+  // Load and cast cached value to T
+  loadCachedValue<T>(optionName: string): T | undefined {
     const cachePath = this.getCachePath();
     if (!FileOperations.fileExists(cachePath)) {
       return undefined;
@@ -28,7 +29,7 @@ export class CacheManager {
 
     try {
       const cache = FileOperations.loadConfigFromFile(cachePath);
-      return cache[optionName];
+      return cache[optionName] as T | undefined;
     } catch (err) {
       console.error(`Failed to load cached value for ${optionName}:`, err);
       return undefined;

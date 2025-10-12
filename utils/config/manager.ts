@@ -2,15 +2,15 @@ import { monitorFile } from "ags/file";
 import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
 import { ConfigOption } from "./option.ts";
-import { CacheManager } from "./cache-manager.ts";
+import { CacheManager } from "./cacheManager.ts";
 import { FileOperations } from "./io.ts";
-import { ConfigValue, IConfigOption } from "./types.ts";
+import { TypedConfigOption } from "./types.ts";
 
 export class ConfigManager {
-  private options = new Map<string, IConfigOption>();
+  private options = new Map<string, TypedConfigOption<any>>();
   private cacheManager: CacheManager;
   private subscriptions: Map<string, () => void> = new Map();
-  private loadedConfig: Record<string, ConfigValue> | null = null;
+  private loadedConfig: Record<string, any> | null = null;
 
   constructor(public readonly configPath: string) {
     this.cacheManager = new CacheManager(`${GLib.get_user_cache_dir()}/ags`);
@@ -20,8 +20,7 @@ export class ConfigManager {
     }
   }
 
-  // Load config once and cache it
-  private getLoadedConfig(): Record<string, ConfigValue> {
+  private getLoadedConfig(): Record<string, any> {
     if (this.loadedConfig === null) {
       this.loadedConfig = FileOperations.loadConfigFromFile(this.configPath);
     }
@@ -32,21 +31,20 @@ export class ConfigManager {
     this.loadedConfig = null;
   }
 
-  createOption<T extends ConfigValue>(
+  createOption<T>(
     optionName: string,
     defaultValue: T,
     options: { useCache?: boolean; autoSave?: boolean } = {},
   ): ConfigOption<T> {
     !optionName.includes(".") &&
       console.warn(
-        `Warning: Config key "${optionName}" doesn't use dot notation. This is allowed but not recommended.`,
+        `Warning: Config key "${optionName}" doesn't use dot notation.`,
       );
 
     const option = new ConfigOption<T>(optionName, defaultValue, options);
-    this.options.set(optionName, option as IConfigOption);
+    this.options.set(optionName, option);
     this.initializeOption(option);
 
-    // Add auto-save for non-cached options
     if (!option.useCache && option.autoSave) {
       option.subscribe(() => {
         console.log(`Auto-saving due to change in ${optionName}`);
@@ -57,31 +55,29 @@ export class ConfigManager {
     return option;
   }
 
-  private initializeOption<T extends ConfigValue>(
-    option: ConfigOption<T>,
-  ): void {
-    let loadedValue: ConfigValue | undefined;
+  private initializeOption<T>(option: ConfigOption<T>): void {
+    let loadedValue: T | undefined;
 
     if (option.useCache) {
-      loadedValue = this.cacheManager.loadCachedValue(option.optionName);
+      // Generic method handles type
+      loadedValue = this.cacheManager.loadCachedValue<T>(option.optionName);
 
-      // Setup cache saving subscription
       if (this.subscriptions.has(option.optionName)) {
         const existingCleanup = this.subscriptions.get(option.optionName);
         existingCleanup && existingCleanup();
       }
 
       const cleanup = option.subscribe((value) => {
-        this.cacheManager.saveCachedValue(option.optionName, value);
+        this.cacheManager.saveCachedValue<T>(option.optionName, value);
       });
       this.subscriptions.set(option.optionName, cleanup);
     } else {
       const config = this.getLoadedConfig();
-      loadedValue = config[option.optionName];
+      loadedValue = config[option.optionName] as T | undefined;
     }
 
     if (loadedValue !== undefined) {
-      option.value = loadedValue as T;
+      option.value = loadedValue;
     }
   }
 
@@ -93,8 +89,7 @@ export class ConfigManager {
   }
 
   save(): void {
-    // Prepare config with all non-cached options
-    const config: Record<string, ConfigValue> = {};
+    const config: Record<string, any> = {};
     for (const [optionName, option] of this.options.entries()) {
       if (!option.useCache) {
         config[optionName] = option.value;
@@ -106,7 +101,6 @@ export class ConfigManager {
       config,
     );
     if (saved) {
-      // Update cached config with new values
       this.loadedConfig = { ...config };
     }
   }
@@ -148,9 +142,7 @@ export class ConfigManager {
     });
   }
 
-  getOption<T extends ConfigValue>(
-    optionName: string,
-  ): ConfigOption<T> | undefined {
+  getOption<T>(optionName: string): ConfigOption<T> | undefined {
     return this.options.get(optionName) as ConfigOption<T> | undefined;
   }
 }

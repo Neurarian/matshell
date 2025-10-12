@@ -1,10 +1,10 @@
 import { ConfigManager } from "./manager.ts";
 import { ConfigOption } from "./option.ts";
-import { ConfigValue, ConfigDefinition } from "./types.ts";
+import { ConfigDefinition } from "./types.ts";
 
 let configManager: ConfigManager | null = null;
 
-export function defineOption<T = ConfigValue>(
+export function defineOption<T>(
   defaultValue: T,
   config?: Omit<ConfigDefinition<T>, "defaultValue">,
 ): ConfigDefinition<T> {
@@ -16,14 +16,18 @@ export function defineOption<T = ConfigValue>(
 }
 
 export function initializeConfig<
-  TConfig extends Record<string, ConfigDefinition<any>>
+  TConfig extends Record<string, ConfigDefinition<any>>,
 >(
   configPath: string,
   config: TConfig,
-): Record<keyof TConfig, ConfigOption<ConfigValue>> {
+): {
+  [K in keyof TConfig]: TConfig[K] extends ConfigDefinition<infer T>
+    ? ConfigOption<T>
+    : never;
+} {
   configManager = new ConfigManager(configPath);
 
-  const options: Record<string, ConfigOption<ConfigValue>> = {};
+  const options: any = {};
 
   for (const [path, def] of Object.entries(config)) {
     options[path] = configManager.createOption(path, def.defaultValue, {
@@ -35,5 +39,6 @@ export function initializeConfig<
   configManager.initialize();
   configManager.watchChanges();
 
-  return options as Record<keyof TConfig, ConfigOption<ConfigValue>>;
+  return options;
 }
+

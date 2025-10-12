@@ -1,33 +1,20 @@
-export interface ConfigValueObject {
-  [key: string]: ConfigValue;
-}
+import { Accessor } from "ags";
 
-export interface ConfigValueArray extends Array<ConfigValue> {}
-
-export type ConfigValue =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | Record<string, any>
-  | ConfigValueObject
-  | ConfigValueArray;
-
-export interface IConfigOption {
-  optionName: string;
-  defaultValue: ConfigValue;
-  useCache: boolean;
-  autoSave: boolean;
-  get value(): ConfigValue;
-  set value(v: ConfigValue);
-  subscribe(cb: (v: ConfigValue) => void): () => void;
-}
-
-export interface ConfigDefinition<T = ConfigValue> {
+export interface ConfigDefinition<T> {
   defaultValue: T;
   useCache?: boolean;
   autoSave?: boolean;
+}
+
+export interface TypedConfigOption<T> extends Accessor<T> {
+  readonly optionName: string;
+  readonly defaultValue: T;
+  readonly useCache: boolean;
+  readonly autoSave: boolean;
+  value: T;
+  get(): T;
+  set(value: T): void;
+  subscribe(cb: (v: T) => void): () => void;
 }
 
 export interface OptionChoice {

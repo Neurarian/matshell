@@ -1,10 +1,9 @@
 import { Accessor } from "ags";
-import { ConfigValue, IConfigOption } from "./types.js";
+import { TypedConfigOption } from "./types.js";
 
-// Reactive configuration option
-export class ConfigOption<T extends ConfigValue>
+export class ConfigOption<T>
   extends Accessor<T>
-  implements IConfigOption
+  implements TypedConfigOption<T>
 {
   #value: T;
   #subs = new Set<(v: T) => void>();
@@ -34,11 +33,12 @@ export class ConfigOption<T extends ConfigValue>
   get value(): T {
     return this.#value;
   }
+
   set value(v: T) {
     this.set(v);
   }
 
-  set(v: T) {
+  set(v: T): void {
     if (Object.is(this.#value, v)) return;
     this.#value = v;
     this.#subs.forEach((cb) => cb(v));

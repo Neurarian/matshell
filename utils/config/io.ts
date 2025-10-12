@@ -1,7 +1,6 @@
 import { readFile, writeFile } from "ags/file";
 import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
-import { ConfigValue } from "./types.ts";
 
 export class FileOperations {
   static ensureDirectory(path: string): void {
@@ -9,7 +8,7 @@ export class FileOperations {
       Gio.File.new_for_path(path).make_directory_with_parents(null);
   }
 
-  static loadConfigFromFile(filePath: string): Record<string, ConfigValue> {
+  static loadConfigFromFile(filePath: string): Record<string, any> {
     if (!this.fileExists(filePath)) {
       console.log(`Configuration file doesn't exist: ${filePath}`);
       return {};
@@ -30,10 +29,7 @@ export class FileOperations {
     }
   }
 
-  static saveConfigToFile(
-    filePath: string,
-    config: Record<string, ConfigValue>,
-  ): void {
+  static saveConfigToFile(filePath: string, config: Record<string, any>): void {
     try {
       const directory = filePath.split("/").slice(0, -1).join("/");
       if (directory) {
@@ -49,7 +45,7 @@ export class FileOperations {
 
   static saveConfigToFileIfChanged(
     filePath: string,
-    newConfig: Record<string, ConfigValue>,
+    newConfig: Record<string, any>,
   ): boolean {
     try {
       if (!this.fileExists(filePath)) {

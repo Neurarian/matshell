@@ -1,12 +1,12 @@
 // widgets/sidebar/Sidebar.tsx
 import app from "ags/gtk4/app";
 import { Astal, Gtk } from "ags/gtk4";
-import { createState, For } from "ags";
+import { createState, createComputed, For } from "ags";
 import QuickActionsWidget from "./modules/QuickActionWidget";
 import options from "options";
 import { gdkmonitor } from "utils/monitors";
 import { SIDEBAR_WIDGETS } from "./widgetRegistry";
-import { DEFAULT_WIDGET_ORDER, SidebarWidgetId } from "./types";
+import { SidebarWidgetId } from "./types";
 
 export default function Sidebar(
   props: {
@@ -18,24 +18,12 @@ export default function Sidebar(
   const [visible] = createState(false);
   const { children = [] } = props;
 
-  const [filteredWidgets, setFilteredWidgets] = createState<SidebarWidgetId[]>(
-    [],
+  const filteredWidgets = createComputed(
+    [options["sidebar.widget-order"], options["sidebar.enabled-widgets"]],
+    (order, enabled) => {
+      return order.filter((id: SidebarWidgetId) => enabled.includes(id));
+    },
   );
-
-  const updateFilteredWidgets = () => {
-    const order =
-      (options["sidebar.widget-order"].get() as SidebarWidgetId[]) ||
-      DEFAULT_WIDGET_ORDER;
-    const enabled =
-      (options["sidebar.enabled-widgets"].get() as SidebarWidgetId[]) ||
-      DEFAULT_WIDGET_ORDER;
-    setFilteredWidgets(order.filter((id) => enabled.includes(id)));
-  };
-
-  options["sidebar.widget-order"].subscribe(updateFilteredWidgets);
-  options["sidebar.enabled-widgets"].subscribe(updateFilteredWidgets);
-
-  updateFilteredWidgets();
 
   return (
     <window

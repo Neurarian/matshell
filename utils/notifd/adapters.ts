@@ -39,7 +39,7 @@ export function liveToStored(
     appIcon: notification.appIcon,
     image: notification.image,
     desktopEntry: notification.desktopEntry,
-    time: notification.time,
+    time: notification.time * 1000,
     urgency: notification.urgency || Notifd.Urgency.NORMAL,
     actions: convertedActions,
     seen: false,

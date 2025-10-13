@@ -240,11 +240,13 @@ https://github.com/user-attachments/assets/7a7851e3-9ebc-4f52-8b0f-e9a062122d9e
 
 <p align="center">
 <b>Floating mode</b>
-
-![2025-04-19T03:27:33,093645867+02:00](https://github.com/user-attachments/assets/603b7837-ebac-4ff8-90b8-32721ea5aeae)
+</p>
+  
+<img width="3439" height="1440" alt="20251013_224915" src="https://github.com/user-attachments/assets/f456f4fe-69e8-4751-be95-aa85a6bd7ff3" />
 
 <p align="center">
 <b>Full bar mode & cava in bar</b>
+</p>
 
 <img width="3439" height="1440" alt="20251010_003407" src="https://github.com/user-attachments/assets/64dd646d-c3c0-4190-b5da-5c7e9503e905" />
 

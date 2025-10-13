@@ -1,12 +1,6 @@
-import { createPoll } from "ags/time";
-import GLib from "gi://GLib?version=2.0";
-import type { UnifiedNotification } from "./types.ts";
+import type { DisplayNotification } from "./types.ts";
+import { currentTime, formatTimestamp } from "utils/time.ts";
 import Notifd from "gi://AstalNotifd";
-
-export const currentTime = createPoll(Date.now(), 60000, () => Date.now());
-
-export const formatTimestamp = (timestamp: number, format = "%H:%M") =>
-  GLib.DateTime.new_from_unix_local(timestamp).format(format)!;
 
 export function createNotificationTimeLabel(
   notificationTimestamp: number,
@@ -36,7 +30,7 @@ export function createNotificationTimeLabel(
   }
 }
 
-export const urgency = (notification: UnifiedNotification) => {
+export const urgency = (notification: DisplayNotification) => {
   const { LOW, NORMAL, CRITICAL } = Notifd.Urgency;
 
   switch (notification.urgency) {

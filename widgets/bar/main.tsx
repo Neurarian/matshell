@@ -95,24 +95,12 @@ function Bar({ gdkmonitor, ...props }: any) {
       {...props}
     >
       <overlay>
-        <box
-          $type={"overlay"}
-          canTarget={false}
-          visible={showCavaExpanded((s) => Boolean(s))}
-        >
-          <CavaDraw
-            vexpand
-            hexpand
-            style={options["bar.modules.cava.style"]((value) => String(value))}
-          />
+        <box $type={"overlay"} canTarget={false} visible={showCavaExpanded}>
+          <CavaDraw vexpand hexpand style={options["bar.modules.cava.style"]} />
         </box>
         <centerbox cssClasses={["centerbox"]}>
           <box hexpand halign={Gtk.Align.START} $type="start">
-            <box
-              visible={options["bar.modules.os-icon.enable"]((value) =>
-                Boolean(value),
-              )}
-            >
+            <box visible={options["bar.modules.os-icon.enable"]}>
               <OsIcon />
             </box>
             {compositor.name === "river" ? (
@@ -138,14 +126,12 @@ function Bar({ gdkmonitor, ...props }: any) {
               <box
                 $type={"overlay"}
                 canTarget={false}
-                visible={showCavaFloating((s) => Boolean(s))}
+                visible={showCavaFloating}
               >
                 <CavaDraw
                   vexpand
                   hexpand
-                  style={options["bar.modules.cava.style"]((value) =>
-                    String(value),
-                  )}
+                  style={options["bar.modules.cava.style"]}
                 />
               </box>
               <Media />

@@ -1,17 +1,15 @@
+// widgets/bar/modules/Time.tsx
 import app from "ags/gtk4/app";
 import { Gtk } from "ags/gtk4";
-import { execAsync } from "ags/process";
-import { interval } from "ags/time";
 import { createState } from "ags";
+import { currentTimeString } from "utils/time";
 
 export default function Time() {
-  const [time, setTime] = createState("");
   const [revealPower, setRevealPower] = createState(false);
 
-  interval(1000, () => {
-    execAsync(["date", "+%H 󰇙 %M"])
-      .then((val) => setTime(val.trim()))
-      .catch(console.error);
+  const timeLabel = currentTimeString((time) => {
+    const [hours, minutes] = time.split(":");
+    return `${hours} 󰇙 ${minutes}`;
   });
 
   return (
@@ -30,7 +28,7 @@ export default function Time() {
         self.add_controller(motionController);
       }}
     >
-      <label cssClasses={["clock"]} label={time} />
+      <label cssClasses={["clock"]} label={timeLabel} />
       <revealer
         transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
         transitionDuration={300}

@@ -19,7 +19,7 @@ export class ThumbnailManager extends GObject.Object {
 
   constructor() {
     super();
-    this.maxCacheSize = options["wallpaper.cache-size"]((c) => Number(c));
+    this.maxCacheSize = options["wallpaper.cache-size"];
   }
 
   async getThumbnail(imagePath: string): Promise<Gdk.Texture | null> {

@@ -70,7 +70,7 @@ export class LRUCache<T> {
       return;
     }
 
-    const record = data as Record<string, unknown>;
+    const record = data;
 
     for (const [key, value] of Object.entries(record)) {
       if (this.isValidEntry(value)) {
@@ -86,7 +86,7 @@ export class LRUCache<T> {
       return false;
     }
 
-    const entry = value as any;
+    const entry = value;
     return (
       "value" in entry &&
       "timestamp" in entry &&

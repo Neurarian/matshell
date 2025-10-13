@@ -4,7 +4,7 @@ export default function OsIcon() {
   return (
     <button onClicked={() => app.toggle_window("sidebar")}>
       <image
-        iconName={options["bar.modules.os-icon.type"]((t) => String(t))}
+        iconName={options["bar.modules.os-icon.type"]}
         cssClasses={["OsIcon"]}
       />
     </button>

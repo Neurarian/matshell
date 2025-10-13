@@ -13,7 +13,7 @@ export const Sliders = () => {
   return (
     <box cssClasses={["sliders"]} orientation={Gtk.Orientation.VERTICAL}>
       <box cssClasses={["volume"]}>
-        <button onClicked={() => execAsync(String(options["app.audio"].get()))}>
+        <button onClicked={() => execAsync(options["app.audio"].get())}>
           <image iconName={createBinding(speaker, "volumeIcon")} />
         </button>
         <slider
@@ -29,9 +29,7 @@ export const Sliders = () => {
         cssClasses={["volume"]}
         visible={createBinding(microphone, "path")((mic) => mic !== null)}
       >
-        <button
-          onClicked={() => execAsync(String(options["app.audio"].get()))}
-        >
+        <button onClicked={() => execAsync(options["app.audio"].get())}>
           <image iconName={createBinding(microphone, "volumeIcon")} />
         </button>
         <slider

@@ -1,4 +1,3 @@
-// widgets/bar/RiverWorkspaces.tsx
 import { For, createComputed, Accessor } from "ags";
 import { compositor } from "utils/compositor/detector";
 import { Gdk } from "ags/gtk4";

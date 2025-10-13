@@ -1,38 +1,6 @@
-// widgets/sidebar/modules/ClockWidget.tsx
 import { Gtk } from "ags/gtk4";
-import { createState, With } from "ags";
-
-/** ---------- State ---------- **/
-
-const [currentTime, setCurrentTime] = createState("00:00:00");
-const [currentDate, setCurrentDate] = createState("");
-
-// Format date
-function updateDate() {
-  const now = new Date();
-  return now.toLocaleDateString(undefined, {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-// Update time every second
-setInterval(() => {
-  const now = new Date();
-  const hh = now.getHours().toString().padStart(2, "0");
-  const mm = now.getMinutes().toString().padStart(2, "0");
-  const ss = now.getSeconds().toString().padStart(2, "0");
-  setCurrentTime(`${hh}:${mm}:${ss}`);
-}, 1000);
-
-// Update date once per minute
-setInterval(() => setCurrentDate(updateDate()), 60_000);
-// Set initial date
-setCurrentDate(updateDate());
-
-/** ---------- Digit Stack ---------- **/
+import { With } from "ags";
+import { currentDate, currentTimeString } from "utils/time";
 
 function DigitStack(index: number) {
   return (
@@ -41,7 +9,7 @@ function DigitStack(index: number) {
       transitionDuration={400}
       transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
       $={(self) => (
-        <With value={currentTime}>
+        <With value={currentTimeString}>
           {(time) => {
             const str = time ?? "00:00:00";
             self.visibleChildName = str[index] ?? "0";
@@ -55,14 +23,37 @@ function DigitStack(index: number) {
           $type="named"
           name={i.toString()}
           label={i.toString()}
-          xalign={0.5}
+          halign={Gtk.Align.CENTER}
         />
       ))}
     </stack>
   );
 }
 
-/** ---------- Widget ---------- **/
+function TimeDisplay() {
+  return (
+    <box spacing={4} halign={Gtk.Align.CENTER}>
+      {DigitStack(0)}
+      {DigitStack(1)}
+      <label class="colon" label=":" />
+      {DigitStack(3)}
+      {DigitStack(4)}
+      <label class="colon" label=":" />
+      {DigitStack(6)}
+      {DigitStack(7)}
+    </box>
+  );
+}
+
+function DateDisplay() {
+  return (
+    <With value={currentDate}>
+      {(date) => (
+        <label class="date-label" label={date} halign={Gtk.Align.CENTER} />
+      )}
+    </With>
+  );
+}
 
 export default function ClockWidget() {
   return (
@@ -73,27 +64,9 @@ export default function ClockWidget() {
       valign={Gtk.Align.CENTER}
       spacing={8}
     >
-      {/* Time */}
-      <box spacing={4} halign={Gtk.Align.CENTER}>
-        {DigitStack(0)}
-        {DigitStack(1)}
-        <label class="colon" label=":" />
-        {DigitStack(3)}
-        {DigitStack(4)}
-        <label class="colon" label=":" />
-        {DigitStack(6)}
-        {DigitStack(7)}
-      </box>
-
-      {/* Divider */}
+      <TimeDisplay />
       <Gtk.Separator orientation={Gtk.Orientation.HORIZONTAL} />
-
-      {/* Date */}
-      <With value={currentDate}>
-        {(date) => (
-          <label class="date-label" label={date} halign={Gtk.Align.CENTER} />
-        )}
-      </With>
+      <DateDisplay />
     </box>
   );
 }

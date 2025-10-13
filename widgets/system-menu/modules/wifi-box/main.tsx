@@ -231,12 +231,15 @@ export const WiFiBox = () => {
               cssClasses={["settings-button"]}
               halign={Gtk.Align.END}
               hexpand={false}
-              visible={options["system-menu.modules.wifi-advanced.enable"](
-                (value) => Boolean(value),
-              )}
-              onClicked={() => {
-                execAsync(["sh", "-c", String(options["app.wifi"].get())]);
-                setIsExpanded(false);
+              visible={options["system-menu.modules.wifi-advanced.enable"]}
+              onClicked={async () => {
+                try {
+                  await execAsync(["sh", "-c", options["app.wifi"].get()]);
+                } catch (error) {
+                  console.error("Error:", error);
+                } finally {
+                  setIsExpanded(false);
+                }
               }}
             >
               <image iconName={"emblem-system-symbolic"} />

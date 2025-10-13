@@ -61,9 +61,9 @@ export class WallpaperStore extends GObject.Object {
 
     // Option accesssor configuration
     this.settings = {
-      directory: options["wallpaper.dir"]((wd) => String(wd)),
-      current: options["wallpaper.current"]((w) => String(w)),
-      maxCacheSize: options["wallpaper.theme.cache-size"]((s) => Number(s)),
+      directory: options["wallpaper.dir"],
+      current: options["wallpaper.current"],
+      maxCacheSize: options["wallpaper.theme.cache-size"],
       includeHidden: params.includeHidden ?? false,
     };
 

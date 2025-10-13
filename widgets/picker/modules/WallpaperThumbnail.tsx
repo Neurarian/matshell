@@ -99,7 +99,7 @@ export function WallpaperThumbnail({
           ellipsize={Pango.EllipsizeMode.END}
           maxWidthChars={15}
           cssClasses={["wallpaper-name"]}
-          xalign={0.5}
+          halign={Gtk.Align.CENTER}
         />
       </box>
     </button>

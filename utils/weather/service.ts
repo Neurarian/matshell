@@ -1,4 +1,3 @@
-// ~/.config/ags/utils/weather/service.ts
 import { createPoll } from "ags/time";
 import { fetch } from "ags/fetch";
 import { WeatherData } from "./types";
@@ -6,17 +5,14 @@ import options from "../../options";
 
 const API_URL = "https://wttr.in/?format=j1";
 const CACHE_KEY = "wttr_weather_data";
-const updateInterval = Number(options["weather.update-interval"].value);
+const updateInterval = options["weather.update-interval"].get();
 
 let weatherCache: { data: WeatherData; timestamp: number } | null = null;
 
 // Load cache on startup
 function loadWeatherCache(): void {
   try {
-    const persistentCache = options["weather.cache"].value as Record<
-      string,
-      { data: WeatherData; timestamp: number }
-    >;
+    const persistentCache = options["weather.cache"].value;
     const entry = persistentCache[CACHE_KEY];
     if (entry) {
       weatherCache = entry;
@@ -32,10 +28,7 @@ function saveWeatherCache(): void {
 
   setTimeout(() => {
     try {
-      const persistentCache: Record<
-        string,
-        { data: WeatherData; timestamp: number }
-      > = {};
+      const persistentCache = {};
       persistentCache[CACHE_KEY] = weatherCache!;
 
       options["weather.cache"].value = persistentCache;
@@ -98,11 +91,9 @@ const weather = createPoll<WeatherData>(
     try {
       const cached = getCachedWeather();
       if (cached) {
-        print("using cached data");
         return cached;
       }
 
-      print("using api data");
       return await fetchWeather();
     } catch (err) {
       console.error(`[WeatherService] ❌ ${err}`);

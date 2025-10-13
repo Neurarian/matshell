@@ -8,7 +8,7 @@ export default function NotesWidget() {
   const [charCount, setCharCount] = createState(0);
 
   // Load saved notes from persistent cache on init
-  const savedNotes = String(options["notes.content"].get());
+  const savedNotes = options["notes.content"].get();
   if (savedNotes) {
     textBuffer.set_text(savedNotes, -1);
     setCharCount(savedNotes.length);

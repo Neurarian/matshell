@@ -1,6 +1,5 @@
 import GObject, { register, signal } from "ags/gobject";
 import { execAsync } from "ags/process";
-import { Accessor } from "ags";
 import GLib from "gi://GLib?version=2.0";
 import { CpuMonitor } from "./cpuMonitor";
 import { MemoryMonitor } from "./memoryMonitor";
@@ -13,31 +12,17 @@ import options from "options";
 export { DiskInfo } from "./diskMonitor";
 export { ByteFormatter } from "./base";
 
-interface MonitorSettings {
-  criticalCpuTemp: Accessor<number>;
-  criticalGpuTemp: Accessor<number>;
-  highMemoryThreshold: Accessor<number>;
-  notificationsEnabled: Accessor<boolean>;
-}
 // Config
 export const MonitorConfig = {
   UPDATE_INTERVAL: 1000,
   DISK_UPDATE_INTERVAL: 5000,
   THRESHOLD_DEBOUNCE_MS: 3000,
   settings: {
-    criticalCpuTemp: options["hardware-monitor.thresholds.cpu-temp"]((v) =>
-      Number(v),
-    ),
-    criticalGpuTemp: options["hardware-monitor.thresholds.gpu-temp"]((v) =>
-      Number(v),
-    ),
-    highMemoryThreshold: options["hardware-monitor.thresholds.memory"]((v) =>
-      Number(v),
-    ),
-    notificationsEnabled: options["hardware-monitor.notifications.enable"](
-      (v) => Boolean(v),
-    ),
-  } as MonitorSettings,
+    criticalCpuTemp: options["hardware-monitor.thresholds.cpu-temp"],
+    criticalGpuTemp: options["hardware-monitor.thresholds.gpu-temp"],
+    highMemoryThreshold: options["hardware-monitor.thresholds.memory"],
+    notificationsEnabled: options["hardware-monitor.notifications.enable"],
+  },
 };
 
 @register({ GTypeName: "SystemMonitor" })

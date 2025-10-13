@@ -9,7 +9,7 @@ import { ResultsRenderer } from "./modules/ResultsRenderer.tsx";
 import Adw from "gi://Adw?version=1";
 
 interface PickerLayoutProps {
-  children: any;
+  children: JSX.Element[];
   onClickOutside: () => void;
 }
 

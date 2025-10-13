@@ -1,7 +1,7 @@
 import { onCleanup, onMount } from "ags";
 import Notifd from "gi://AstalNotifd";
 import { BaseNotification } from "./Notification.tsx";
-import { liveToUnified, createTimeoutManager } from "utils/notifd";
+import { liveToDisplay, createTimeoutManager } from "utils/notifd";
 
 export function NotificationWidget({
   notification,
@@ -48,7 +48,7 @@ export function NotificationWidget({
 
   return (
     <BaseNotification
-      notification={liveToUnified(notification)}
+      notification={liveToDisplay(notification)}
       variant="live"
       onClick={handleClick}
       onHover={() => timeoutManager.handleHover()}

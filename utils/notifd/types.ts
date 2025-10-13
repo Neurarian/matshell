@@ -1,7 +1,6 @@
-
 import Notifd from "gi://AstalNotifd";
 
-export interface UnifiedNotification {
+interface BaseNotification {
   id: number;
   appName: string;
   summary: string;
@@ -12,22 +11,17 @@ export interface UnifiedNotification {
   time: number;
   actions: Array<{ label: string; action: string }>;
   urgency: Notifd.Urgency;
-  dismissed?: boolean;
-  seen?: boolean;
 }
 
-export interface StoredNotification {
-  id: number;
-  appName: string;
-  summary: string;
-  body?: string;
-  appIcon?: string;
-  image?: string;
-  desktopEntry?: string;
-  time: number;
-  actions: Array<{ label: string; action: string }>;
-  urgency: Notifd.Urgency;
+// Stored in NotificationManager
+export interface StoredNotification extends BaseNotification {
   seen: boolean;
+}
+
+// Accepts both live and stored
+export interface DisplayNotification extends BaseNotification {
+  seen?: boolean;
+  dismissed?: boolean;
 }
 
 export type TimeoutManager = {

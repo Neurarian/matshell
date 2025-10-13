@@ -107,12 +107,15 @@ export const BluetoothDevices = () => {
           cssClasses={["settings-button"]}
           halign={Gtk.Align.END}
           hexpand={false}
-          visible={options["system-menu.modules.bluetooth-advanced.enable"](
-            (value) => Boolean(value),
-          )}
-          onClicked={() => {
-            execAsync("overskride");
-            setIsExpanded(false);
+          visible={options["system-menu.modules.bluetooth-advanced.enable"]}
+          onClicked={async () => {
+            try {
+              await execAsync(options["app.bluetooth"].get());
+            } catch (error) {
+              console.error("Error:", error);
+            } finally {
+              setIsExpanded(false);
+            }
           }}
         >
           <image iconName={"emblem-system-symbolic"} />

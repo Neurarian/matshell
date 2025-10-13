@@ -28,7 +28,7 @@ export function HardwarePage({
 }: Omit<PageConfig, "id" | "label" | "icon">) {
   const openResourceMonitor = async () => {
     try {
-      await execAsync(String(options["app.resource-monitor"].get()));
+      await execAsync(options["app.resource-monitor"].get());
     } catch (error) {
       console.error("Error opening resource monitor:", error);
     }

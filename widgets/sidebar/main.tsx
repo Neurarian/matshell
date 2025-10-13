@@ -43,7 +43,6 @@ export default function Sidebar(
     >
       <box
         orientation={Gtk.Orientation.VERTICAL}
-        hexpand={false}
         vexpand={true}
       >
         {/* Dynamic widgets */}

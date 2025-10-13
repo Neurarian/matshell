@@ -8,6 +8,7 @@ import {
 import Notifd from "gi://AstalNotifd";
 import GLib from "gi://GLib?version=2.0";
 import type { StoredNotification } from "./types.ts";
+import { liveToStored } from "./adapters.ts";
 import options from "options.ts";
 
 export class NotificationManager {
@@ -17,9 +18,8 @@ export class NotificationManager {
     typeof createState<StoredNotification[]>
   >[1];
   private notifd = Notifd.get_default();
-  private maxVisibleNotifications = Number(
-    options["notification-center.max-notifications"].get(),
-  );
+  private maxVisibleNotifications =
+    options["notification-center.max-notifications"].get();
 
   constructor() {
     const [notificationState, setNotificationState] = createState<
@@ -35,7 +35,6 @@ export class NotificationManager {
   dismissNotification(id: number): void {
     const notification = this.notifications.get(id);
     if (notification) {
-      console.log(`Deleting notification: ${notification.summary}`);
       this.notifications.delete(id);
       this.updateState();
       this.persistNotifications();
@@ -187,25 +186,7 @@ export class NotificationManager {
   }
 
   private storeNotification(notification: Notifd.Notification): void {
-    const convertedActions = (notification.actions || []).map((action) => ({
-      label: action.label || action.name || action.text || String(action),
-      action: action.id || action.key || action.action || String(action),
-    }));
-
-    const stored: StoredNotification = {
-      id: notification.id,
-      appName: notification.appName || "Unknown",
-      summary: notification.summary || "",
-      body: notification.body,
-      appIcon: notification.appIcon,
-      image: notification.image,
-      desktopEntry: notification.desktopEntry,
-      time: notification.time * 1000,
-      actions: convertedActions,
-      urgency: notification.urgency || Notifd.Urgency.NORMAL,
-      seen: false,
-    };
-
+    const stored = liveToStored(notification);
     this.notifications.set(notification.id, stored);
     this.updateState();
     this.persistNotifications();

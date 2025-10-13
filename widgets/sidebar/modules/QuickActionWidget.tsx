@@ -1,4 +1,3 @@
-// widgets/sidebar/modules/QuickActionsWidget.tsx
 import { Gtk } from "ags/gtk4";
 import app from "ags/gtk4/app";
 import { execAsync } from "ags/process";
@@ -36,21 +35,19 @@ export default function QuickActionsWidget() {
       label: "Terminal",
       icon: "Terminal",
       action: () =>
-        execAsync(String(options["app.terminal"].get())).catch(console.error),
+        execAsync(options["app.terminal"].get()).catch(console.error),
     },
     {
       label: "Files",
       icon: "Folder",
       action: () =>
-        execAsync(String(options["app.file-manager"].get())).catch(
-          console.error,
-        ),
+        execAsync(options["app.file-manager"].get()).catch(console.error),
     },
     {
       label: "Browser",
       icon: "Captive_Portal",
       action: () =>
-        execAsync(String(options["app.browser"].get())).catch(console.error),
+        execAsync(options["app.browser"].get()).catch(console.error),
     },
   ];
 

@@ -17,7 +17,7 @@ function OptionSelect({ option, label, choices = [] }: OptionSelectProps) {
     <box cssClasses={["option-row", "option-select"]}>
       <CenteredDropDown
         options={choices}
-        selected={String(options[option].get())}
+        selected={options[option].get()}
         onSelected={(id) => {
           options[option].value = id;
         }}
@@ -38,7 +38,7 @@ function OptionToggle({ option, label }: OptionToggleProps) {
     <box cssClasses={["option-row", "option-toggle"]}>
       <switch
         cssClasses={["option-switch"]}
-        active={options[option]((value) => Boolean(value))}
+        active={options[option]}
         onNotifyActive={(self) => {
           console.log(`Toggle ${option} changed to: ${self.active}`);
           options[option].value = self.active;

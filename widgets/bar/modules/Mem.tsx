@@ -23,7 +23,7 @@ export default function Mem() {
           cssClasses={["ram-inner"]}
           onClicked={async () => {
             try {
-              await execAsync(String(options["app.resource-monitor"].get()));
+              await execAsync(options["app.resource-monitor"].get());
             } catch (error) {
               console.error("Error:", error);
             }

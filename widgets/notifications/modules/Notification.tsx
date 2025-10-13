@@ -5,15 +5,15 @@ import { createState, Accessor } from "ags";
 import { NotificationIcon } from "./Icon.tsx";
 import {
   urgency,
-  UnifiedNotification,
+  DisplayNotification,
   createNotificationTimeLabel,
 } from "utils/notifd";
 
 export interface BaseNotificationProps {
-  notification: UnifiedNotification;
+  notification: DisplayNotification;
   onAction?: (id: number, action: string) => void;
   onDismiss?: (id: number) => void;
-  onClick?: (button: number, notification: UnifiedNotification) => void;
+  onClick?: (button: number, notification: DisplayNotification) => void;
   onHover?: () => void;
   onHoverLost?: () => void;
   variant?: "live" | "stored";
@@ -137,7 +137,7 @@ export function BaseNotification({
         <Gtk.Separator cssClasses={["notification-separator"]} />
 
         {/* Content */}
-        <box cssClasses={["content"]} >
+        <box cssClasses={["content"]}>
           <box
             cssClasses={["thumb"]}
             visible={Boolean(NotificationIcon(notification))}

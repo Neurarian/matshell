@@ -1,12 +1,7 @@
 import app from "ags/gtk4/app";
 import { Astal, Gtk } from "ags/gtk4";
 import Mpris from "gi://AstalMpris";
-import {
-  createBinding,
-  createState,
-  With,
-  onCleanup,
-} from "ags";
+import { createBinding, createState, With, onCleanup } from "ags";
 import Gio from "gi://Gio?version=2.0";
 import { findPlayer, generateBackground } from "utils/mpris";
 import { Cover } from "./modules/Cover";
@@ -55,16 +50,12 @@ function MusicBox({ player }: { player: Mpris.Player }) {
         cssClasses={["cava-container"]}
         $type="overlay"
         canTarget={false}
-        visible={options["music-player.modules.cava.enable"]((value) =>
-          Boolean(value),
-        )}
+        visible={options["music-player.modules.cava.enable"]}
       >
         <CavaDraw
           hexpand
           vexpand
-          style={options["music-player.modules.cava.style"]((value) =>
-            String(value),
-          )}
+          style={options["music-player.modules.cava.style"]}
         />
       </box>
       <box

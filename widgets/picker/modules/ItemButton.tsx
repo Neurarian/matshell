@@ -19,12 +19,8 @@ export function ItemButton({ item, picker, index }: ItemButtonProps) {
   return (
     <box>
       <button
-        cssClasses={createComputed(
-          [selectedIndex, hasNavigated],
-          (s, n): string[] =>
-            s === index.get() && n
-              ? ["app-button", "selected"]
-              : ["app-button"],
+        cssClasses={createComputed([selectedIndex, hasNavigated], (s, n) =>
+          s === index.get() && n ? ["app-button", "selected"] : ["app-button"],
         )}
         onClicked={() => picker.activate(item)}
         hexpand

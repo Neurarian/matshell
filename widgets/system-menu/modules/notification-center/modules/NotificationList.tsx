@@ -1,6 +1,6 @@
 import { Gtk } from "ags/gtk4";
 import { createState, For } from "ags";
-import { notificationManager, storedToUnified } from "utils/notifd";
+import { notificationManager } from "utils/notifd";
 import { BaseNotification } from "widgets/notifications/modules/Notification.tsx";
 
 export const NotificationList = () => {
@@ -38,7 +38,7 @@ export const NotificationList = () => {
           <For each={newNotifications}>
             {(notification) => (
               <BaseNotification
-                notification={storedToUnified(notification)}
+                notification={notification}
                 variant="stored"
                 onAction={(id, action) => {
                   notificationManager.dismissNotification(id);
@@ -67,7 +67,7 @@ export const NotificationList = () => {
           <For each={readNotifications}>
             {(notification) => (
               <BaseNotification
-                notification={storedToUnified(notification)}
+                notification={notification}
                 variant="stored"
                 onAction={(id, action) => {
                   notificationManager.dismissNotification(id);

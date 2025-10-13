@@ -13,6 +13,8 @@ import {
 const options = initializeConfig(
   `${GLib.get_user_config_dir()}/ags/config.json`,
   {
+    "app.audio": defineOption("pwvucontrol"),
+    "app.bluetooth": defineOption("overskride"),
     "app.browser": defineOption("zen"),
     "app.file-manager": defineOption("nautilus"),
     "app.resource-monitor": defineOption("resources"),
@@ -20,7 +22,6 @@ const options = initializeConfig(
     "app.wifi": defineOption(
       "XDG_CURRENT_DESKTOP=GNOME gnome-control-center wifi",
     ),
-    "app.audio": defineOption("pwvucontrol"),
     "bar.position": defineOption("top"), // "top", "bottom"
     "bar.style": defineOption("expanded"), // "floating" or "expanded"
     "bar.modules.cava.enable": defineOption(false),

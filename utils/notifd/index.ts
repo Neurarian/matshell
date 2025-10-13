@@ -1,6 +1,6 @@
 // Types
 export type {
-  UnifiedNotification,
+  DisplayNotification,
   StoredNotification,
   TimeoutManager,
 } from "./types.ts";
@@ -10,11 +10,6 @@ export { NotificationManager, notificationManager } from "./manager.ts";
 
 // Utilities
 export { createTimeoutManager } from "./timeout.ts";
-export {
-  currentTime,
-  formatTimestamp,
-  createNotificationTimeLabel,
-  urgency,
-} from "./formatting.ts";
+export { createNotificationTimeLabel, urgency } from "./formatting.ts";
 export { isIcon, fileExists } from "./validation.ts";
-export { liveToUnified, storedToUnified } from "./adapters.ts";
+export { liveToStored, liveToDisplay } from "./adapters.ts";

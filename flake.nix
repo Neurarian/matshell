@@ -121,7 +121,7 @@
               libnotify
               dart-sass
               imagemagick
-              swww
+              awww
               cliphist
               wl-clipboard
               inputs.matugen.packages.${system}.default

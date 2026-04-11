@@ -107,7 +107,7 @@ This setup tries to achieve sleek, "MacOS-esque" looks with a little bit of rice
 - ttf-firacode-nerd
 - ***For matugen theming:***
   - matugen
-  - swww **or** hyprpaper
+  - awww **or** hyprpaper
   - [image-hct](https://github.com/Neurarian/image-hct) (optional; for proper chroma/tone based theming. Uses imagemagick as fallback)
 
 #### Not required but useful for laptop device features:

@@ -169,16 +169,16 @@ install_dependencies() {
     echo "════════════════════════════════════════"
     echo ""
     echo "Choose wallpaper daemon:"
-    echo "  • swww: More feature-rich, animations, GIF support"
+    echo "  • awww: More feature-rich, animations, GIF support"
     echo "  • hyprpaper: Simpler, lighter, Hyprland-specific"
     echo ""
     
     local wallpaper_choice
-    prompt_choice "Which wallpaper daemon?" "swww" "hyprpaper" "Both (install both)"
+    prompt_choice "Which wallpaper daemon?" "awww" "hyprpaper" "Both (install both)"
     local wp_choice=$?
     
     case $wp_choice in
-        0) wallpaper_choice="swww" ;;
+        0) wallpaper_choice="awww" ;;
         1) wallpaper_choice="hyprpaper" ;;
     esac
     
@@ -225,8 +225,8 @@ install_dependencies() {
     CORE_DEPS["compositor"]="$compositor_choice"
     
     # Install wallpaper daemon(s)
-    if [ "$wallpaper_choice" = "swww" ]; then
-        CORE_DEPS["wallpaper"]="swww"
+    if [ "$wallpaper_choice" = "awww" ]; then
+        CORE_DEPS["wallpaper"]="awww"
     elif [ "$wallpaper_choice" = "hyprpaper" ]; then
         CORE_DEPS["wallpaper"]="hyprpaper"
     fi

@@ -13,12 +13,12 @@ interface WallpaperStrategy {
   dispose?(): void;
 }
 
-class SwwwStrategy implements WallpaperStrategy {
-  readonly name = "swww";
+class AwwwStrategy implements WallpaperStrategy {
+  readonly name = "awww";
   private daemon: Process | null = null;
 
   async canSet(): Promise<boolean> {
-    return GLib.find_program_in_path("swww") !== null;
+    return GLib.find_program_in_path("awww") !== null;
   }
 
   async setWallpaper(imagePath: string): Promise<WallpaperSetResult> {
@@ -28,7 +28,7 @@ class SwwwStrategy implements WallpaperStrategy {
       }
 
       await execAsync([
-        "swww",
+        "awww",
         "img",
         imagePath,
         "--transition-type",
@@ -50,7 +50,7 @@ class SwwwStrategy implements WallpaperStrategy {
 
   private async isDaemonRunning(): Promise<boolean> {
     try {
-      await execAsync(["swww", "query"]);
+      await execAsync(["awww", "query"]);
       return true;
     } catch {
       return false;
@@ -61,12 +61,12 @@ class SwwwStrategy implements WallpaperStrategy {
     if (this.daemon) return;
 
     this.daemon = subprocess(
-      ["swww-daemon"],
+      ["awww-daemon"],
       (stdout: string) => {
-        if (stdout.trim()) console.debug("swww-daemon:", stdout.trim());
+        if (stdout.trim()) console.debug("awww-daemon:", stdout.trim());
       },
       (stderr: string) => {
-        if (stderr.trim()) console.debug("swww-daemon:", stderr.trim());
+        if (stderr.trim()) console.debug("awww-daemon:", stderr.trim());
       },
     );
   }
@@ -75,9 +75,9 @@ class SwwwStrategy implements WallpaperStrategy {
     if (this.daemon) {
       try {
         this.daemon.kill();
-        console.log("swww daemon stopped");
+        console.log("awww daemon stopped");
       } catch (error) {
-        console.error("Failed to stop swww daemon:", error);
+        console.error("Failed to stop awww daemon:", error);
       } finally {
         this.daemon = null;
       }
@@ -136,7 +136,7 @@ export class WallpaperSetter {
   private strategies: WallpaperStrategy[];
 
   constructor() {
-    this.strategies = [new SwwwStrategy(), new HyprpaperStrategy()];
+    this.strategies = [new AwwwStrategy(), new HyprpaperStrategy()];
   }
 
   async setWallpaper(imagePath: string): Promise<WallpaperSetResult> {

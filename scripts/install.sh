@@ -325,8 +325,8 @@ input_path = "~/.config/ags/matugen/templates/ags.scss"
 output_path = "~/.config/ags/style/abstracts/_variables.scss"
 
 [templates.hypr]
-input_path = "~/.config/ags/matugen/templates/hyprland_colors.conf"
-output_path = "~/.config/hypr/hyprland_colors.conf"
+input_path = "~/.config/ags/matugen/templates/hyprland_colors.lua"
+output_path = "~/.config/hypr/hyprland_colors.lua"
 
 [templates.hyprlock]
 input_path = "~/.config/ags/matugen/templates/hyprlock_colors.conf"

@@ -67,7 +67,7 @@ in {
     home.file.".config/matugen/config.toml".text = let
       gtkTemplate = builtins.path {path = ../matugen/templates/gtk.css;};
       agsTemplate = builtins.path {path = ../matugen/templates/ags.scss;};
-      hyprTemplate = builtins.path {path = ../matugen/templates/hyprland_colors.conf;};
+      hyprTemplate = builtins.path {path = ../matugen/templates/hyprland_colors.lua;};
       hyprlockTemplate = builtins.path {path = ../matugen/templates/hyprlock_colors.conf;};
     in
       lib.mkIf cfg.matugenConfig ''
@@ -85,7 +85,7 @@ in {
 
         [templates.hypr]
         input_path = "${hyprTemplate}"
-        output_path = "~/.config/hypr/hyprland_colors.conf"
+        output_path = "~/.config/hypr/hyprland_colors.lua"
 
         [templates.hyprlock]
         input_path = "${hyprlockTemplate}"

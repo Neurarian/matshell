@@ -10,8 +10,8 @@
     "moduleResolution": "Bundler",
     "noImplicitAny": false,
     "paths": {
-      "ags/*": ["/nix/store/ln7rx3a8xfvc1mc9sff1lcb208w082xz-ags-3.1.0/share/ags/js/lib/*"],
-      "ags": ["/nix/store/ln7rx3a8xfvc1mc9sff1lcb208w082xz-ags-3.1.0/share/ags/js/lib/index.ts"]
+      "ags/*": ["/nix/store/ijm5qvm41dyk50l6ba16v6byarf87xhx-ags-3.1.0/share/ags/js/lib/*"],
+      "ags": ["/nix/store/ijm5qvm41dyk50l6ba16v6byarf87xhx-ags-3.1.0/share/ags/js/lib/index.ts"]
     },
     "typeRoots": [
       "./@girs"

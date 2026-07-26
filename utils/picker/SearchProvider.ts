@@ -1,7 +1,12 @@
 import GObject, { register, property, signal } from "ags/gobject";
 import { PickerItem, ISearchProvider } from "./types";
 import { FrecencyManager } from "./frecency/manager.ts";
-import { ProviderConfig } from "./types";
+import {
+  ProviderConfig,
+  ProviderFeatures,
+  OptionalFeatureMethods,
+} from "./types";
+import { parsePrefixModifier } from "utils/query.ts";
 
 export type SearchProvider = BaseProvider & ISearchProvider;
 
@@ -12,6 +17,7 @@ export class BaseProvider extends GObject.Object {
   @property(Boolean) isLoading: boolean = false;
   @property(String) command: string = "";
   @property(Boolean) showingDefaults: boolean = false; // Track current mode
+  @property(Boolean) active: boolean = false;
 
   protected frecencyManager: FrecencyManager;
 
@@ -29,13 +35,38 @@ export class BaseProvider extends GObject.Object {
   protected get providerConfig(): ProviderConfig {
     return (this as this & { config: ProviderConfig }).config;
   }
-
-  setResults(results: PickerItem[]) {
-    this.results = results;
-    this.showingDefaults = false;
-    this.emit("results-changed", results);
+  get hasResults(): boolean {
+    return this.results.length > 0;
   }
 
+  get hasDefaults(): boolean {
+    return this.defaultResults.length > 0;
+  }
+
+  get features(): ProviderFeatures {
+    const self = this as OptionalFeatureMethods;
+    return {
+      refresh: typeof self.refresh === "function",
+      random: typeof self.random === "function",
+      delete: typeof self.delete === "function",
+      wipe: typeof self.wipe === "function",
+    };
+  }
+
+  protected extractCategory(query: string): {
+    category?: string;
+    term: string;
+  } {
+    const mod = this.providerConfig?.categoryModifier;
+    if (!mod) return { term: query };
+
+    const { token, term } = parsePrefixModifier(query, mod.prefix);
+    return { category: token?.toLowerCase(), term };
+  }
+
+  setResults(results: PickerItem[]) {
+    this.updateResults(results);
+  }
   // Results based on frecency when no search query
   setDefaultResults(allItems: PickerItem[]) {
     const maxResults = this.providerConfig?.maxResults;
@@ -48,15 +79,11 @@ export class BaseProvider extends GObject.Object {
       .filter(Boolean) as PickerItem[];
 
     this.defaultResults = defaults;
-    this.results = defaults;
-    this.showingDefaults = true;
-    this.emit("results-changed", defaults);
+    this.updateResults(defaults);
   }
 
   clearResults() {
-    this.results = [];
-    this.showingDefaults = false;
-    this.emit("results-changed", []);
+    this.updateResults([]);
   }
 
   setLoading(loading: boolean) {
@@ -66,6 +93,14 @@ export class BaseProvider extends GObject.Object {
     }
   }
 
+  setActive(active: boolean) {
+    this.active = active;
+  }
+
+  recordActivation(item: PickerItem) {
+    this.frecencyManager.recordUsage(item, this.command);
+  }
+
   complete(text: string): string {
     const matches = this.results.filter((item) =>
       item.name?.toLowerCase().startsWith(text.toLowerCase()),
@@ -73,15 +108,9 @@ export class BaseProvider extends GObject.Object {
     return matches[0]?.name || text;
   }
 
-  recordActivation(item: PickerItem) {
-    this.frecencyManager.recordUsage(item, this.command);
-  }
-
-  get hasResults(): boolean {
-    return this.results.length > 0;
-  }
-
-  get hasDefaults(): boolean {
-    return this.defaultResults.length > 0;
+  private updateResults(results: PickerItem[], showingDefaults = false) {
+    this.results = results;
+    this.showingDefaults = showingDefaults;
+    this.emit("results-changed", results);
   }
 }

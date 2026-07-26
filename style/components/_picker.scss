@@ -49,6 +49,29 @@ box.picker {
         color: color.adjust($fg, $alpha: -0.2);
       }
 
+      label.impact-badge {
+        @include rounding;
+        font-size: 0.75em;
+        font-weight: 600;
+        padding: 0.1rem 0.4rem 0rem 0.4rem;
+        margin-left: 0.4rem;
+
+        &.if-high {
+          background-color: color.adjust($primary, $alpha: -0.75);
+          color: $primary;
+        }
+
+        &.if-medium {
+          background-color: color.adjust($fg, $alpha: -0.85);
+          color: color.adjust($fg, $alpha: -0.05);
+        }
+
+        &.if-low {
+          background-color: color.adjust($fg, $alpha: -0.92);
+          color: color.adjust($fg, $alpha: -0.3);
+        }
+      }
+
       &:focus,
       &:hover,
       &.selected {
@@ -232,4 +255,3 @@ box.picker {
     }
   }
 }
-

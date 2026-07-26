@@ -131,8 +131,8 @@ function EmptyState() {
 }
 
 function ActionBar({ picker }: { picker: PickerCoordinator }) {
-  const config = picker.currentConfig;
-  const hasActions = config?.features?.refresh || config?.features?.random;
+  const features = picker.currentProvider?.features;
+  const hasActions = features?.refresh || features?.random;
 
   if (!hasActions) {
     return <box />;
@@ -140,7 +140,7 @@ function ActionBar({ picker }: { picker: PickerCoordinator }) {
 
   return (
     <box cssClasses={["action-bar"]} spacing={8}>
-      {config?.features?.refresh && (
+      {features?.refresh && (
         <button
           cssClasses={["action-button"]}
           onClicked={() => picker.refresh()}
@@ -153,7 +153,7 @@ function ActionBar({ picker }: { picker: PickerCoordinator }) {
         </button>
       )}
       <ThemeControls picker={picker} />
-      {config?.features?.random && (
+      {features?.random && (
         <button
           cssClasses={["action-button"]}
           onClicked={() => picker.random()}
@@ -165,7 +165,7 @@ function ActionBar({ picker }: { picker: PickerCoordinator }) {
           />
         </button>
       )}
-      {config?.features?.wipe && (
+      {features?.wipe && (
         <button
           cssClasses={["action-button"]}
           tooltipText={"Purge history"}

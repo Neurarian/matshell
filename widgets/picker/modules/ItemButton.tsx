@@ -11,10 +11,19 @@ interface ItemButtonProps {
   index: Accessor<number>;
 }
 
+function impactTier(impactFactor?: number): string {
+  if (!impactFactor) return "if-none";
+  if (impactFactor >= 20) return "if-high";
+  if (impactFactor >= 5) return "if-medium";
+  return "if-low";
+}
+
 export function ItemButton({ item, picker, index }: ItemButtonProps) {
-  const config = picker.currentConfig;
+  const features = picker.currentProvider?.features;
   const selectedIndex = createBinding(picker, "selectedIndex");
   const hasNavigated = createBinding(picker, "hasNavigated");
+  const showImpactBadge =
+    item.kind === "rss" && item.impactFactor !== undefined;
 
   return (
     <box>
@@ -29,17 +38,32 @@ export function ItemButton({ item, picker, index }: ItemButtonProps) {
           {item.iconName && (
             <image iconName={item.iconName || "image-x-generic"} />
           )}
-          <box valign={Gtk.Align.CENTER} orientation={Gtk.Orientation.VERTICAL}>
-            <label
-              cssClasses={["name"]}
-              ellipsize={Pango.EllipsizeMode.END}
-              halign={Gtk.Align.START}
-              label={item.name}
-            />
+          <box
+            valign={Gtk.Align.CENTER}
+            orientation={Gtk.Orientation.VERTICAL}
+            hexpand
+          >
+            <box cssClasses={["title-row"]} spacing={6}>
+              <label
+                cssClasses={["name"]}
+                ellipsize={Pango.EllipsizeMode.END}
+                halign={Gtk.Align.START}
+                label={item.name}
+                hexpand
+              />
+              {showImpactBadge && (
+                <label
+                  cssClasses={["impact-badge", impactTier(item.impactFactor)]}
+                  label={`IF ${item.impactFactor!.toFixed(1)}`}
+                  halign={Gtk.Align.END}
+                />
+              )}
+            </box>
             {item.description && (
               <label
                 cssClasses={["description"]}
                 wrap
+                ellipsize={Pango.EllipsizeMode.END}
                 halign={Gtk.Align.START}
                 label={item.description}
               />
@@ -47,7 +71,7 @@ export function ItemButton({ item, picker, index }: ItemButtonProps) {
           </box>
         </box>
       </button>
-      {config?.features?.delete && (
+      {features?.delete && (
         <box>
           <button
             cssClasses={["action-button"]}

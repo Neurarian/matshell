@@ -153,6 +153,7 @@ export class ClipboardProvider extends BaseProvider {
           description: `#${cliphistId} : ${this.getContentTypeDescription(actualContent)}`,
           content: line, // Original line for cliphist operations
           searchableText: actualContent.toLowerCase(),
+          kind: "clip",
           cliphistId: cliphistId, // Keep original ID
         };
       });

@@ -246,6 +246,7 @@ export class WallpaperStore extends GObject.Object {
           iconName: "image-x-generic",
           path: path ?? undefined,
           file: file,
+          kind: "wallpaper",
         };
       });
 

@@ -4,9 +4,11 @@ import { register, property, signal } from "ags/gobject";
 import { SearchProvider } from "./SearchProvider.ts";
 import { PickerItem, ProviderConfig } from "./types.ts";
 import { FrecencyManager } from "./frecency/manager.ts";
+import { ParsedModifier, parsePrefixModifier } from "utils/query.ts";
 
 @register({ GTypeName: "PickerCoordinator" })
 export class PickerCoordinator extends GObject.Object {
+  // Class fields & properties
   private static instance: PickerCoordinator | null = null;
 
   @property(String) searchText: string = "";
@@ -42,39 +44,14 @@ export class PickerCoordinator extends GObject.Object {
     return PickerCoordinator.instance;
   }
 
-  private resetSelection(): void {
-    this.selectedIndex = 0;
-    this.hasNavigated = false;
-  }
-
-  private moveSelection(direction: 1 | -1): boolean {
-    if (this.currentResults.length === 0) return false;
-    // First navigation edge case
-    if (!this.hasNavigated) {
-      this.hasNavigated = true;
-      return true;
-    }
-
-    const newIndex = this.selectedIndex + direction;
-
-    // Wrap around navigation
-    if (newIndex < 0) {
-      this.selectedIndex = this.currentResults.length - 1;
-    } else if (newIndex >= this.currentResults.length) {
-      this.selectedIndex = 0;
-    } else {
-      this.selectedIndex = newIndex;
-    }
-
-    return true;
-  }
-
+  // Signals
   @signal([String], GObject.TYPE_NONE, { default: false })
   providerChanged(provider: string): undefined {}
 
   @signal([Array], GObject.TYPE_NONE, { default: false })
   resultsChanged(results: PickerItem[]): undefined {}
 
+  // Provider registry
   addProvider(provider: SearchProvider) {
     this.providers.set(provider.command, provider);
 
@@ -110,9 +87,26 @@ export class PickerCoordinator extends GObject.Object {
       this.providerName = provider.config.name;
 
       // Trigger initial display of frecency defaults after provider connects
-      setTimeout(() => {
-        provider.search("");
-      }, 0);
+      void this.showDefaultsFor(provider);
+    }
+  }
+
+  dispose(): void {
+    for (const [command, signalIds] of this.providerSignalIds) {
+      const provider = this.providers.get(command);
+      if (provider) {
+        signalIds.forEach((id) => provider.disconnect(id));
+      }
+    }
+    this.providerSignalIds.clear();
+
+    for (const provider of this.providers.values()) {
+      provider.dispose?.();
+    }
+    this.providers.clear();
+
+    if (PickerCoordinator.instance === this) {
+      PickerCoordinator.instance = null;
     }
   }
 
@@ -124,79 +118,63 @@ export class PickerCoordinator extends GObject.Object {
     return Array.from(this.providers.keys());
   }
 
-  get selectedResult(): PickerItem | null {
-    return this.currentResults[this.selectedIndex] || null;
+  getProviderConfig(command: string): ProviderConfig | undefined {
+    const provider = this.providers.get(command);
+    return provider?.config;
   }
 
   get currentConfig() {
     return this.currentProvider?.config;
   }
 
-  getProviderConfig(command: string): ProviderConfig | undefined {
-    const provider = this.providers.get(command);
-    return provider?.config;
+  // Provider switching
+  private activateProvider(command: string): SearchProvider | undefined {
+    if (!this.providers.has(command) || this.activeProvider === command) {
+      return this.currentProvider;
+    }
+    this.activeProvider = command;
+    this.resetSelection();
+
+    const provider = this.currentProvider;
+    if (provider?.config) {
+      this.searchIcon = provider.config.icon;
+      this.placeholderText = provider.config.placeholder;
+      this.providerName = provider.config.name;
+      provider.setActive(true);
+    }
+    this.emit("provider-changed", command);
+    return provider;
   }
 
   setActiveProvider(command: string): boolean {
-    if (this.providers.has(command) && this.activeProvider !== command) {
-      this.activeProvider = command;
-      this.resetSelection();
+    const provider = this.activateProvider(command);
+    if (!provider) return false;
 
-      // Update reactive UI properties
-      const provider = this.currentProvider;
-      if (provider?.config) {
-        this.searchIcon = provider.config.icon;
-        this.placeholderText = provider.config.placeholder;
-        this.providerName = provider.config.name;
-      }
-
-      this.emit("provider-changed", command);
-      this.focusSearch();
-      this.searchText = "";
-      this.hasQuery = false;
-
-      //  Trigger empty search to show defaults
-      if (provider) {
-        setTimeout(() => {
-          provider.search("").then(() => {
-            this.hasResults = provider.hasResults;
-          });
-        }, 0);
-      }
-
-      return true;
-    }
-    return false;
+    this.focusSearch();
+    this.searchText = "";
+    this.hasQuery = false;
+    void this.showDefaultsFor(provider);
+    return true;
   }
 
-  private parseInput(text: string): { command: string; query: string } {
-    // Support switch of providers via :command like gnofi in addition to tab switching
-    if (text.startsWith(":")) {
-      const spaceIndex = text.indexOf(" ");
-      return {
-        command: spaceIndex === -1 ? text.slice(1) : text.slice(1, spaceIndex),
-        query: spaceIndex === -1 ? "" : text.slice(spaceIndex + 1),
-      };
-    }
-
-    // Fall back to current active provider
-    return { command: this.activeProvider, query: text };
-  }
-
+  // Search
   async setSearchText(text: string): Promise<void> {
-    if (this.searchText !== text) {
-      this.searchText = text;
-      this.hasQuery = text.trim().length > 0;
-      this.resetSelection();
-      const { command, query } = this.parseInput(text);
+    if (this.searchText === text) return;
 
-      if (this.providers.has(command) && command !== this.activeProvider) {
-        this.setActiveProvider(command);
-      }
-      if (this.currentProvider) {
-        await this.currentProvider.search(query);
-      }
+    const { token, term } = parsePrefixModifier(text, ":");
+    const isProviderCommand = token !== null && this.providers.has(token);
+
+    if (isProviderCommand) {
+      this.activateProvider(token);
+      this.searchText = term;
+    } else {
+      this.searchText = text;
     }
+
+    this.hasQuery = this.searchText.trim().length > 0;
+    this.resetSelection();
+
+    await this.currentProvider?.search(term);
   }
 
   clearSearch(): void {
@@ -205,20 +183,15 @@ export class PickerCoordinator extends GObject.Object {
 
     // Show updated defaults instead of clearing everything
     if (this.currentProvider) {
-      this.currentProvider.search("").then(() => {
-        this.hasResults = this.currentProvider?.hasResults || false;
-      });
+      void this.showDefaultsFor(this.currentProvider);
     }
   }
 
-  activate(item: PickerItem): void {
-    const provider = this.currentProvider;
-    if (provider) {
-      // Record activation for frecency
-      provider.recordActivation(item);
-      provider.activate(item);
+  private async showDefaultsFor(provider: SearchProvider): Promise<void> {
+    await provider.search("");
+    if (provider.command === this.activeProvider) {
+      this.hasResults = provider.hasResults;
     }
-    this.hide();
   }
 
   showDefaults(): void {
@@ -228,6 +201,47 @@ export class PickerCoordinator extends GObject.Object {
       this.hasResults = true;
       this.emit("results-changed", provider.defaultResults);
     }
+  }
+
+  async refresh(): Promise<void> {
+    const provider = this.currentProvider;
+    if (provider?.refresh) {
+      await provider.refresh();
+      // Re-search after refresh
+      await provider.search(this.searchText);
+    }
+  }
+
+  // Selection / navigation
+  private resetSelection(): void {
+    this.selectedIndex = 0;
+    this.hasNavigated = false;
+  }
+
+  private moveSelection(direction: 1 | -1): boolean {
+    if (this.currentResults.length === 0) return false;
+    // First navigation edge case
+    if (!this.hasNavigated) {
+      this.hasNavigated = true;
+      return true;
+    }
+
+    const newIndex = this.selectedIndex + direction;
+
+    // Wrap around navigation
+    if (newIndex < 0) {
+      this.selectedIndex = this.currentResults.length - 1;
+    } else if (newIndex >= this.currentResults.length) {
+      this.selectedIndex = 0;
+    } else {
+      this.selectedIndex = newIndex;
+    }
+
+    return true;
+  }
+
+  get selectedResult(): PickerItem | null {
+    return this.currentResults[this.selectedIndex] || null;
   }
 
   // First result by default
@@ -240,15 +254,17 @@ export class PickerCoordinator extends GObject.Object {
     return false;
   }
 
-  async refresh(): Promise<void> {
+  activate(item: PickerItem): void {
     const provider = this.currentProvider;
-    if (provider?.refresh) {
-      await provider.refresh();
-      // Re-search after refresh
-      await provider.search(this.searchText);
+    if (provider) {
+      // Record activation for frecency
+      provider.recordActivation(item);
+      provider.activate(item);
     }
+    this.hide();
   }
 
+  // Provider feature passthrough
   async delete(item: PickerItem): Promise<void> {
     const provider = this.currentProvider;
     if (provider?.delete) {
@@ -263,14 +279,8 @@ export class PickerCoordinator extends GObject.Object {
     }
   }
 
-  async random(
-    command: string | undefined = this.currentProvider?.config.command,
-  ): Promise<void> {
-    if (command) {
-      const provider = this.providers.get(command);
-      if (provider?.random) await provider?.random();
-      return;
-    }
+  async random(): Promise<void> {
+    await this.currentProvider?.random?.();
   }
 
   async getThumbnail(imagePath: string): Promise<Gdk.Texture | null> {
@@ -321,6 +331,7 @@ export class PickerCoordinator extends GObject.Object {
     }
   }
 
+  // Input handling
   handleKeyPress({
     key,
     controlMod,
@@ -334,12 +345,7 @@ export class PickerCoordinator extends GObject.Object {
         return true;
 
       case Gdk.KEY_KP_Enter:
-        const selected = this.selectedResult;
-        if (selected) {
-          this.activate(selected);
-          return true;
-        }
-        return false;
+        return this.activateSelectedResult();
 
       case Gdk.KEY_Tab:
         if (this.hasQuery) {
@@ -382,24 +388,5 @@ export class PickerCoordinator extends GObject.Object {
     }
 
     return false;
-  }
-
-  dispose(): void {
-    for (const [command, signalIds] of this.providerSignalIds) {
-      const provider = this.providers.get(command);
-      if (provider) {
-        signalIds.forEach((id) => provider.disconnect(id));
-      }
-    }
-    this.providerSignalIds.clear();
-
-    for (const provider of this.providers.values()) {
-      provider.dispose?.();
-    }
-    this.providers.clear();
-
-    if (PickerCoordinator.instance === this) {
-      PickerCoordinator.instance = null;
-    }
   }
 }

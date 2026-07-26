@@ -4,6 +4,7 @@ import type { UsageEntry } from "utils/picker/frecency/types";
 import { initializeConfig, defineOption } from "./utils/config";
 import { CacheEntry } from "utils/wallpaper/LRUCache";
 import { ThemeProperties } from "utils/wallpaper";
+import type { RssFeedConfig, RssArticle } from "utils/rss/types.ts";
 import {
   DEFAULT_WIDGET_ORDER,
   DEFAULT_ENABLED_WIDGETS,
@@ -33,8 +34,8 @@ const options = initializeConfig(
     "bar.modules.os-icon.type": defineOption("nix-symbolic"), // "nix-symbolic" or "arch-symbolic"
     "bar.modules.os-icon.enable": defineOption(true),
     "hardware-monitor.notifications.enable": defineOption(true),
-    "hardware-monitor.thresholds.cpu-temp": defineOption(85),
-    "hardware-monitor.thresholds.gpu-temp": defineOption(85),
+    "hardware-monitor.thresholds.cpu-temp": defineOption(95),
+    "hardware-monitor.thresholds.gpu-temp": defineOption(98),
     "hardware-monitor.thresholds.memory": defineOption(0.95),
     "music-player.modules.cava.enable": defineOption(true),
     "music-player.modules.cava.style": defineOption("catmull_rom"),
@@ -52,6 +53,33 @@ const options = initializeConfig(
       DEFAULT_ENABLED_WIDGETS,
       { useCache: true },
     ),
+    "rss.feeds": defineOption<RssFeedConfig[]>([
+      {
+        url: "http://feeds.nature.com/nature/rss/current",
+        name: "Nature",
+        categories: ["high impact", "general"],
+      },
+      {
+        url: "https://www.cell.com/cell/inpress.rss",
+        name: "Cell",
+        categories: ["high impact", "general"],
+      },
+      {
+        url: "https://www.spiegel.de/schlagzeilen/index.rss",
+        name: "Spiegel",
+        categories: ["news", "germany"],
+      },
+    ]),
+
+    "rss.refresh-interval-min": defineOption(30),
+
+    "rss.impact-weight": defineOption(0.5),
+
+    "rss.max-cache-age-days": defineOption(14),
+
+    "rss.article-cache": defineOption<
+      Record<string, { data: RssArticle[]; timestamp: number }>
+    >({}, { useCache: true }),
     "system-menu.modules.bluetooth-advanced.enable": defineOption(true),
     "system-menu.modules.wifi-advanced.enable": defineOption(true),
     "wallpaper.dir": defineOption(`${GLib.get_home_dir()}/Pictures/wallpapers`),

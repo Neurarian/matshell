@@ -2,8 +2,6 @@ import GLib from "gi://GLib?version=2.0";
 import type { WeatherData } from "utils/weather";
 import type { UsageEntry } from "utils/picker/frecency/types";
 import { initializeConfig, defineOption } from "./utils/config";
-import { CacheEntry } from "utils/wallpaper/LRUCache";
-import { ThemeProperties } from "utils/wallpaper";
 import {
   DEFAULT_WIDGET_ORDER,
   DEFAULT_ENABLED_WIDGETS,
@@ -56,14 +54,10 @@ const options = initializeConfig(
     "system-menu.modules.wifi-advanced.enable": defineOption(true),
     "wallpaper.dir": defineOption(`${GLib.get_home_dir()}/Pictures/wallpapers`),
     "wallpaper.cache-size": defineOption(50),
-    "wallpaper.theme.cache-size": defineOption(100),
     // Empty string placeholder - will be set by wallpaper service
     "wallpaper.current": defineOption("", {
       useCache: true,
     }),
-    "wallpaper.theme.cache": defineOption<
-      Record<string, CacheEntry<ThemeProperties>>
-    >({}, { useCache: true }),
     "weather.update-interval": defineOption(900_000),
     "weather.cache": defineOption<
       Record<

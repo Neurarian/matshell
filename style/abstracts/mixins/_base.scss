@@ -1,6 +1,5 @@
 @use "sass:color";
 @use "../variables" as *;
-@use "../theme_variables_matugen" as *;
 
 // Base animation and transitions
 @mixin animate($duration: 400ms, $easing: cubic-bezier(0.05, 0.7, 0.1, 1)) {

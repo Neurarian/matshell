@@ -1,17 +1,13 @@
 import GLib from "gi://GLib";
 import { execAsync } from "ags/process";
 import type { ThemeProperties } from "./types";
-import { writeFileAsync } from "ags/file";
 
 export class ThemeApplicator {
   async applyTheme(
     imagePath: string,
     analysis: ThemeProperties,
   ): Promise<void> {
-    await Promise.all([
-      this.applyMatugen(imagePath, analysis),
-      this.writeThemeVariables(analysis),
-    ]);
+    await Promise.all([this.applyMatugen(imagePath, analysis)]);
 
     this.sendNotification(imagePath, analysis).catch((error) => {
       console.warn("Failed to send theme notification:", error);
@@ -42,26 +38,6 @@ export class ThemeApplicator {
       ]);
     } catch (error) {
       console.error("Failed to run matugen:", error);
-      throw error;
-    }
-  }
-
-  private async writeThemeVariables(analysis: ThemeProperties): Promise<void> {
-    try {
-      const configDir = GLib.get_user_config_dir();
-      const scssFile = `${configDir}/ags/style/abstracts/_theme_variables_matugen.scss`;
-
-      const content = [
-        "",
-        "/* Theme mode and scheme variables */",
-        `$darkmode: ${analysis.mode === "dark"};`,
-        `$material-color-scheme: "${analysis.scheme}";`,
-        "",
-      ].join("\n");
-
-      writeFileAsync(scssFile, content);
-    } catch (error) {
-      console.error("Failed to write theme variables:", error);
       throw error;
     }
   }

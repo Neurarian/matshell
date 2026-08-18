@@ -7,9 +7,7 @@ import { register, property, signal } from "ags/gobject";
 import { getThumbnailManager, ThumbnailManager } from ".";
 import { FileSystemScanner } from "./FileSystemScanner";
 import { WallpaperSetter } from "./WallpaperSetter";
-import { ThemeAnalyzer } from "./ThemeAnalyzer";
 import { ThemeApplicator } from "./ThemeApplicator";
-import { LRUCache } from "./LRUCache";
 import options from "options";
 import Fuse from "../fuse.js";
 import type { WallpaperItem } from "utils/picker/types.ts";
@@ -19,7 +17,6 @@ import { monitorFile } from "ags/file.ts";
 interface WallpaperSettings {
   directory: Accessor<string>;
   current: Accessor<string>;
-  maxCacheSize: Accessor<number>;
   includeHidden: boolean;
 }
 
@@ -28,8 +25,8 @@ export class WallpaperStore extends GObject.Object {
   @property(Array) wallpapers: WallpaperItem[] = [];
   @property(String) currentWallpaperPath: string = "";
   @property(Number) maxItems: number = 12;
-  @property(Object) manualMode: ThemeProperties["mode"] = "auto";
-  @property(String) manualScheme: ThemeProperties["scheme"] = "auto";
+  @property(Object) manualMode: ThemeProperties["mode"] = "smart";
+  @property(String) manualScheme: ThemeProperties["scheme"] = "scheme-smart";
 
   @signal([Array], GObject.TYPE_NONE, { default: false })
   wallpapersChanged(wallpapers: WallpaperItem[]): undefined {}
@@ -51,9 +48,7 @@ export class WallpaperStore extends GObject.Object {
 
   private fileScanner: FileSystemScanner;
   private wallpaperSetter: WallpaperSetter;
-  private themeAnalyzer: ThemeAnalyzer;
   private themeApplicator: ThemeApplicator;
-  private themeCache: LRUCache<ThemeProperties>;
   private thumbnailManager: ThumbnailManager;
 
   constructor(params: { includeHidden?: boolean } = {}) {
@@ -63,19 +58,15 @@ export class WallpaperStore extends GObject.Object {
     this.settings = {
       directory: options["wallpaper.dir"],
       current: options["wallpaper.current"],
-      maxCacheSize: options["wallpaper.theme.cache-size"],
       includeHidden: params.includeHidden ?? false,
     };
 
     this.fileScanner = new FileSystemScanner();
     this.wallpaperSetter = new WallpaperSetter();
-    this.themeAnalyzer = new ThemeAnalyzer();
     this.themeApplicator = new ThemeApplicator();
-    this.themeCache = new LRUCache(this.settings.maxCacheSize.get());
     this.thumbnailManager = getThumbnailManager();
 
     this.setupWatchers();
-    this.loadThemeCache();
     this.loadWallpapers();
   }
 
@@ -85,12 +76,7 @@ export class WallpaperStore extends GObject.Object {
       this.setupDirectoryMonitor();
     });
 
-    const cacheSizeUnsubscribe = this.settings.maxCacheSize.subscribe(() => {
-      const newSize = this.settings.maxCacheSize.get();
-      this.themeCache.updateMaxSize(newSize);
-    });
-
-    this.unsubscribers.push(dirUnsubscribe, cacheSizeUnsubscribe);
+    this.unsubscribers.push(dirUnsubscribe);
     this.setupDirectoryMonitor();
   }
   private setupDirectoryMonitor(): void {
@@ -219,12 +205,6 @@ export class WallpaperStore extends GObject.Object {
     return this.thumbnailManager.getThumbnail(imagePath);
   }
 
-  clearThemeCache(): void {
-    this.themeCache.clear();
-    options["wallpaper.theme.cache"].value = {};
-    console.log("Theme cache cleared");
-  }
-
   private loadWallpapers(): void {
     try {
       const dirPath = this.settings.directory.get();
@@ -292,63 +272,12 @@ export class WallpaperStore extends GObject.Object {
 
   private async applyWallpaperTheme(imagePath: string): Promise<void> {
     try {
-      let analysis: ThemeProperties;
-
-      const needsAutoMode = this.manualMode === "auto";
-      const needsAutoScheme = this.manualScheme === "auto";
-
-      if (!needsAutoMode && !needsAutoScheme) {
-        analysis = {
-          tone: 0,
-          chroma: 0,
-          mode: this.manualMode,
-          scheme: this.manualScheme,
-        };
-      } else {
-        // Check cache first
-        const cached = this.themeCache.get(imagePath);
-
-        if (cached) {
-          analysis = {
-            tone: cached.tone,
-            chroma: cached.chroma,
-            mode: needsAutoMode ? cached.mode : this.manualMode,
-            scheme: needsAutoScheme ? cached.scheme : this.manualScheme,
-          };
-        } else {
-          const autoAnalysis = await this.themeAnalyzer.analyzeImage(imagePath);
-
-          this.themeCache.set(imagePath, autoAnalysis);
-          this.saveThemeCache();
-
-          analysis = {
-            tone: autoAnalysis.tone,
-            chroma: autoAnalysis.chroma,
-            mode: needsAutoMode ? autoAnalysis.mode : this.manualMode,
-            scheme: needsAutoScheme ? autoAnalysis.scheme : this.manualScheme,
-          };
-        }
-      }
-
-      await this.themeApplicator.applyTheme(imagePath, analysis);
+      const mode = this.manualMode;
+      const scheme = this.manualScheme;
+      await this.themeApplicator.applyTheme(imagePath, { mode, scheme });
     } catch (error) {
       console.error("Failed to apply wallpaper theme:", error);
     }
-  }
-
-  private loadThemeCache(): void {
-    const persistentCache = options["wallpaper.theme.cache"].get();
-    this.themeCache.fromJSON(persistentCache);
-  }
-
-  private saveThemeCache(): void {
-    setTimeout(() => {
-      try {
-        options["wallpaper.theme.cache"].value = this.themeCache.toJSON();
-      } catch (error) {
-        console.error("Failed to save theme cache:", error);
-      }
-    }, 0);
   }
 
   dispose(): void {
@@ -377,6 +306,5 @@ export class WallpaperStore extends GObject.Object {
     this.unsubscribers = [];
 
     this.wallpaperSetter.dispose();
-    this.themeCache.clear();
   }
 }

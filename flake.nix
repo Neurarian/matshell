@@ -24,11 +24,6 @@
       url = "github:InioX/matugen";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    image-hct = {
-      url = "github:Neurarian/image-hct";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs @ {
@@ -125,7 +120,6 @@
               cliphist
               wl-clipboard
               inputs.matugen.packages.${system}.default
-              inputs.image-hct.packages.${system}.default
             ])
           }
           )

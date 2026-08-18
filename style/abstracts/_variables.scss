@@ -1,5 +1,4 @@
 @use "sass:color";
-@use "theme_variables_matugen";
 
 /*
 * Css Colors
@@ -183,3 +182,6 @@ $spacing-md: 0.75rem;
 $border-width: 2px;
 $scale: 0.5rem;
 $font: 1.1rem;
+
+/* matugen */
+$darkmode: true;
